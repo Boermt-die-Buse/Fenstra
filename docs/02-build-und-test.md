@@ -113,3 +113,16 @@ Zusätzlich von Hand:
 | App-Start | Konsole, Dolphin, Firefox jeweils dreimal starten, Zeit bis zum sichtbaren Fenster | so kurz wie möglich, Vergleichswert |
 
 Die VM-Werte sind Vergleichsbasis für die folgenden Bausteine, keine absoluten Aussagen über Hardware. Sobald das Grundsystem steht, lohnt ein Test von einem USB-Stick auf echter Hardware (davor warne ich beim Schreiben des Sticks ausdrücklich, weil dabei das Zielgerät überschrieben wird).
+
+## Auf einen USB-Stick schreiben
+
+**Warnung:** Beim Schreiben wird der gesamte Inhalt des Sticks gelöscht. Vorher den Laufwerksbuchstaben des Sticks im Explorer prüfen und alle anderen USB-Laufwerke abziehen. Stick mit mindestens 8 GB.
+
+Das Schreiben passiert unter Windows, nicht in WSL (WSL sieht USB-Sticks nicht als Blockgeräte):
+
+- **Rufus** (rufus.ie): Gerät = der Stick, „Auswahl“ = das Fenstra-ISO, Partitionsschema GPT, Zielsystem UEFI. Beim Start fragt Rufus nach „ISO-Modus“ oder „DD-Modus“: **DD-Modus** wählen. Fedora-ISOs sind Hybrid-Images und werden 1:1 geschrieben.
+- Alternativ **Fedora Media Writer** (getfedora.org): „Eigenes Image auswählen“, dann das Fenstra-ISO, dann den Stick. Der schreibt ebenfalls 1:1.
+
+Vom Stick starten: PC neu starten und das Bootmenü öffnen (je nach Hersteller F12, F8, Esc oder F2), den Stick unter „UEFI: …“ wählen. Oder in Windows: Einstellungen, System, Wiederherstellung, „Erweiterter Start“, dann „Ein Gerät verwenden“. Secure Boot kann eingeschaltet bleiben; die Fedora-Startkette ist signiert.
+
+**Live-Modus ist gefahrlos**: Solange du nicht auf „Auf Festplatte installieren“ klickst, wird die Platte des PCs nicht angefasst. Änderungen im Live-System liegen im RAM und sind nach dem Neustart weg. Der Installer gehört auf dem echten PC vorerst nicht angeklickt; installiert wird nur in der VM.
