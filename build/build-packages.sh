@@ -17,6 +17,7 @@
 # =============================================================================
 set -euo pipefail
 fehler() { echo "FEHLER: $*" >&2; exit 1; }
+trap 'echo "FEHLER: unerwarteter Abbruch in Zeile $LINENO (Befehl: $BASH_COMMAND)" >&2' ERR
 
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="${FENSTRA_WORK:-/var/lib/fenstra-build}"
@@ -73,8 +74,11 @@ for p in "${PKGS[@]}"; do
       tar -C "$dir" -czf "$TOP/SOURCES/${p}-src.tar.gz" src
     fi
   fi
-  # entfernte Quellen laden (nur https) und prüfen
-  rpmspec -P "$TOP/SPECS/$(basename "$spec")" | grep -E '^Source[0-9]*:\s*https://' | while read -r _ url; do
+  # entfernte Quellen laden (nur https) und prüfen. grep liefert 1, wenn ein
+  # Paket keine Download-Quelle hat; das ist kein Fehler.
+  urls=$(rpmspec -P "$TOP/SPECS/$(basename "$spec")" | grep -E '^Source[0-9]*:\s*https://' || true)
+  echo "$urls" | while read -r _ url; do
+    [ -n "$url" ] || continue
     name="${url##*#/}"; [ "$name" = "$url" ] && name="${url##*/}"
     cache="$WORK/sources/$name"; mkdir -p "$WORK/sources"
     if [ ! -f "$cache" ]; then
