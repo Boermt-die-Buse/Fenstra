@@ -1,0 +1,8 @@
+# Build-Ergebnisse gehören nicht ins Git
+*.iso
+*.img
+*.qcow2
+out/
+logs/
+tmp/
+# Messwerte und Berichte sind klein und gehören hinein (berichte/, messungen/)
