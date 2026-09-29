@@ -1,14 +1,16 @@
 # Selawik (Microsoft, SIL Open Font License 1.1): metrisch zu Segoe UI kompatible
 # freie Schrift. Nicht in Fedora paketiert, deshalb hier.
-# Quelle: https://github.com/microsoft/Selawik (Verzeichnis fonts/, Datei LICENSE.txt).
-# Der Tarball wird beim Bauen von GitHub geladen (build/build-packages.sh) und seine
-# Prüfsumme in packages/sources.sha256 festgehalten (erster Download = Referenz).
+# Quelle: https://github.com/microsoft/Selawik. Das Archiv enthält nur die
+# UFO-Quellen ("Source files/UFO/Selawik-*.ufo"); die TTFs werden beim Bauen mit
+# fontmake erzeugt (so macht es Fedora bei Schriften, die als Quelle vorliegen).
+# Der Tarball wird von build/build-packages.sh geladen und gegen
+# packages/sources.sha256 geprüft.
 %global fontlicense    OFL-1.1
 %global fontlicenses   LICENSE*
 %global fontdocs       README.md
 %global fontfamily     Selawik
 %global fontsummary    Selawik, freier metrischer Ersatz für Segoe UI
-# Die TTFs werden beim Entpacken aus dem Archiv nach fonts/ gesammelt (Layout des Repos egal)
+# fontmake legt die erzeugten TTFs unter fonts/ ab
 %global fonts          fonts/*.ttf
 %global fontconfs      %{SOURCE10}
 %global fontdescription %{expand:
@@ -26,19 +28,26 @@ URL:            https://github.com/microsoft/Selawik
 Source0:        https://github.com/microsoft/Selawik/archive/refs/heads/master.tar.gz#/Selawik-master.tar.gz
 Source10:       60-selawik.conf
 Provides:       fenstra-fonts-selawik = %{version}-%{release}
+BuildRequires:  fontmake
 
 %fontpkg
 
 %prep
 %autosetup -n Selawik-master
-# TTFs unabhängig vom Verzeichnis-Layout des Repos einsammeln
-mkdir -p fonts
-find . -path ./fonts -prune -o -type f -iname '*.ttf' -print0 | xargs -0 -r -I{} mv {} fonts/
-ls fonts/*.ttf >/dev/null 2>&1 || { echo "Keine TTF-Dateien im Selawik-Archiv gefunden:"; find . -type f | head -50; exit 1; }
-ls LICENSE* >/dev/null 2>&1 || { echo "Keine LICENSE-Datei im Archiv"; exit 1; }
+ls LICENSE* >/dev/null 2>&1 || { echo "Keine LICENSE-Datei im Archiv:"; ls; exit 1; }
 [ -e README.md ] || echo "Selawik: https://github.com/microsoft/Selawik" > README.md
 
 %build
+# TTFs aus den UFO-Quellen erzeugen (Regular, Bold, Light, Semibold, Semilight)
+mkdir -p fonts
+n=0
+while IFS= read -r ufo; do
+  echo "fontmake: $ufo"
+  fontmake -u "$ufo" -o ttf --output-dir fonts
+  n=$((n + 1))
+done < <(find . -type d -name '*.ufo' | sort)
+[ "$n" -gt 0 ] || { echo "Keine UFO-Quellen im Archiv gefunden:"; find . -maxdepth 3 | head -40; exit 1; }
+ls -l fonts/
 %fontbuild
 
 %install
