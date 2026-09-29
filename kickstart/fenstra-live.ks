@@ -51,7 +51,9 @@ part / --size=20480 --fstype=ext4
 # --- Dienste, Netzwerk, root -----------------------------------------------------
 services --enabled=NetworkManager,ModemManager --disabled=sshd
 network --bootproto=dhcp --device=link --activate
-rootpw --lock --iscrypted locked
+# root ohne Passwort und gesperrt. Fedoras alte Vorlage "--iscrypted locked" scheitert
+# seit shadow-utils 4.17 (chpasswd prüft den Hash: "invalid password hash").
+rootpw --lock
 shutdown
 
 # --- Paketquellen ------------------------------------------------------------------
