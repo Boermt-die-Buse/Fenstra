@@ -6,3 +6,4 @@ out/
 logs/
 tmp/
 # Messwerte und Berichte sind klein und gehören hinein (berichte/, messungen/)
+sources.sha256.neu

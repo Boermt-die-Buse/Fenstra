@@ -8,7 +8,7 @@
 %global fontdocs       README.md
 %global fontfamily     Selawik
 %global fontsummary    Selawik, freier metrischer Ersatz für Segoe UI
-# Im Selawik-Repo liegen die TTFs unter fonts/ (selawk.ttf, selawkb.ttf, selawkl.ttf, selawksb.ttf, selawksl.ttf)
+# Die TTFs werden in %prep aus dem Archiv nach fonts/ gesammelt (Layout des Repos egal)
 %global fonts          fonts/*.ttf
 %global fontconfs      %{SOURCE10}
 %global fontdescription %{expand:
@@ -17,7 +17,7 @@ Schrift mit denselben Metriken wie Segoe UI. Fenstra verwendet sie als
 Oberflächenschrift; Anfragen nach "Segoe UI" werden per fontconfig auf Selawik
 umgeleitet.}
 
-Name:           selawik-fonts
+# Name (selawik-fonts) setzt %fontpkg aus fontfamily
 Version:        1.01
 Release:        1%{?dist}
 URL:            https://github.com/microsoft/Selawik
@@ -30,6 +30,12 @@ Provides:       fenstra-fonts-selawik = %{version}-%{release}
 
 %prep
 %autosetup -n Selawik-master
+# TTFs unabhängig vom Verzeichnis-Layout des Repos einsammeln
+mkdir -p fonts
+find . -path ./fonts -prune -o -type f -iname '*.ttf' -print0 | xargs -0 -r -I{} mv {} fonts/
+ls fonts/*.ttf >/dev/null 2>&1 || { echo "Keine TTF-Dateien im Selawik-Archiv gefunden:"; find . -type f | head -50; exit 1; }
+ls LICENSE* >/dev/null 2>&1 || { echo "Keine LICENSE-Datei im Archiv"; exit 1; }
+[ -e README.md ] || echo "Selawik: https://github.com/microsoft/Selawik" > README.md
 
 %build
 %fontbuild

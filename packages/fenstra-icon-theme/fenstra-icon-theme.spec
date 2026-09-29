@@ -29,6 +29,7 @@ alle übrigen Symbole (Programme, Dateitypen) aus Breeze.
 %setup -q -c -n fluent
 # npm-Tarball entpackt nach fluent/package/{icons,package.json,...}; Lizenztext (MIT) liegt als Source4 bei
 grep -q '"license": "MIT"' package/package.json
+cp -p %{SOURCE4} LICENSE
 
 %build
 mkdir -p src
@@ -44,7 +45,7 @@ install -p -m 0644 %{SOURCE2} %{SOURCE3} %{buildroot}%{_datadir}/fenstra/icon-th
 install -p -m 0755 %{SOURCE1} %{buildroot}%{_datadir}/fenstra/icon-theme/
 
 %files
-%license %{SOURCE4}
+%license LICENSE
 %{_datadir}/icons/fenstra/
 %dir %{_datadir}/fenstra
 %{_datadir}/fenstra/icon-theme/
