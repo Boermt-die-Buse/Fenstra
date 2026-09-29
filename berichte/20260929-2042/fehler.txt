@@ -1,0 +1,71 @@
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:7:2026-09-29 20:42:05,921: terminal size detection failed, using default width
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:482:2026-09-29 20:48:13,814: Installing libgpg-error.x86_64 (259/2294)
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3554:2026-09-29 20:52:35,154: The exact error message is: 
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3556:2026-09-29 20:52:35,154: An error occurred during the transaction: The transaction process has ended with errors..
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3559:2026-09-29 20:55:36,008: Running anaconda failed: process '['unshare', '--pid', '--kill-child', '--mount', '--propagation', 'unchanged', 'anaconda', '--kickstart', '/root/Fenstra/kickstart/fenstra-live.ks', '--cmdline', '--dirinstall', '--remotelog', '127.0.0.1:43109']' exited with status 1
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3561:2026-09-29 20:55:37,669: Install failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3563:2026-09-29 20:55:38,141: ERROR: Image creation failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/konsole.log:3564:2026-09-29 20:55:38,142: Image creation failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:10:2026-09-29 20:42:05,921 INFO pylorax: terminal size detection failed, using default width
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:485:2026-09-29 20:48:13,814 INFO pylorax: Installing libgpg-error.x86_64 (259/2294)
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3557:2026-09-29 20:52:35,154 INFO pylorax: The exact error message is: 
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3559:2026-09-29 20:52:35,154 INFO pylorax: An error occurred during the transaction: The transaction process has ended with errors..
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3562:2026-09-29 20:55:36,008 ERROR pylorax: Running anaconda failed: process '['unshare', '--pid', '--kill-child', '--mount', '--propagation', 'unchanged', 'anaconda', '--kickstart', '/root/Fenstra/kickstart/fenstra-live.ks', '--cmdline', '--dirinstall', '--remotelog', '127.0.0.1:43109']' exited with status 1
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3564:2026-09-29 20:55:37,669 ERROR pylorax: Install failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3566:2026-09-29 20:55:38,141 ERROR pylorax: ERROR: Image creation failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/livemedia.log:3567:2026-09-29 20:55:38,142 ERROR livemedia-creator: Image creation failed: novirt_install failed
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:62:20:42:08,951 ERR localization: setting console font to eurlatgr failed
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:104:20:42:16,811 DBG payload.dnf.payload: The selection has been checked: ValidationReport(error_messages=[], warning_messages=[])
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:122:20:52:35,013 CRT exception: Traceback (most recent call last):
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:153:    return self._handle_method_error(error)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:156:  File "/usr/lib/python3.14/site-packages/dasbus/client/handler.py", line 509, in _handle_method_error
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/anaconda.log:159:pyanaconda.modules.common.errors.installation.PayloadInstallationError: An error occurred during the transaction: The transaction process has ended with errors.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dbus.log:14:dbus-daemon[8]: Activated service 'org.fedoraproject.Anaconda.Addons.Kdump' failed: Process org.fedoraproject.Anaconda.Addons.Kdump exited with status 1
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dbus.log:15:dbus-daemon[8]: Activated service 'org.fedoraproject.Anaconda.Modules.Subscription' failed: Process org.fedoraproject.Anaconda.Modules.Subscription exited with status 1
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:31:2026-09-29T18:42:16+0000 [46] ERROR Argument 'akregator' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:32:2026-09-29T18:42:16+0000 [46] ERROR Argument 'kaddressbook' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:33:2026-09-29T18:42:16+0000 [46] ERROR Argument 'kmail' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:34:2026-09-29T18:42:16+0000 [46] ERROR Argument 'kontact' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:35:2026-09-29T18:42:16+0000 [46] ERROR Argument 'korganizer' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:37:2026-09-29T18:42:16+0000 [46] DEBUG Failed to find rpm package of a running kernel in sack
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:38:2026-09-29T18:42:19+0000 [46] ERROR Argument 'akregator' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:39:2026-09-29T18:42:19+0000 [46] ERROR Argument 'kaddressbook' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:40:2026-09-29T18:42:19+0000 [46] ERROR Argument 'kmail' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:41:2026-09-29T18:42:19+0000 [46] ERROR Argument 'kontact' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:42:2026-09-29T18:42:19+0000 [46] ERROR Argument 'korganizer' matches only excluded packages.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:561:2026-09-29T18:47:46+0000 [211] INFO RPM callback open file "/var/tmp/dnf.package.cache/libgpg-error-1.58-2.fc44.x86_64.rpm"
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:5152:2026-09-29T18:47:56+0000 [211] INFO RPM callback open file "/var/tmp/dnf.package.cache/libgpg-error-1.58-2.fc44.x86_64.rpm"
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:9741:2026-09-29T18:47:58+0000 [211] INFO RPM callback open file "/var/tmp/dnf.package.cache/libgpg-error-1.58-2.fc44.x86_64.rpm"
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:14954:2026-09-29T18:48:13+0000 [211] INFO RPM callback open file "/var/tmp/dnf.package.cache/libgpg-error-1.58-2.fc44.x86_64.rpm"
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:14955:2026-09-29T18:48:13+0000 [211] INFO RPM callback install start "libgpg-error-0:1.58-2.fc44.x86_64" total 970268
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:14956:2026-09-29T18:48:13+0000 [211] INFO RPM callback install stop "libgpg-error-0:1.58-2.fc44.x86_64" amount 970268 total 970268
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:17252:2026-09-29T18:48:25+0000 [211] INFO [scriptlet] There was an error while processing parameters
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:18043:2026-09-29T18:48:31+0000 [211] INFO [scriptlet] Failed to change boolean virt_use_nfs: No such file or directory
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:21388:2026-09-29T18:49:49+0000 [211] INFO [scriptlet] Failed to preset unit: Unit plasma-kded.service does not exist
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:22761:2026-09-29T18:50:04+0000 [211] INFO [scriptlet] Failed to preset unit: Unit systemd-tmpfiles-clear.service does not exist
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:25286:2026-09-29T18:52:17+0000 [211] INFO [scriptlet] cp: error copying '/var/tmp/dracut.dmUMglA/initramfs.img' to '/boot/initramfs-0-rescue-beacf891790249c3bbce2d20180ba38f.img': No space left on device
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:25287:2026-09-29T18:52:17+0000 [211] INFO [scriptlet] dracut[F]: Creation of /boot/initramfs-0-rescue-beacf891790249c3bbce2d20180ba38f.img failed
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:25288:2026-09-29T18:52:18+0000 [211] INFO [scriptlet] /usr/lib/kernel/install.d/51-dracut-rescue.install failed with exit status 1.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:25289:2026-09-29T18:52:18+0000 [211] WARNING [rpm] %posttrans(kernel-core-6.19.10-300.fc44.x86_64) scriptlet failed, exit status 1
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/dnf.log:25291:2026-09-29T18:52:18+0000 [211] WARNING RPM callback non-critical error in %posttrans scriptlet "kernel-core-0:6.19.10-300.fc44.x86_64"
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:104:DEBUG:anaconda.modules.payloads.payload.dnf.dnf_manager:Resolving has been completed: ValidationReport(error_messages=[], warning_messages=[])
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:105:DEBUG:anaconda.modules.payloads.payload.dnf.validation:Resolving has been completed: ValidationReport(error_messages=[], warning_messages=[])
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:361:DEBUG:anaconda.modules.payloads.payload.dnf.dnf_manager:Resolving has been completed: ValidationReport(error_messages=[], warning_messages=[])
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:362:DEBUG:anaconda.modules.payloads.payload.dnf.validation:Resolving has been completed: ValidationReport(error_messages=[], warning_messages=[])
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:1265:DEBUG:anaconda.modules.payloads.payload.dnf.download_progress:Started downloading 'libgpg-error-0:1.58-2.fc44.x86_64' - 260153.0 bytes
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:3557:DEBUG:anaconda.modules.payloads.payload.dnf.download_progress:Downloaded 'libgpg-error-0:1.58-2.fc44.x86_64'
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:7575:DEBUG:anaconda.modules.payloads.payload.dnf.transaction_progress:Installing - libgpg-error-0:1.58-2.fc44.x86_64
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10646:DEBUG:anaconda.modules.payloads.payload.dnf.dnf_manager:The transaction finished with 5 (Rpm transaction failed.)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10648:ERROR:anaconda.modules.payloads.payload.dnf.transaction_progress:The transaction process has ended with errors.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10650:INFO:anaconda.core.threads:Thread Failed: AnaTaskThread-InstallPackagesTask-1 (124450562131648)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10651:ERROR:anaconda.modules.common.task.task:Thread AnaTaskThread-InstallPackagesTask-1 has failed: Traceback (most recent call last):
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10671:    raise PayloadInstallationError("An error occurred during the transaction: " + msg)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10672:pyanaconda.modules.common.errors.installation.PayloadInstallationError: An error occurred during the transaction: The transaction process has ended with errors.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10675:WARNING:dasbus.server.handler:The call org.fedoraproject.Anaconda.Task.Finish has failed with an exception:
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10676:Traceback (most recent call last):
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10689:    thread_manager.raise_if_error(self._thread_name)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10691:  File "/usr/lib64/python3.14/site-packages/pyanaconda/core/threads.py", line 172, in raise_if_error
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10712:    raise PayloadInstallationError("An error occurred during the transaction: " + msg)
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/packaging.log:10713:pyanaconda.modules.common.errors.installation.PayloadInstallationError: An error occurred during the transaction: The transaction process has ended with errors.
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/program.log:4:20:42:08,950 INF program: setfont: ERROR kdfontop.c:212 put_font_kdfontop: Unable to load such font with such kernel version
+/var/lib/fenstra-build/logs/20260929-2042/anaconda/storage.log:13:INFO:blivet:failed to get initiator name from iscsi firmware: No firmware found

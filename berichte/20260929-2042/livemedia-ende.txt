@@ -1,0 +1,200 @@
+2026-09-29 20:50:49,590 INFO pylorax: Installing ed.x86_64 (2199/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing traceroute.x86_64 (2200/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing memstrack.x86_64 (2201/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing exfatprogs.x86_64 (2202/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing b43-fwcutter.x86_64 (2203/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing mpage.x86_64 (2204/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing compsize.x86_64 (2205/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,590 INFO pylorax: Installing dos2unix.x86_64 (2206/2294)
+2026-09-29 20:50:49,590 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,591 INFO pylorax: Installing symlinks.x86_64 (2207/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,591 INFO pylorax: Installing time.x86_64 (2208/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,591 INFO pylorax: Installing tree.x86_64 (2209/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,591 INFO pylorax: Installing catdoc.x86_64 (2210/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-other-sans.noarch (2211/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-other-serif.noarch (2212/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-core-math.noarch (2213/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-core-emoji.noarch (2214/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-cjk-serif.noarch (2215/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-cjk-sans.noarch (2216/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing default-fonts-cjk-mono.noarch (2217/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing iwlwifi-mvm-firmware.noarch (2218/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing langpacks-en.noarch (2219/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing langpacks-de.noarch (2220/2294)
+2026-09-29 20:50:49,591 INFO pylorax: Installing hunspell-en.noarch (2221/2294)
+2026-09-29 20:50:52,092 INFO pylorax: Configuring qt6-qtwebengine.x86_64
+2026-09-29 20:50:52,092 INFO pylorax: Installing breeze-gtk-gtk3.noarch (2222/2294)
+2026-09-29 20:50:52,092 INFO pylorax: Installing breeze-gtk-gtk4.noarch (2223/2294)
+2026-09-29 20:50:52,092 INFO pylorax: Installing default-fonts-core-serif.noarch (2224/2294)
+2026-09-29 20:50:52,092 INFO pylorax: Installing default-fonts-core-mono.noarch (2225/2294)
+2026-09-29 20:50:52,092 INFO pylorax: Installing default-fonts-other-mono.noarch (2226/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing amd-gpu-firmware.noarch (2227/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing atheros-firmware.noarch (2228/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing brcmfmac-firmware.noarch (2229/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing cirrus-audio-firmware.noarch (2230/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing intel-audio-firmware.noarch (2231/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing intel-gpu-firmware.noarch (2232/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing intel-vsc-firmware.noarch (2233/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing iwlegacy-firmware.noarch (2234/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing iwlwifi-dvm-firmware.noarch (2235/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing libertas-firmware.noarch (2236/2294)
+2026-09-29 20:50:52,093 INFO pylorax: Installing mt7xxx-firmware.noarch (2237/2294)
+2026-09-29 20:50:52,593 INFO pylorax: Installing nvidia-gpu-firmware.noarch (2238/2294)
+2026-09-29 20:50:52,593 INFO pylorax: Installing nxpwireless-firmware.noarch (2239/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing qcom-wwan-firmware.noarch (2240/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing realtek-firmware.noarch (2241/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing tiwilink-firmware.noarch (2242/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing amd-ucode-firmware.noarch (2243/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing proj-data-ar.noarch (2244/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing proj-data-at.noarch (2245/2294)
+2026-09-29 20:50:52,594 INFO pylorax: Installing proj-data-au.noarch (2246/2294)
+2026-09-29 20:50:53,094 INFO pylorax: Installing proj-data-be.noarch (2247/2294)
+2026-09-29 20:50:53,094 INFO pylorax: Installing proj-data-br.noarch (2248/2294)
+2026-09-29 20:50:53,094 INFO pylorax: Installing proj-data-ca.noarch (2249/2294)
+2026-09-29 20:50:53,094 INFO pylorax: Installing proj-data-ch.noarch (2250/2294)
+2026-09-29 20:50:53,094 INFO pylorax: Installing proj-data-cz.noarch (2251/2294)
+2026-09-29 20:50:53,095 INFO pylorax: Installing proj-data-de.noarch (2252/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-dk.noarch (2253/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-es.noarch (2254/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-eur.noarch (2255/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-fi.noarch (2256/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-fo.noarch (2257/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-fr.noarch (2258/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-hu.noarch (2259/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-is.noarch (2260/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-jp.noarch (2261/2294)
+2026-09-29 20:50:53,595 INFO pylorax: Installing proj-data-lv.noarch (2262/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-mx.noarch (2263/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-nc.noarch (2264/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-nl.noarch (2265/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-no.noarch (2266/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-nz.noarch (2267/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-pl.noarch (2268/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-pt.noarch (2269/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-se.noarch (2270/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-si.noarch (2271/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-sk.noarch (2272/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-uk.noarch (2273/2294)
+2026-09-29 20:50:53,596 INFO pylorax: Installing proj-data-us.noarch (2274/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing proj-data-za.noarch (2275/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing google-noto-serif-fonts.noarch (2276/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing aajohan-comfortaa-fonts.noarch (2277/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing google-noto-emoji-fonts.noarch (2278/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing gdouros-symbola-fonts.noarch (2279/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing open-sans-fonts.noarch (2280/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing adwaita-mono-fonts.noarch (2281/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing adwaita-sans-fonts.noarch (2282/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing qt6-qttranslations.noarch (2283/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing fedora-appstream-metadata.noarch (2284/2294)
+2026-09-29 20:50:56,097 INFO pylorax: Installing gawk-all-langpacks.x86_64 (2285/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing fedora-bookmarks.noarch (2286/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing words.noarch (2287/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing microcode_ctl.x86_64 (2288/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing mailcap.noarch (2289/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing bash-color-prompt.noarch (2290/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing plasma-desktop-doc.noarch (2291/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing NetworkManager-config-connectivity-fedora.noarch (2292/2294)
+2026-09-29 20:50:56,098 INFO pylorax: Installing alsa-sof-firmware.noarch (2293/2294)
+2026-09-29 20:50:56,598 INFO pylorax: Installing rootfiles.noarch (2294/2294)
+2026-09-29 20:50:56,598 INFO pylorax: Configuring filesystem.x86_64
+2026-09-29 20:50:56,598 INFO pylorax: Configuring glibc-all-langpacks.x86_64
+2026-09-29 20:50:56,598 INFO pylorax: Configuring grub2-common.noarch
+2026-09-29 20:50:56,598 INFO pylorax: Configuring libreoffice-data.x86_64
+2026-09-29 20:50:58,099 INFO pylorax: Configuring ca-certificates.noarch
+2026-09-29 20:50:58,099 INFO pylorax: Configuring authselect-libs.x86_64
+2026-09-29 20:50:58,099 INFO pylorax: Configuring dconf.x86_64
+2026-09-29 20:50:58,099 INFO pylorax: Configuring fontconfig.x86_64
+2026-09-29 20:50:58,099 INFO pylorax: Configuring nss-mdns.x86_64
+2026-09-29 20:50:58,099 INFO pylorax: Configuring urw-base35-bookman-fonts.noarch
+2026-09-29 20:50:58,599 INFO pylorax: Configuring urw-base35-c059-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-d050000l-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-gothic-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-nimbus-mono-ps-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-nimbus-roman-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-nimbus-sans-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-p052-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-standard-symbols-ps-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring urw-base35-z003-fonts.noarch
+2026-09-29 20:50:58,600 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:51:08,602 INFO pylorax: Configuring selinux-policy-targeted.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring container-selinux.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring passt-selinux.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring systemd-resolved.x86_64
+2026-09-29 20:51:09,103 INFO pylorax: Configuring snapper-libs.x86_64
+2026-09-29 20:51:09,103 INFO pylorax: Configuring sssd-common.x86_64
+2026-09-29 20:51:09,103 INFO pylorax: Configuring wireplumber.x86_64
+2026-09-29 20:51:09,103 INFO pylorax: Configuring firewalld.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring crypto-policies-scripts.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring ibus.x86_64
+2026-09-29 20:51:09,103 INFO pylorax: Configuring mysql-selinux.noarch
+2026-09-29 20:51:09,103 INFO pylorax: Configuring tuned.noarch
+2026-09-29 20:51:09,603 INFO pylorax: Configuring appstream.x86_64
+2026-09-29 20:51:09,603 INFO pylorax: Configuring cups-filters.x86_64
+2026-09-29 20:51:09,603 INFO pylorax: Configuring abrt.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-dbus.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-addon-ccpp.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-addon-xorg.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-addon-kerneloops.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-addon-pstoreoops.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring abrt-addon-vmcore.x86_64
+2026-09-29 20:51:09,604 INFO pylorax: Configuring systemd-udev.x86_64
+2026-09-29 20:52:18,124 INFO pylorax: Configuring kernel-core.x86_64
+2026-09-29 20:52:25,126 INFO pylorax: Configuring kernel-modules-core.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring kernel-modules.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring grub2-efi-x64.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring shim-x64.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring cups-browsed.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring tuned-ppd.noarch
+2026-09-29 20:52:25,127 INFO pylorax: Configuring systemd-networkd.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring plocate.x86_64
+2026-09-29 20:52:25,127 INFO pylorax: Configuring rootfiles.noarch
+2026-09-29 20:52:25,627 INFO pylorax: Configuring glibc-common.x86_64
+2026-09-29 20:52:25,627 INFO pylorax: Configuring hicolor-icon-theme.noarch
+2026-09-29 20:52:25,627 INFO pylorax: Configuring vlc-libs.x86_64
+2026-09-29 20:52:26,128 INFO pylorax: Configuring breeze-icon-theme.noarch
+2026-09-29 20:52:26,628 INFO pylorax: Configuring breeze-icon-theme.noarch
+2026-09-29 20:52:26,628 INFO pylorax: Configuring glib2.x86_64
+2026-09-29 20:52:26,628 INFO pylorax: Configuring glib2.x86_64
+2026-09-29 20:52:30,629 INFO pylorax: Configuring shared-mime-info.x86_64
+2026-09-29 20:52:30,630 INFO pylorax: Configuring desktop-file-utils.x86_64
+2026-09-29 20:52:30,630 INFO pylorax: Configuring fontconfig.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring systemd.x86_64
+2026-09-29 20:52:31,130 INFO pylorax: Configuring adwaita-icon-theme-legacy.noarch
+2026-09-29 20:52:31,130 INFO pylorax: Configuring adwaita-icon-theme.noarch
+2026-09-29 20:52:31,131 INFO pylorax: Configuring man-db.x86_64
+2026-09-29 20:52:31,631 INFO pylorax: Configuring fedora-third-party.noarch
+2026-09-29 20:52:31,631 INFO pylorax: Configuring gtk3.x86_64
+2026-09-29 20:52:32,631 INFO pylorax: Configuring ibus.x86_64
+2026-09-29 20:52:34,142 INFO pylorax: Configuring appstream.x86_64
+2026-09-29 20:52:34,642 INFO pylorax: Configuring systemd-udev.x86_64
+2026-09-29 20:52:34,642 INFO pylorax: Configuring systemd-udev.x86_64
+2026-09-29 20:52:35,154 INFO pylorax: 
+2026-09-29 20:52:35,154 INFO pylorax: Running in cmdline mode, no interactive debugging allowed.
+2026-09-29 20:52:35,154 INFO pylorax: The exact error message is: 
+2026-09-29 20:52:35,154 INFO pylorax: 
+2026-09-29 20:52:35,154 INFO pylorax: An error occurred during the transaction: The transaction process has ended with errors..
+2026-09-29 20:52:35,154 INFO pylorax: 
+2026-09-29 20:52:35,154 INFO pylorax: The installer will now terminate.
+2026-09-29 20:55:36,008 ERROR pylorax: Running anaconda failed: process '['unshare', '--pid', '--kill-child', '--mount', '--propagation', 'unchanged', 'anaconda', '--kickstart', '/root/Fenstra/kickstart/fenstra-live.ks', '--cmdline', '--dirinstall', '--remotelog', '127.0.0.1:43109']' exited with status 1
+2026-09-29 20:55:36,008 INFO livemedia-creator: Shutting down log processing
+2026-09-29 20:55:37,669 ERROR pylorax: Install failed: novirt_install failed
+2026-09-29 20:55:37,669 INFO pylorax: Removing bad disk image
+2026-09-29 20:55:38,141 ERROR pylorax: ERROR: Image creation failed: novirt_install failed
+2026-09-29 20:55:38,142 ERROR livemedia-creator: Image creation failed: novirt_install failed

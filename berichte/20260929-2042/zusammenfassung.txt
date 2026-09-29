@@ -1,0 +1,47 @@
+Fenstra Build-Bericht 20260929-2042
+Erstellt: 2026-09-29T21:08:16+02:00 auf Fedora Linux 44 (WSL) Kernel 6.18.33.2-microsoft-standard-WSL2
+lorax: lorax-44.7-1.fc44.x86_64, anaconda: anaconda-tui-44.30-2.fc44.x86_64, pykickstart: pykickstart-3.69-1.fc44.noarch
+
+Kein ISO erzeugt.
+
+Letzte Zeilen der Konsole:
+2026-09-29 20:52:25,127: Configuring rootfiles.noarch
+2026-09-29 20:52:25,627: Configuring glibc-common.x86_64
+2026-09-29 20:52:25,627: Configuring hicolor-icon-theme.noarch
+2026-09-29 20:52:25,627: Configuring vlc-libs.x86_64
+2026-09-29 20:52:26,128: Configuring breeze-icon-theme.noarch
+2026-09-29 20:52:26,628: Configuring breeze-icon-theme.noarch
+2026-09-29 20:52:26,628: Configuring glib2.x86_64
+2026-09-29 20:52:26,628: Configuring glib2.x86_64
+2026-09-29 20:52:30,629: Configuring shared-mime-info.x86_64
+2026-09-29 20:52:30,630: Configuring desktop-file-utils.x86_64
+2026-09-29 20:52:30,630: Configuring fontconfig.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring systemd.x86_64
+2026-09-29 20:52:31,130: Configuring adwaita-icon-theme-legacy.noarch
+2026-09-29 20:52:31,130: Configuring adwaita-icon-theme.noarch
+2026-09-29 20:52:31,131: Configuring man-db.x86_64
+2026-09-29 20:52:31,631: Configuring fedora-third-party.noarch
+2026-09-29 20:52:31,631: Configuring gtk3.x86_64
+2026-09-29 20:52:32,631: Configuring ibus.x86_64
+2026-09-29 20:52:34,142: Configuring appstream.x86_64
+2026-09-29 20:52:34,642: Configuring systemd-udev.x86_64
+2026-09-29 20:52:34,642: Configuring systemd-udev.x86_64
+2026-09-29 20:52:35,154: 
+2026-09-29 20:52:35,154: Running in cmdline mode, no interactive debugging allowed.
+2026-09-29 20:52:35,154: The exact error message is: 
+2026-09-29 20:52:35,154: 
+2026-09-29 20:52:35,154: An error occurred during the transaction: The transaction process has ended with errors..
+2026-09-29 20:52:35,154: 
+2026-09-29 20:52:35,154: The installer will now terminate.
+2026-09-29 20:55:36,008: Running anaconda failed: process '['unshare', '--pid', '--kill-child', '--mount', '--propagation', 'unchanged', 'anaconda', '--kickstart', '/root/Fenstra/kickstart/fenstra-live.ks', '--cmdline', '--dirinstall', '--remotelog', '127.0.0.1:43109']' exited with status 1
+2026-09-29 20:55:36,008: Shutting down log processing
+2026-09-29 20:55:37,669: Install failed: novirt_install failed
+2026-09-29 20:55:37,669: Removing bad disk image
+2026-09-29 20:55:38,141: ERROR: Image creation failed: novirt_install failed
+2026-09-29 20:55:38,142: Image creation failed: novirt_install failed
