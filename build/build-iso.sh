@@ -69,6 +69,14 @@ if [ -d "$LOCAL_REPO/repodata" ]; then
 else
   fehler "Keine Paketquelle unter $LOCAL_REPO. Erst: bash build/build-packages.sh"
 fi
+# Jedes Fenstra-Paket, das der Kickstart verlangt, muss als RPM vorliegen
+fehlend=""
+for p in $(grep -E '^(fenstra-|plymouth-theme-fenstra|selawik-fonts)' "$KS" | awk '{print $1}'); do
+  ls "$LOCAL_REPO/$p"-[0-9]*.rpm >/dev/null 2>&1 || fehlend="$fehlend $p"
+done
+if [ -n "$fehlend" ]; then
+  fehler "In der Paketquelle fehlen:$fehlend. Bitte nachbauen: bash build/build-packages.sh (Paketverzeichnis: fenstra-fonts-selawik baut selawik-fonts, fenstra-theme baut plymouth-theme-fenstra)"
+fi
 # Der Kickstart enthält den Standardpfad; bei abweichendem FENSTRA_WORK ersetzen.
 KS_USED="$KS"
 if [ "$LOCAL_REPO" != /var/lib/fenstra-build/repo ]; then
@@ -106,7 +114,7 @@ livemedia-creator \
   --make-iso --no-virt --nomacboot \
   --ks "$KS_USED" \
   --project "Fenstra" --releasever "$RELEASEVER" \
-  --volid "$VOLID" --title "Fenstra $RELEASEVER" \
+  --volid "$VOLID" \
   --iso-only --iso-name "$ISO_NAME" \
   --resultdir "$OUTDIR" --tmp "$TMPDIR_LMC" \
   --logfile "$LOGDIR/livemedia.log" \
