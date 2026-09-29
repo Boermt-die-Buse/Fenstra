@@ -1,0 +1,8 @@
+# Fenstra: Fensterknöpfe wie unter Windows (nur rechts: Minimieren, Maximieren, Schließen),
+# keine Fensterrahmen. Rundungen, Schatten und Blur folgen im Baustein 4b.
+[org.kde.kdecoration2]
+library=org.kde.breeze
+ButtonsOnLeft=
+ButtonsOnRight=IAX
+BorderSize=None
+BorderSizeAuto=false

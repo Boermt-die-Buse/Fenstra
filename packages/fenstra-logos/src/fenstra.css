@@ -1,0 +1,9 @@
+/* Anaconda (klassische GTK-Oberfläche): Farben der Kopf- und Seitenleiste.
+   Wird von Anaconda geladen, wenn /usr/share/anaconda/pixmaps/<VARIANT_ID>.css
+   bzw. fedora.css vorhanden ist. */
+@define-color product_bg_color #0B3D7A;
+
+/* Kopfzeile */
+.logo-sidebar { background-image: url('/usr/share/anaconda/pixmaps/sidebar-bg.png'); background-color: @product_bg_color; background-repeat: no-repeat; }
+.logo { background-image: url('/usr/share/anaconda/pixmaps/sidebar-logo.png'); background-position: 50% 20px; background-repeat: no-repeat; background-color: transparent; }
+AnacondaSpokeWindow #nav-box { background-color: @product_bg_color; background-image: url('/usr/share/anaconda/pixmaps/topbar-bg.png'); background-repeat: no-repeat; color: white; }

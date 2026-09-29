@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fenstra-Ordner (eigenes Werk, CC-BY-SA-4.0): gelber Ordner mit hellerer Vorderseite,
+     Koordinaten 0..64. Wird vom Generator um Fluent-Glyphen ergänzt. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="fbBack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E9A825"/>
+      <stop offset="1" stop-color="#D9921B"/>
+    </linearGradient>
+    <linearGradient id="fbFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFD25A"/>
+      <stop offset="1" stop-color="#F5B82E"/>
+    </linearGradient>
+  </defs>
+  <path d="M6 12 C6 9.8 7.8 8 10 8 H24 L30 14 H54 C56.2 14 58 15.8 58 18 V52 C58 54.2 56.2 56 54 56 H10 C7.8 56 6 54.2 6 52 Z" fill="url(#fbBack)"/>
+  <path d="M6 24 C6 21.8 7.8 20 10 20 H54 C56.2 20 58 21.8 58 24 V52 C58 54.2 56.2 56 54 56 H10 C7.8 56 6 54.2 6 52 Z" fill="url(#fbFront)"/>
+</svg>

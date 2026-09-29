@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Id": "Fenstra",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Fenstra",
+        "Name[de]": "Fenstra"
+    },
+    "KPackageStructure": "Plasma/Wallpaper"
+}

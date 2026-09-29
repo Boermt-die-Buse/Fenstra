@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fenstra-Logo, einfarbig dunkel (helle Hintergründe, Druck). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect x="50" y="62" width="156" height="132" rx="12" ry="12" fill="none" stroke="#1F1F1F" stroke-width="14"/>
+  <rect x="130" y="70" width="68" height="116" rx="4" ry="4" fill="#1F1F1F" fill-opacity="0.25"/>
+  <polygon points="50,62 116,34 116,222 50,194" fill="#1F1F1F"/>
+</svg>

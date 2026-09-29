@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Category": "",
+        "Description": "Fenstra: helles Design im Stil von Windows 11",
+        "Description[de]": "Fenstra: helles Design im Stil von Windows 11",
+        "Id": "org.fenstra.desktop",
+        "License": "GPL-2.0+",
+        "Name": "Fenstra",
+        "Name[de]": "Fenstra",
+        "Version": "44.0",
+        "Website": "https://github.com/Boermt-die-Buse/Fenstra"
+    },
+    "X-Plasma-APIVersion": "2"
+}

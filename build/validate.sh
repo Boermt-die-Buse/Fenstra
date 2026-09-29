@@ -54,7 +54,30 @@ for e in "$tmp"/embedded*; do
     echo "  FEHLER  eingebettet: ${e##*/embedded}: $(cat "$tmp/err")"; rc=1
   fi
 done
-rm -rf "$tmp"
+rm -rf "$tmp"; tmp=$(mktemp -u)
+
+echo "== Paketquellen (packages/) =="
+while IFS= read -r f; do
+  if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" 2>"$tmp.err"; then echo "  ok      $f"; else echo "  FEHLER  $f: $(cat "$tmp.err")"; rc=1; fi
+done < <(find packages -name '*.json')
+while IFS= read -r f; do
+  if python3 -c "import xml.dom.minidom,sys; xml.dom.minidom.parse(sys.argv[1])" "$f" 2>"$tmp.err"; then echo "  ok      $f"; else echo "  FEHLER  $f: $(head -1 "$tmp.err")"; rc=1; fi
+done < <(find packages -name '*.svg' -o -path '*/fontconfig/*.conf' -o -name '60-selawik.conf')
+while IFS= read -r f; do
+  if python3 -m py_compile "$f" 2>"$tmp.err"; then echo "  ok      $f"; else echo "  FEHLER  $f: $(cat "$tmp.err")"; rc=1; fi
+done < <(find packages -name '*.py')
+while IFS= read -r f; do
+  head -1 "$f" | grep -q '^#!/bin/bash' || continue
+  if bash -n "$f"; then echo "  ok      $f"; else echo "  FEHLER  $f"; rc=1; fi
+done < <(find packages -type f -perm -u+x ! -name '*.py')
+if command -v rpmspec >/dev/null; then
+  for f in packages/*/*.spec; do
+    if rpmspec -P "$f" >/dev/null 2>"$tmp.err"; then echo "  ok      $f (rpmspec)"; else echo "  FEHLER  $f: $(head -3 "$tmp.err")"; rc=1; fi
+  done
+else
+  echo "  (rpmspec fehlt, Specs werden nur in WSL geprüft)"
+fi
+rm -f "$tmp.err"
 
 echo "== Bash-Syntax build/*.sh =="
 for s in build/*.sh; do

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fenstra-Logo: ein geöffnetes Fenster (ein Flügel nach außen geschwenkt).
+     Eigenes Motiv, keine Vier-Felder-Flagge. Lizenz: CC-BY-SA-4.0 (Fenstra-Projekt). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B9BFF"/>
+      <stop offset="1" stop-color="#0052B4"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.20"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="256" height="256" rx="56" ry="56" fill="url(#bg)"/>
+  <!-- Rahmen -->
+  <rect x="62" y="70" width="132" height="116" rx="10" ry="10" fill="none" stroke="#FFFFFF" stroke-width="12"/>
+  <!-- rechter Flügel (geschlossen, Glas) -->
+  <rect x="130" y="76" width="58" height="104" rx="4" ry="4" fill="url(#glass)"/>
+  <!-- linker Flügel (nach außen geöffnet) -->
+  <polygon points="62,70 118,46 118,210 62,186" fill="#FFFFFF"/>
+  <polygon points="74,84 108,68 108,188 74,172" fill="#CFE6FF"/>
+</svg>

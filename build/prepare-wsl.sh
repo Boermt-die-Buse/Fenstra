@@ -20,13 +20,14 @@ echo "System: ${PRETTY_NAME:-?}"
 [ "${VERSION_ID:-}" = 44 ] || echo "WARNUNG: Fedora ${VERSION_ID:-?} statt 44. livemedia-creator --no-virt ist nur zuverlässig, wenn Host- und Zielversion gleich sind."
 
 echo "== Pakete =="
-PFLICHT=(lorax lorax-lmc-novirt anaconda-tui pykickstart squashfs-tools xorriso dosfstools isomd5sum e2fsprogs util-linux git)
+PFLICHT=(lorax lorax-lmc-novirt anaconda-tui pykickstart squashfs-tools xorriso dosfstools isomd5sum e2fsprogs util-linux git
+         rpm-build rpmdevtools createrepo_c librsvg2-tools ImageMagick python3 fonts-rpm-macros curl)
 dnf install -y "${PFLICHT[@]}"
 # Referenz-Kickstarts des Fedora-Projekts (nur zum Vergleichen, nicht Pflicht)
 dnf install -y --skip-unavailable fedora-kickstarts || true
 
 echo "== Werkzeuge =="
-for b in livemedia-creator ksvalidator ksflatten mksquashfs xorriso mkfs.ext4 mkfs.vfat losetup implantisomd5; do
+for b in livemedia-creator ksvalidator ksflatten mksquashfs xorriso mkfs.ext4 mkfs.vfat losetup implantisomd5 rpmbuild rpmspec createrepo_c rsvg-convert magick python3; do
   command -v "$b" >/dev/null || fehler "$b fehlt"
   echo "  ok  $b"
 done
@@ -61,4 +62,4 @@ echo "RAM: $(free -g | awk 'NR==2{print $2}') GB, CPUs: $(nproc)"
 if [ -d /usr/share/spin-kickstarts ]; then
   echo "Referenz-Kickstarts von Fedora liegen unter /usr/share/spin-kickstarts/ (fedora-live-kde.ks, fedora-live-base.ks)."
 fi
-echo "Fertig. Nächster Schritt: bash build/build-iso.sh"
+echo "Fertig. Nächste Schritte: bash build/build-packages.sh, dann bash build/build-iso.sh"

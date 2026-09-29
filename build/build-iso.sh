@@ -12,7 +12,8 @@
 #   FENSTRA_WORK=/var/lib/fenstra-build           Bau-Verzeichnis (Linux-Dateisystem!)
 #
 # Was passiert:
-#  1. Prüfungen (root, Werkzeuge, Platz, Linux-Dateisystem statt /mnt/c)
+#  1. Prüfungen (root, Werkzeuge, Platz, Linux-Dateisystem statt /mnt/c,
+#     lokale Paketquelle aus build/build-packages.sh)
 #  2. ksvalidator
 #  3. livemedia-creator --make-iso --no-virt: Anaconda installiert in ein
 #     ext4-Image, lorax packt es als squashfs und baut das ISO (GRUB2 für BIOS
@@ -61,8 +62,23 @@ echo "  Ergebnis:    $OUTDIR/$ISO_NAME"
 echo "  Protokolle:  $LOGDIR"
 echo "  Freier Platz: ${avail_gb} GB, CPUs: $(nproc), RAM: $(free -g | awk 'NR==2{print $2}') GB"
 
+echo "== Lokale Paketquelle (eigene Fenstra-Pakete) =="
+LOCAL_REPO="$WORK/repo"
+if [ -d "$LOCAL_REPO/repodata" ]; then
+  echo "  $LOCAL_REPO ($(ls "$LOCAL_REPO"/*.rpm 2>/dev/null | wc -l) RPMs)"
+else
+  fehler "Keine Paketquelle unter $LOCAL_REPO. Erst: bash build/build-packages.sh"
+fi
+# Der Kickstart enthält den Standardpfad; bei abweichendem FENSTRA_WORK ersetzen.
+KS_USED="$KS"
+if [ "$LOCAL_REPO" != /var/lib/fenstra-build/repo ]; then
+  KS_USED="$LOGDIR/$(basename "$KS")"
+  sed "s|file:///var/lib/fenstra-build/repo|file://$LOCAL_REPO|" "$KS" > "$KS_USED"
+  echo "  Kickstart-Kopie mit angepasstem Pfad: $KS_USED"
+fi
+
 echo "== Kickstart prüfen =="
-ksvalidator -v "F${RELEASEVER}" "$KS" || fehler "Kickstart ungültig."
+ksvalidator -v "F${RELEASEVER}" "$KS_USED" || fehler "Kickstart ungültig."
 echo "  ok"
 
 EXTRA=()
@@ -88,7 +104,7 @@ cd "$LOGDIR"
 set +e
 livemedia-creator \
   --make-iso --no-virt --nomacboot \
-  --ks "$KS" \
+  --ks "$KS_USED" \
   --project "Fenstra" --releasever "$RELEASEVER" \
   --volid "$VOLID" --title "Fenstra $RELEASEVER" \
   --iso-only --iso-name "$ISO_NAME" \

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Wortmarke für Installer-Seitenleiste und Startseiten: Logo + Schriftzug.
+     Schrift: Selawik (OFL), Fallback DejaVu Sans / sans-serif. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="160" viewBox="0 0 640 160">
+  <g transform="translate(16,16) scale(0.5)">
+    <rect x="50" y="62" width="156" height="132" rx="12" ry="12" fill="none" stroke="#FFFFFF" stroke-width="14"/>
+    <rect x="130" y="70" width="68" height="116" rx="4" ry="4" fill="#FFFFFF" fill-opacity="0.35"/>
+    <polygon points="50,62 116,34 116,222 50,194" fill="#FFFFFF"/>
+  </g>
+  <text x="168" y="104" font-family="Selawik, 'Selawik Light', 'DejaVu Sans', sans-serif" font-size="72" font-weight="300" fill="#FFFFFF" letter-spacing="1">Fenstra</text>
+</svg>

@@ -1,0 +1,6 @@
+# SHA256-Prüfsummen externer Quellen (build/build-packages.sh prüft dagegen).
+# Fluent UI System Icons, npm @fluentui/svg-icons 1.1.343 (MIT), geprüft am 2026-09-29
+50f442c6aebe83383b39fccbc1d13f16de2587e805cbe088d932990c2a0e15c0  svg-icons-1.1.343.tgz
+# Selawik (OFL-1.1), GitHub-Archiv des master-Zweigs: noch nicht geprüft (Prüfsumme
+# beim ersten Build sichten und hier eintragen; GitHub war aus der Bau-Umgebung
+# dieser Sitzung nicht erreichbar)

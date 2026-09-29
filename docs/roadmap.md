@@ -4,16 +4,19 @@ Reihenfolge wie besprochen. Jeder Baustein endet mit einem Build, einem VM-Test 
 
 ## 0. Erster Build und Basiswerte (jetzt)
 
-- `build/build-iso.sh` in WSL, ISO in Hyper-V testen, installieren, `fenstra-baseline` nach `messungen/`.
-- Ergebnis: funktionierendes Fedora-KDE-Live-ISO mit Fenstra-Platzhaltern, Btrfs-Installer-Profil, Snapper-Vorbereitung, zRAM.
-- Offen aus Build #1: Paketnamen gegen F44 bestätigen, SELinux-Labels prüfen, Bootzeit/RAM als Vergleichsbasis.
+- `build/build-packages.sh` und `build/build-iso.sh` in WSL, ISO in Hyper-V testen, installieren, `fenstra-baseline` nach `messungen/`.
+- Ergebnis: Fedora-KDE-Live-ISO mit Fenstra-Branding (4a), Btrfs-Installer-Profil, Snapper-Vorbereitung, zRAM.
+- Erledigt: alle Paketnamen des Kickstarts gegen die Fedora-44-Paketdaten geprüft (vorhanden).
+- Offen: SELinux-Labels prüfen, Bootzeit/RAM als Vergleichsbasis.
+- Erkenntnisse aus den F44-Paketdaten: der KDE-Spin nutzt den **Plasma Login Manager** (nicht SDDM) und die **Anaconda-Weboberfläche** als Installer. Beides beeinflusst 4a/4b (Anmeldebildschirm) und die Installer-Optik.
 
-## 4a. Branding und Theme
+## 4a. Branding und Theme (Paketquellen fertig, Build und VM-Test offen)
 
-- Pakete `fenstra-release` (ersetzt fedora-release, setzt os-release sauber) und `fenstra-logos` (ersetzt fedora-logos: Bootlogo, SDDM, Anaconda-Grafiken). Eigenes Logo (Fenster-Motiv, keine Vier-Felder-Flagge). Eigene Wallpaper (Farbverläufe/abstrakt).
-- Plasma-Theme, Farbschema (Hell/Dunkel, Akzentfarbe), Icon-Theme aus Fluent UI System Icons (MIT), Schriften Selawik + Cascadia Code, Cursor-Theme.
-- Plymouth-Bootscreen, SDDM-Anmeldebildschirm im Windows-Stil (Uhr unten links, Nutzerbild mittig), Anaconda-Branding („Fenstra installieren“).
-- Lokale RPM-Quelle im Build (`createrepo_c` + `repo --baseurl=file://…`), damit eigene Pakete ins Kickstart kommen.
+Details: [04a-branding-und-theme.md](04a-branding-und-theme.md), Pakete: [../packages/README.md](../packages/README.md).
+
+- Erledigt: Pakete `fenstra-release` (os-release per Dateitrigger, ergänzt fedora-release), `fenstra-logos` (ersetzt fedora-logos), `fenstra-backgrounds` (ersetzt Fedora-Hintergründe, auch Anmelde-/Sperrbildschirm), `fenstra-theme` (globales Design hell/dunkel, Farbschemata, Vorgaben, Plymouth-Thema), `fenstra-icon-theme` (Fluent UI System Icons, MIT), `selawik-fonts`. Lokale RPM-Quelle im Build (`build/build-packages.sh`, `createrepo_c`, `repo --baseurl=file://…`).
+- Offen: erster Build mit den Paketen, VM-Test nach Prüfliste, Messung. Cursor-Thema verschoben (Breeze Light ist nah dran).
+- Geändert gegenüber Plan: kein SDDM-Thema, weil Fedora 44 KDE den Plasma Login Manager nutzt. Anmeldebildschirm im Windows-Aufbau wird in 4b am Plasma Login Manager geprüft.
 - Ehrlich: Segoe UI, Windows-Icons, Windows-Wallpaper bleiben außen vor. Selawik ist Microsofts eigener freier Segoe-Ersatz, die Metrik passt, die Formen sind etwas anders.
 - Messpunkt: Bootzeit (Plymouth), RAM unverändert.
 

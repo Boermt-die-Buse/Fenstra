@@ -1,5 +1,5 @@
 # =============================================================================
-# Fenstra – Basis-Kickstart für das Live-ISO (Build #1)
+# Fenstra – Kickstart für das Live-ISO (Build #2: Basis + Branding/Theme, Baustein 4a)
 # =============================================================================
 # Ergebnis: startfähiges Live-ISO mit KDE Plasma (Wayland) und Installer.
 # Grundlage: Fedora Linux 44 (Remix). Der Aufbau ist an fedora-live-base.ks und
@@ -7,11 +7,15 @@
 # Branch f44), hier aber eigenständig gehalten, damit keine versteckten
 # Abhängigkeiten entstehen und jede Zeile nachvollziehbar ist.
 #
-# Bauen (in WSL, FedoraLinux-44, als root):   bash build/build-iso.sh
+# Bauen (in WSL, FedoraLinux-44, als root):   bash build/build-packages.sh   (eigene RPMs)
+#                                              bash build/build-iso.sh        (ISO)
 # Prüfen:                                      bash build/validate.sh
 #
+# Eigene Pakete (packages/): fenstra-release, fenstra-logos, fenstra-backgrounds,
+# fenstra-theme, plymouth-theme-fenstra, fenstra-icon-theme, selawik-fonts.
+# Sie kommen aus der lokalen Paketquelle "fenstra" (siehe repo-Zeile unten).
+#
 # Was diese Datei bewusst NOCH NICHT enthält (kommt in späteren Bausteinen):
-#   - eigenes Branding-Paket (fenstra-release, fenstra-logos, Wallpaper, Theme)
 #   - Windows-11-Layout für Taskleiste, Startmenü, Schnelleinstellungen
 #   - grub-btrfs (nicht in den Fedora-Quellen; wird als eigenes Paket gebaut)
 #   - Wine/Proton, Steam, NVIDIA-Treiber (RPM Fusion)
@@ -56,6 +60,9 @@ shutdown
 url  --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch
 repo --name=fedora  --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$releasever&arch=$basearch
 repo --name=updates --mirrorlist=https://mirrors.fedoraproject.org/mirrorlist?repo=updates-released-f$releasever&arch=$basearch
+# Eigene Fenstra-Pakete (build/build-packages.sh). Pfad wird von build-iso.sh
+# ersetzt, wenn FENSTRA_WORK woanders liegt.
+repo --name=fenstra --baseurl=file:///var/lib/fenstra-build/repo
 
 
 %packages
@@ -103,6 +110,20 @@ zram-generator-defaults
 # --- Fenstra: Sprache und Schrift ---------------------------------------------------------
 langpacks-de
 cascadia-code-fonts
+selawik-fonts
+
+# --- Fenstra: Branding und Theme (eigene Pakete, Baustein 4a) -----------------------------
+fenstra-release
+fenstra-logos
+fenstra-backgrounds
+fenstra-theme
+fenstra-icon-theme
+plymouth-theme-fenstra
+# Fedora-Grafiken weichen den Fenstra-Paketen (system-logos, system-backgrounds-kde).
+# desktop-backgrounds-compat bleibt erlaubt (sddm verlangt es), es kollidiert nicht.
+-fedora-logos
+-desktop-backgrounds-kde
+-f44-backgrounds-kde
 
 # --- Ausschlüsse: schlankeres System -------------------------------------------------------
 # keine X11-Sitzung (Fenstra ist Wayland)
@@ -153,32 +174,20 @@ rm -f /etc/machine-id
 touch /etc/machine-id
 
 # =============================================================================
-# Teil 2: Fenstra-Kennung (Platzhalter, später Paket fenstra-release)
+# Teil 2: Fenstra-Kennung und Bootscreen
 # =============================================================================
-# /etc/os-release zeigt auf /usr/lib/os-release (Paket fedora-release). ID bleibt
-# "fedora", damit dnf, Anaconda-Profile und Skripte weiter funktionieren; die
-# sichtbaren Namen werden auf Fenstra gesetzt. Ein Update von fedora-release
-# würde diese Änderung überschreiben. Deshalb ist das nur ein Platzhalter.
-OSREL=/usr/lib/os-release
-sed -i \
-  -e 's/^NAME=.*/NAME="Fenstra"/' \
-  -e 's/^VERSION=.*/VERSION="44 (Fenstra Desktop)"/' \
-  -e 's/^PRETTY_NAME=.*/PRETTY_NAME="Fenstra 44 (basiert auf Fedora Linux)"/' \
-  -e 's/^VARIANT=.*/VARIANT="Fenstra Desktop"/' \
-  -e 's/^VARIANT_ID=.*/VARIANT_ID=fenstra/' \
-  -e 's/^LOGO=.*/LOGO=fenstra/' \
-  -e 's/^DEFAULT_HOSTNAME=.*/DEFAULT_HOSTNAME="fenstra"/' \
-  -e 's|^HOME_URL=.*|HOME_URL="https://github.com/Boermt-die-Buse/Fenstra"|' \
-  -e 's|^DOCUMENTATION_URL=.*|DOCUMENTATION_URL="https://github.com/Boermt-die-Buse/Fenstra"|' \
-  -e 's|^SUPPORT_URL=.*|SUPPORT_URL="https://github.com/Boermt-die-Buse/Fenstra/issues"|' \
-  -e 's|^BUG_REPORT_URL=.*|BUG_REPORT_URL="https://github.com/Boermt-die-Buse/Fenstra/issues"|' \
-  -e '/^REDHAT_/d' \
-  "$OSREL"
-grep -q '^VARIANT_ID=' "$OSREL"       || echo 'VARIANT_ID=fenstra'          >> "$OSREL"
-grep -q '^VARIANT=' "$OSREL"          || echo 'VARIANT="Fenstra Desktop"'   >> "$OSREL"
-grep -q '^DEFAULT_HOSTNAME=' "$OSREL" || echo 'DEFAULT_HOSTNAME="fenstra"'  >> "$OSREL"
-grep -q '^LOGO=' "$OSREL"             || echo 'LOGO=fenstra'                >> "$OSREL"
-printf 'Fenstra 44 (basiert auf Fedora Linux)\nKernel \\r auf \\m (\\l)\n\n' > /etc/issue
+# os-release, /etc/issue, Logos, Theme und Symbole kommen aus den eigenen Paketen
+# (fenstra-release, fenstra-logos, fenstra-theme, ...). Hier nur Kontrolle und
+# Bootscreen-Vorgabe.
+grep -q '^VARIANT_ID=fenstra' /usr/lib/os-release || echo "WARNUNG: os-release trägt nicht die Fenstra-Kennung (fenstra-release fehlt?)"
+grep -E '^(PRETTY_NAME|VARIANT_ID)=' /usr/lib/os-release
+
+# Plymouth: Fenstra-Bootscreen als Vorgabe. Das Live-initramfs baut lorax selbst;
+# das installierte System erzeugt beim Installieren ein neues initramfs mit
+# diesem Theme (deshalb hier kein dracut-Lauf).
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme fenstra || echo "WARNUNG: Plymouth-Thema fenstra nicht gefunden"
+fi
 
 # =============================================================================
 # Teil 3: Installer-Profil (Anaconda) für Fenstra

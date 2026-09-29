@@ -1,0 +1,23 @@
+# Fenstra: systemweite Vorgaben für alle Benutzer (überschreibbar in ~/.config/kdeglobals)
+[General]
+ColorScheme=FenstraLight
+AccentColor=0,120,212
+font=Selawik,10,-1,5,50,0,0,0,0,0
+menuFont=Selawik,10,-1,5,50,0,0,0,0,0
+toolBarFont=Selawik,10,-1,5,50,0,0,0,0,0
+smallestReadableFont=Selawik,8,-1,5,50,0,0,0,0,0
+fixed=Cascadia Code,10,-1,5,50,0,0,0,0,0
+XftAntialias=true
+XftHintStyle=hintslight
+XftSubPixel=rgb
+
+[WM]
+activeFont=Selawik,10,-1,5,50,0,0,0,0,0
+
+[Icons]
+Theme=fenstra
+
+[KDE]
+LookAndFeelPackage=org.fenstra.desktop
+SingleClick=false
+widgetStyle=Breeze
