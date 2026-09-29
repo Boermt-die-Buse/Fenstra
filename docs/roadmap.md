@@ -75,3 +75,8 @@ Reihenfolge wie besprochen. Jeder Baustein endet mit einem Build, einem VM-Test 
 - Compositor: Blur/Animationen mit Fallback bei llvmpipe; Mesa aktuell; VA-API im Browser; NVIDIA-Weg dokumentieren.
 - Live-Image: squashfs xz → zstd testen (`FENSTRA_SQUASHFS=zstd`), initramfs zstd, Bootmenü-Timeout kurz.
 - Btrfs: `noatime`, `compress=zstd:1`, `discard=async` (Kernel-Standard), wöchentlich `fstrim` und `scrub`, `nodatacow` für VM-Images und Datenbanken per Ordnerattribut.
+
+## 5. Abschluss: fertiges ISO auf den USB-Stick
+
+- Erst wenn alle Bausteine in der VM laufen und die Messwerte passen: finaler Build, Prüfsumme, Test des ISOs in Hyper-V mit Secure Boot, dann Stick schreiben (Anleitung in docs/02, Abschnitt USB-Stick).
+- Bis dahin kein Stick. Zwischenstände bleiben in der VM.

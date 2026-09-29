@@ -114,7 +114,9 @@ Zusätzlich von Hand:
 
 Die VM-Werte sind Vergleichsbasis für die folgenden Bausteine, keine absoluten Aussagen über Hardware. Sobald das Grundsystem steht, lohnt ein Test von einem USB-Stick auf echter Hardware (davor warne ich beim Schreiben des Sticks ausdrücklich, weil dabei das Zielgerät überschrieben wird).
 
-## Auf einen USB-Stick schreiben
+## Auf einen USB-Stick schreiben (erst wenn Fenstra fertig ist)
+
+Dieser Schritt kommt zum Schluss. Alle Zwischenstände werden nur in der VM getestet; erst das fertige Fenstra kommt auf den Stick.
 
 **Warnung:** Beim Schreiben wird der gesamte Inhalt des Sticks gelöscht. Vorher den Laufwerksbuchstaben des Sticks im Explorer prüfen und alle anderen USB-Laufwerke abziehen. Stick mit mindestens 8 GB.
 
