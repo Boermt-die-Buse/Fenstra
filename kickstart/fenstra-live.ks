@@ -42,10 +42,11 @@ xconfig --startxonboot
 # --- Wurzeldateisystem des Live-Images (NICHT die Zielplatte des Nutzers) -----
 # livemedia-creator legt eine ext4-Datei dieser Größe an, installiert hinein und
 # packt sie anschließend als squashfs ins ISO. Ungenutzter Platz kostet im ISO
-# praktisch nichts.
+# praktisch nichts. 10 GB reichten für die KDE-Umgebung von Fedora 44 nicht
+# (Build vom 29.09.2026: "No space left on device" beim Rettungs-initramfs).
 zerombr
 clearpart --all
-part / --size=10240 --fstype=ext4
+part / --size=20480 --fstype=ext4
 
 # --- Dienste, Netzwerk, root -----------------------------------------------------
 services --enabled=NetworkManager,ModemManager --disabled=sshd

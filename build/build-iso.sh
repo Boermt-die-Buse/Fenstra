@@ -20,7 +20,7 @@
 #     und UEFI). Läuft komplett innerhalb der WSL-Distribution.
 #  4. Ergebnis + SHA256 nach $OUTDIR, Protokolle nach $LOGDIR
 #
-# Dauer: ca. 15–45 Minuten, Download ca. 2–3 GB, Platz ca. 25 GB unter $FENSTRA_WORK.
+# Dauer: ca. 15–45 Minuten, Download ca. 2–3 GB, Platz ca. 40 GB unter $FENSTRA_WORK.
 #
 # Hinweis zum Risiko: livemedia-creator --no-virt lässt Anaconda als root auf
 # dem Host laufen (Verzeichnis-Installation). lorax warnt, dass ein Anaconda-
@@ -56,7 +56,7 @@ case "$WORK" in /mnt/*) fehler "FENSTRA_WORK darf nicht unter /mnt liegen (Loop-
 [ -e "$OUTDIR" ] && fehler "$OUTDIR existiert schon (livemedia-creator verlangt ein neues Verzeichnis)."
 mkdir -p "$TMPDIR_LMC" "$LOGDIR" "$WORK/out"
 avail_gb=$(df -BG --output=avail "$WORK" | tail -1 | tr -dc '0-9')
-[ "$avail_gb" -ge 30 ] || fehler "Zu wenig Platz unter $WORK: ${avail_gb} GB frei, 30 GB nötig."
+[ "$avail_gb" -ge 45 ] || fehler "Zu wenig Platz unter $WORK: ${avail_gb} GB frei, 45 GB nötig."
 echo "  Kickstart:   $KS"
 echo "  Ergebnis:    $OUTDIR/$ISO_NAME"
 echo "  Protokolle:  $LOGDIR"

@@ -3,7 +3,7 @@
 ## Voraussetzungen
 
 - Windows 11 mit WSL2 und der Distribution **FedoraLinux-44** (Benutzer root, 16 Kerne, 31 GB RAM).
-- Etwa **30 GB frei** im Linux-Dateisystem der Distribution (nicht auf `C:`). Der Build legt ein 10-GB-ext4-Image an, packt es und baut das ISO.
+- Etwa **45 GB frei** im Linux-Dateisystem der Distribution (nicht auf `C:`). Der Build legt ein 20-GB-ext4-Image an, packt es und baut das ISO.
 - Internet: etwa **2–3 GB Download** aus den Fedora-Spiegeln pro Build. Ein lokaler Zwischenspeicher kommt später, wenn wir häufiger bauen.
 
 ## Bauen
