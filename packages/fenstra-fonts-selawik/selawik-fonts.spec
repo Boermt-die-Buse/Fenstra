@@ -8,7 +8,7 @@
 %global fontdocs       README.md
 %global fontfamily     Selawik
 %global fontsummary    Selawik, freier metrischer Ersatz für Segoe UI
-# Die TTFs werden in %prep aus dem Archiv nach fonts/ gesammelt (Layout des Repos egal)
+# Die TTFs werden beim Entpacken aus dem Archiv nach fonts/ gesammelt (Layout des Repos egal)
 %global fonts          fonts/*.ttf
 %global fontconfs      %{SOURCE10}
 %global fontdescription %{expand:
@@ -17,13 +17,14 @@ Schrift mit denselben Metriken wie Segoe UI. Fenstra verwendet sie als
 Oberflächenschrift; Anfragen nach "Segoe UI" werden per fontconfig auf Selawik
 umgeleitet.}
 
-# Name (selawik-fonts) setzt %fontpkg aus fontfamily
+# Achtung: RPM expandiert Makros auch in Kommentaren, deshalb hier keine Makronamen.
+# Name (selawik-fonts), Summary, License, BuildArch und BuildRequires erzeugt das
+# Font-Makro unten aus fontfamily/fontsummary/fontlicense; sie dürfen hier nicht stehen.
 Version:        1.01
 Release:        1%{?dist}
 URL:            https://github.com/microsoft/Selawik
 Source0:        https://github.com/microsoft/Selawik/archive/refs/heads/master.tar.gz#/Selawik-master.tar.gz
 Source10:       60-selawik.conf
-BuildRequires:  fonts-rpm-macros
 Provides:       fenstra-fonts-selawik = %{version}-%{release}
 
 %fontpkg
