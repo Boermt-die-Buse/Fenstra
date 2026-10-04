@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Search
+Name[de]=Suche
+Comment=Search apps, files and settings
+Comment[de]=Apps, Dateien und Einstellungen suchen
+Icon=search
+Exec=krunner
+NoDisplay=true
+Categories=Utility;

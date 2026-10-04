@@ -1,5 +1,5 @@
 # Fenstra: Fensterknöpfe wie unter Windows (nur rechts: Minimieren, Maximieren, Schließen),
-# keine Fensterrahmen. Rundungen, Schatten und Blur folgen im Baustein 4b.
+# keine Fensterrahmen. Rundungen, Schatten und Titelausrichtung: /etc/xdg/breezerc.
 [org.kde.kdecoration2]
 library=org.kde.breeze
 ButtonsOnLeft=

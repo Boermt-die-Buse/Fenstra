@@ -1,0 +1,3 @@
+# Fenstra: Suche (KRunner) frei schwebend in der Bildschirmmitte statt am oberen Rand
+[General]
+FreeFloating=true

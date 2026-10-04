@@ -22,6 +22,8 @@ Details: [04a-branding-und-theme.md](04a-branding-und-theme.md), Pakete: [../pac
 
 ## 4b. Taskleiste, Startmenü, Schnelleinstellungen, Benachrichtigungen
 
+Details und Stand: [04b-taskleiste-und-fenster.md](04b-taskleiste-und-fenster.md). Schritt 4b-1 (Taskleiste, Fensterrahmen, Suche) umgesetzt; 4b-2 Startmenü und 4b-3 Schnelleinstellungen/Snap-Layouts offen.
+
 - Panel unten, Symbole zentriert, Start-Schaltfläche, Suche, Task-Ansicht, Widgets-Knopf, Systray rechts mit Uhr.
 - Startmenü als eigenes Plasma-Applet (QML): angepinnte Apps, „Empfohlen“, Nutzer und Ausschalten unten, Suche oben, „Alle Apps“.
 - Schnelleinstellungen (WLAN, Bluetooth, Flugmodus, Helligkeit, Lautstärke) als eigenes Applet; Benachrichtigungscenter mit Kalender.

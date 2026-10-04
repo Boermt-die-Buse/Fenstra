@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -20,6 +20,9 @@ Requires:       fenstra-icon-theme
 Requires:       fenstra-logos
 Requires:       selawik-fonts
 Requires:       cascadia-code-fonts
+# Taskleiste: Suche = KRunner, Aktive Anwendungen = KWin-Übersicht per qdbus
+Requires:       /usr/bin/krunner
+Requires:       /usr/bin/qdbus-qt6
 
 %description
 Globales Design "Fenstra" (hell und dunkel) für KDE Plasma im Stil von
@@ -57,6 +60,11 @@ cp -a look-and-feel/org.fenstra.desktop.dark %{buildroot}%{_datadir}/plasma/look
 # KDE (kf.package) lehnt Verweise aus dem Paketverzeichnis heraus als
 # "Path traversal" ab, der Startbildschirm fehlte dann im dunklen Design.
 cp -a look-and-feel/org.fenstra.desktop/contents/splash %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
+# ebenso das Taskleisten-Layout (Windows-11-Aufbau, beim ersten Anmelden)
+cp -a look-and-feel/org.fenstra.desktop/contents/layouts %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
+# Knöpfe der Taskleiste: Suche und Aktive Anwendungen (nicht im Startmenü sichtbar)
+install -d %{buildroot}%{_datadir}/applications
+install -p -m 0644 applications/fenstra-search.desktop applications/fenstra-taskview.desktop %{buildroot}%{_datadir}/applications/
 # Begrüßungsassistent (plasma-welcome): Fenstra-Logo und -Text statt KDE-Maskottchen
 install -D -p -m 0644 plasma-welcome/intro-customization.desktop %{buildroot}%{_datadir}/plasma/plasma-welcome/intro-customization.desktop
 # Farbschemata
@@ -64,7 +72,7 @@ install -d %{buildroot}%{_datadir}/color-schemes
 install -p -m 0644 color-schemes/*.colors %{buildroot}%{_datadir}/color-schemes/
 # systemweite Vorgaben (KConfig liest /etc/xdg vor den Fedora-Profilen)
 install -d %{buildroot}%{_sysconfdir}/xdg
-install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc %{buildroot}%{_sysconfdir}/xdg/
+install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/breezerc xdg/krunnerrc %{buildroot}%{_sysconfdir}/xdg/
 # fontconfig
 install -D -p -m 0644 fontconfig/61-fenstra-ui.conf %{buildroot}%{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 # Plymouth
@@ -96,12 +104,23 @@ fi
 %config(noreplace) %{_sysconfdir}/xdg/kwinrc
 %config(noreplace) %{_sysconfdir}/xdg/kscreenlockerrc
 %config(noreplace) %{_sysconfdir}/xdg/ksplashrc
+%config(noreplace) %{_sysconfdir}/xdg/breezerc
+%config(noreplace) %{_sysconfdir}/xdg/krunnerrc
+%{_datadir}/applications/fenstra-search.desktop
+%{_datadir}/applications/fenstra-taskview.desktop
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 
 %files -n plymouth-theme-fenstra
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Sun Oct 04 2026 Fenstra-Projekt - 44.0-3
+- Baustein 4b, Schritt 1: Taskleiste im Aufbau von Windows 11 (Layout im globalen
+  Design: unten, volle Breite, nicht schwebend, Programme mittig, Start, Suche,
+  Aktive Anwendungen, Uhr mit Datum darunter)
+- Fensterrahmen: Titel links, Ecken rundum abgerundet, Umrandung, weicher Schatten
+- Suche (KRunner) schwebt in der Bildschirmmitte
+
 * Sun Oct 04 2026 Fenstra-Projekt - 44.0-2
 - Startbildschirm der dunklen Variante als Kopie statt Symlink (KDE: Path traversal)
 - Begrüßungsassistent: Fenstra-Logo und -Text (intro-customization.desktop)
