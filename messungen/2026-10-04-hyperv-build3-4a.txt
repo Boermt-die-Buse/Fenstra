@@ -1,0 +1,155 @@
+Fenstra Basiswerte – 2026-10-04T14:39:42+02:00
+PRETTY_NAME="Fenstra 44 (basiert auf Fedora Linux)"
+VARIANT_ID=fenstra
+Kernel: 6.19.10-300.fc44.x86_64
+Sitzung: wayland / KDE
+Live-Modus: nein
+
+== Bootzeit (systemd) ==
+Startup finished in 348ms (kernel) + 1.705s (initrd) + 4.301s (userspace) = 6.356s 
+graphical.target reached after 4.175s in userspace.
+
+== Größte Bremsen beim Start ==
+2.545s sys-module-fuse.device
+2.526s dev-disk-by\x2ddiskseq-1\x2dpart2.device
+2.526s dev-disk-by\x2did-scsi\x2d36002248002a8be978d0a6e94aebe6dc1\x2dpart2.device
+2.526s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart2.device
+2.526s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2dpartuuid-5918b083\x2dc4c9\x2d4216\x2d8aad\x2d33ee7f96e827.device
+2.526s dev-disk-by\x2duuid-deed9926\x2de951\x2d4a5d\x2da64b\x2d526642127e2c.device
+2.526s sys-devices-LNXSYSTM:00-LNXSYBUS:00-ACPI0004:00-MSFT1000:00-365d573e\x2d5a3b\x2d48b3\x2d8586\x2dbee0a6e7f999-host0-target0:0:0-0:0:0:0-block-sda-sda2.device
+2.526s dev-disk-by\x2dpartuuid-5918b083\x2dc4c9\x2d4216\x2d8aad\x2d33ee7f96e827.device
+2.526s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2duuid-deed9926\x2de951\x2d4a5d\x2da64b\x2d526642127e2c.device
+2.526s dev-disk-by\x2did-wwn\x2d0x6002248002a8be978d0a6e94aebe6dc1\x2dpart2.device
+2.526s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2dpartnum-2.device
+2.526s dev-sda2.device
+2.523s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2dpartuuid-5374bef6\x2dcd2e\x2d4bcb\x2db115\x2d8a71e791e0d4.device
+2.523s dev-sda3.device
+2.523s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2duuid-18790f82\x2da222\x2d48d9\x2db293\x2d35880c2c6b45.device
+2.523s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2dlabel-fedora.device
+2.523s dev-disk-by\x2duuid-18790f82\x2da222\x2d48d9\x2db293\x2d35880c2c6b45.device
+2.523s sys-devices-LNXSYSTM:00-LNXSYBUS:00-ACPI0004:00-MSFT1000:00-365d573e\x2d5a3b\x2d48b3\x2d8586\x2dbee0a6e7f999-host0-target0:0:0-0:0:0:0-block-sda-sda3.device
+2.523s dev-disk-by\x2dpath-acpi\x2dMSFT1000:00\x2dscsi\x2d0:0:0:0\x2dpart-by\x2dpartnum-3.device
+2.523s dev-disk-by\x2dpartuuid-5374bef6\x2dcd2e\x2d4bcb\x2db115\x2d8a71e791e0d4.device
+
+== Kritischer Pfad ==
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @4.175s
+└─multi-user.target @4.175s
+  └─tuned-ppd.service @4.076s +98ms
+    └─tuned.service @3.849s +212ms
+      └─network.target @3.835s
+        └─NetworkManager.service @3.719s +114ms
+          └─network-pre.target @3.718s
+            └─firewalld.service @3.157s +560ms
+              └─polkit.service @3.015s +131ms
+                └─basic.target @2.970s
+                  └─dbus-broker.service @2.918s +28ms
+                    └─dbus.socket @2.905s +1ms
+                      └─sysinit.target @2.899s
+                        └─systemd-binfmt.service @1.937s +961ms
+                          └─proc-sys-fs-binfmt_misc.mount @2.873s +20ms
+                            └─proc-sys-fs-binfmt_misc.automount @876ms
+
+== Speicher (MB) ==
+               total        used        free      shared  buff/cache   available
+Mem:            7928        1917        5232          42        1297        6010
+Swap:           7927           0        7927
+
+== zRAM / Swap ==
+NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+/dev/zram0 zstd          7,7G   4K   64B   20K         [SWAP]
+NAME       TYPE      SIZE USED PRIO
+/dev/zram0 partition 7,7G   0B  100
+
+== Prozesse nach Speicher (RSS in KB) ==
+  RSS     PID COMMAND
+420216   1821 plasmashell
+281320   1708 plasma-keyboard
+238500   1649 kwin_wayland
+186656   2382 packagekitd
+160264   1782 kded6
+137504   2632 konsole
+131372   2124 DiscoverNotifie
+130324   2093 xwaylandvideobr
+128508   2089 kdeconnectd
+123824   1378 ksecretd
+120584   1895 polkit-kde-auth
+120520   2179 xdg-desktop-por
+110480   1894 kaccess
+109640   1780 ksmserver
+
+== Laufende Dienste (40) ==
+  abrt-journal-core.service                    loaded active running ABRT coredumpctl message creator
+  abrt-oops.service                            loaded active running ABRT kernel log watcher
+  abrt-xorg.service                            loaded active running ABRT Xorg log watcher
+  abrtd.service                                loaded active running ABRT Daemon
+  accounts-daemon.service                      loaded active running Accounts Service
+  atd.service                                  loaded active running Deferred execution scheduler
+  auditd.service                               loaded active running Security Audit Logging Service
+  avahi-daemon.service                         loaded active running Avahi mDNS/DNS-SD Stack
+  chronyd.service                              loaded active running NTP client/server
+  crond.service                                loaded active running Command Scheduler
+  cups.service                                 loaded active running CUPS Scheduler
+  dbus-:1.3-org.freedesktop.problems@0.service loaded active running dbus-:1.3-org.freedesktop.problems@0.service
+  dbus-broker.service                          loaded active running D-Bus System Message Bus
+  firewalld.service                            loaded active running firewalld - dynamic firewall daemon
+  gssproxy.service                             loaded active running GSSAPI Proxy Daemon
+  hypervkvpd.service                           loaded active running Hyper-V KVP daemon
+  hypervvssd.service                           loaded active running Hyper-V VSS daemon
+  irqbalance.service                           loaded active running irqbalance daemon
+  ModemManager.service                         loaded active running Modem Manager
+  NetworkManager.service                       loaded active running Network Manager
+  packagekit.service                           loaded active running PackageKit Daemon
+  plasmalogin.service                          loaded active running Plasma Login Manager
+  polkit.service                               loaded active running Authorization Manager
+  rsyslog.service                              loaded active running System Logging Service
+  rtkit-daemon.service                         loaded active running RealtimeKit Scheduling Policy Service
+  sshd.service                                 loaded active running OpenSSH server daemon
+  switcheroo-control.service                   loaded active running Switcheroo Control Proxy service
+  systemd-homed.service                        loaded active running Home Area Manager
+  systemd-journald.service                     loaded active running Journal Service
+  systemd-logind.service                       loaded active running User Login Management
+  systemd-oomd.service                         loaded active running Userspace Out-Of-Memory (OOM) Killer
+  systemd-resolved.service                     loaded active running Network Name Resolution
+  systemd-udevd.service                        loaded active running Rule-based Manager for Device Events and Files
+  systemd-userdbd.service                      loaded active running User Database Manager
+  tuned-ppd.service                            loaded active running PPD-to-TuneD API Translation Daemon
+  tuned.service                                loaded active running Dynamic System Tuning Daemon
+  udisks2.service                              loaded active running Disk Manager
+  upower.service                               loaded active running Daemon for power management
+  uresourced.service                           loaded active running User resource assignment daemon
+  user@1000.service                            loaded active running User Manager for UID 1000
+
+== Grafik ==
+card1 card1-Virtual-1 version 
+
+== Dateisysteme ==
+TARGET        SOURCE                FSTYPE OPTIONS
+/             /dev/sda3[/root]      btrfs  rw,noatime,seclabel,compress=zstd:1,discard=async,space_cache=v2,subvolid=256,subvol=/root
+├─/.snapshots /dev/sda3[/snapshots] btrfs  rw,noatime,seclabel,compress=zstd:1,discard=async,space_cache=v2,subvolid=259,subvol=/snapshots
+├─/home       /dev/sda3[/home]      btrfs  rw,noatime,seclabel,compress=zstd:1,discard=async,space_cache=v2,subvolid=257,subvol=/home
+└─/boot       /dev/sda2             ext4   rw,relatime,seclabel
+  └─/boot/efi /dev/sda1             vfat   rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=winnt,errors=remount-ro
+
+== SELinux ==
+Enforcing
+system_u:object_r:passwd_file_t:s0 /etc/passwd
+
+== Wiederherstellungspunkte ==
+# │ Typ    │ Vorher # │ Datum                        │ Benutzer │ Bereinigen │ Beschreibung                      │ Benutzerdaten
+──┼────────┼──────────┼──────────────────────────────┼──────────┼────────────┼───────────────────────────────────┼──────────────
+0 │ single │          │                              │ root     │            │ current                           │
+1 │ single │          │ So 04 Okt 2026 14:32:31 CEST │ root     │ number     │ Ausgangszustand nach Installation │ important=yes
+
+== Ersteinrichtung ==
+== 2026-10-04T14:32:30+02:00 Fenstra Ersteinrichtung ==
+Rechnername: fenstra gesetzt
+fstab: noatime/compress ergänzt (Sicherung: /var/lib/fenstra/fstab.vor-fenstra)
+snapper: Konfiguration 'root' angelegt (Administratoren dürfen sie lesen)
+Create subvolume '/tmp/tmp.X2CoCSy346/snapshots'
+Delete subvolume 258 (no-commit): '//.snapshots'
+snapper: /.snapshots als eigenes Subvolume eingehängt
+SELinux: Labels vorhanden, ab dem nächsten Start enforcing
+Ersteinrichtung abgeschlossen

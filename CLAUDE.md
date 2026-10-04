@@ -48,15 +48,20 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 - Repo liegt unter /root/Fenstra (Linux-Dateisystem, nicht /mnt/c). Branch: claude/gifted-bell-sylvb0.
 - Bau-Verzeichnis /var/lib/fenstra-build (repo/, rpmbuild/, sources/, out/, logs/, tmp/).
   955 GB frei. ISO von Windows aus: `\\wsl$\FedoraLinux-44\var\lib\fenstra-build\out\…`.
-- `git push` aus WSL braucht ein Token (Credential Manager von Git für Windows oder
-  Personal Access Token). Unversendete lokale Commits können vorliegen (Build-Bericht
-  20260929-2042). Vor dem Bauen: `git pull --rebase`.
+- `git push` direkt aus WSL scheitert (Git Credential Manager als Helfer: „Invalid argument“,
+  kein Token hinterlegt). Funktionierender Weg (Claude Code unter Windows, 2026-10-04):
+  in WSL `git bundle create <scratchpad>/fenstra.bundle <branch>`, unter Windows
+  `git clone --branch <branch> fenstra.bundle pushclone`, `git remote set-url origin
+  https://github.com/Boermt-die-Buse/Fenstra.git`, `git push` (Windows-GCM hat die
+  Anmeldung gespeichert), danach in WSL `git fetch origin`. Fetch/Pull aus WSL geht ohne
+  Anmeldung. Vor dem Bauen: `git pull --rebase`.
 - WSL belegt beim Bauen bis ~39 GB RAM als Cache; `wsl --shutdown` gibt ihn frei. Optional
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
-- Test-VM „Fenstra-Test“ existiert (Dateien C:\Users\Daniel\Fenstra\vm\, Skript
-  C:\Users\Daniel\Fenstra\neue-vm.ps1). Installiert mit Build #2, Benutzer daniel (Passwort
+- Test-VMs „Fenstra-Test“ (Build #2) und „Fenstra-Test3“ (Build #3) existieren (Dateien
+  C:\Users\Daniel\Fenstra\vm\, Skript C:\Users\Daniel\Fenstra\neue-vm.ps1 -Name -Iso).
+  In beiden Benutzer daniel (Passwort
   kennt der Nutzer; nicht ins Repo schreiben). SSH vom Windows-PC:
   `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_fenstra daniel@<IP>`
   (IP per Default Switch, wechselt; im Gast `ip -4 -br a`). sudo per `echo <pw> | sudo -S`.
@@ -96,14 +101,20 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
   messungen/2026-10-04-hyperv-build2-4a-pruefung.md. Kurz: Secure Boot ok, Boot 6,4 s,
   SELinux enforcing ohne AVC, Snapper-Snapshot 1 da, Branding/Theme/Schriften/Symbole ok,
   Sperr-/Anmeldebildschirm bereits Windows-artig. RAM 1914 MB (Ziel 1,5 GB verfehlt).
-- Offen vor 4b (Korrekturen 4a, dann Build #3):
-  1. fenstra-theme.spec:57 Symlink splash im Dark-Paket → KDE „Path traversal“; kopieren.
-  2. Logo weiß, im hellen Design unsichtbar (Info-Zentrum) → farbige/dunkle Variante.
-  3. Rechnername leer → Ersteinrichtung setzt `fenstra`, wenn /etc/hostname leer.
-  4. Branding: Plasma Setup „Willkommen bei Plasma Desktop“, KDE-Maskottchen im
-     Begrüßungsassistenten, Installer-Symbol Fedora-„f“.
-  5. fenstra-baseline: Snapper nur mit root lesbar.
-  6. „Schreibtisch“-Ordner mit Monitor-Symbol / Doppelname Arbeitsfläche.
+- Korrekturen 4a umgesetzt (2026-10-04, Pakete Release 2, Kickstart „Build #3“):
+  Dark-Splash als Kopie; Info-Zentrum-Logo farbig; Ersteinrichtung setzt Rechnername
+  `fenstra`; Begrüßungsassistent mit Fenstra-Logo/-Text; Installer-Symbol = Fenstra-Logo
+  (Symbolthema „apps/scalable“ verlinkt fenstra-logo-icon); Snapper für wheel lesbar
+  (ALLOW_GROUPS, SYNC_ACL) + Hinweis in fenstra-baseline; Arbeitsfläche-Symbol in
+  Akzentblau (Generator-Art „accent:“).
+- Build #3 erfolgreich: Fenstra-44-x86_64-20261004-1402.iso, 4,0 GB, SHA256
+  d2786076ab590021510931077c23650af779d6adaf05ebce8e50dbe55a40afd2. In VM „Fenstra-Test3“
+  installiert und geprüft: alle Korrekturen bestätigt, Plymouth-Bootscreen sichtbar,
+  Boot 6,36 s, RAM 1917 MB, SELinux enforcing. Protokoll:
+  messungen/2026-10-04-hyperv-build3-4a-pruefung.md. Baustein 4a damit abgeschlossen.
+- Bleibt offen: Plasma Setup „Willkommen bei Plasma Desktop“ + Konqi-Abschlussbild (nur per
+  Paket-Patch), grauer Hintergrund in Plasma Setup, Ordnername „Schreibtisch“ vs.
+  „Arbeitsfläche“ (Windows: „Desktop“, 4c).
   Danach Baustein 4b (Taskleiste, Startmenü, Schnelleinstellungen, KWin-Rundungen/Blur).
   RAM-Abspecken (plasma-keyboard, xwaylandvideobridge, kdeconnect, DiscoverNotifier, abrt …)
   im Querschnitt Leistung. Hyper-V hat nur llvmpipe: fps/Blur dort nicht messbar.
@@ -124,6 +135,20 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 - Mit `set -euo pipefail` bricht `cmd | grep` bei „nichts gefunden“ still ab; `|| true` setzen.
 - desktop-backgrounds-compat nicht ausschließen (sddm/sddm-breeze verlangen es).
 - Paketnamen des Kickstarts sind gegen die F44-Paketdaten geprüft (alle vorhanden).
+- Der ISO-Bau löscht in WSL die binfmt-Registrierung `WSLInterop`: danach starten keine
+  Windows-Programme mehr aus WSL („Exec format error“). Wiederherstellen:
+  `echo ':WSLInterop:M::MZ::/init:PF' > /proc/sys/fs/binfmt_misc/register` oder `wsl --shutdown`.
+- KDE-Pakete (Look-and-Feel, kf.package) lehnen Symlinks aus dem Paketverzeichnis hinaus ab
+  („Path traversal attempt detected“): Dateien kopieren, nicht verlinken.
+- Begrüßungsassistent: /usr/share/plasma/plasma-welcome/intro-customization.desktop
+  (Name = Einleitungstext, Comment = Bildunterschrift, Icon = Bild statt Konqi, URL).
+- Plasma Setup: „Willkommen bei Plasma Desktop“ und Konqi-Bild auf der Abschlussseite sind
+  fest im Paket (nicht anpassbar ohne eigenen Paket-Patch); es schreibt den Rechnernamen
+  nur, wenn man ihn ändert.
+- Info-Zentrum-Logo kommt aus /etc/xdg/kcm-about-distrorc (kde-settings) →
+  /usr/share/pixmaps/system-logo-white.png (liefert fenstra-logos, farbig).
+- Das Symbol `user-desktop` nutzt auch der Taskleistenknopf „Arbeitsfläche anzeigen“:
+  keine Ordnergrafik dafür verwenden.
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 
