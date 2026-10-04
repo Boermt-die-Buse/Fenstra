@@ -121,6 +121,7 @@ fenstra-release
 fenstra-logos
 fenstra-backgrounds
 fenstra-theme
+fenstra-startmenu
 fenstra-icon-theme
 plymouth-theme-fenstra
 # Fedora-Grafiken weichen den Fenstra-Paketen (system-logos, system-backgrounds-kde).

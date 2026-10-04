@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -23,6 +23,8 @@ Requires:       cascadia-code-fonts
 # Taskleiste: Suche = KRunner, Aktive Anwendungen = KWin-Übersicht per qdbus
 Requires:       /usr/bin/krunner
 Requires:       /usr/bin/qdbus-qt6
+# Startmenü der Taskleiste
+Requires:       fenstra-startmenu = %{version}-%{release}
 
 %description
 Globales Design "Fenstra" (hell und dunkel) für KDE Plasma im Stil von
@@ -39,6 +41,22 @@ Requires(post): plymouth-scripts
 %description -n plymouth-theme-fenstra
 Bootscreen im Stil von Windows: Firmware-Logo (falls vorhanden) oder das
 Fenstra-Logo mit einem Ladering auf schwarzem Grund.
+
+%package -n fenstra-startmenu
+Summary:        Startmenü im Stil von Windows 11 für Fenstra
+License:        GPL-2.0-or-later
+# QML-Module: Kicker-Modelle (plasma-workspace), Plasma-Komponenten (libplasma),
+# Kirigami, Avatar (kirigami-addons), Benutzerdaten (kcoreaddons)
+Requires:       plasma-workspace
+Requires:       libplasma
+Requires:       kf6-kirigami
+Requires:       kf6-kirigami-addons
+Requires:       kf6-kcoreaddons
+
+%description -n fenstra-startmenu
+Plasma-Startmenü im Aufbau von Windows 11: Suche oben, angeheftete Apps als
+Raster, Empfohlen (zuletzt benutzt), alle Apps alphabetisch, unten Benutzer
+und Ein/Aus. Öffnet auch mit der Windows-Taste.
 
 %prep
 %setup -q -n src
@@ -62,6 +80,9 @@ cp -a look-and-feel/org.fenstra.desktop.dark %{buildroot}%{_datadir}/plasma/look
 cp -a look-and-feel/org.fenstra.desktop/contents/splash %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
 # ebenso das Taskleisten-Layout (Windows-11-Aufbau, beim ersten Anmelden)
 cp -a look-and-feel/org.fenstra.desktop/contents/layouts %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
+# Startmenü (Plasmoid)
+install -d %{buildroot}%{_datadir}/plasma/plasmoids
+cp -a plasmoids/org.fenstra.startmenu %{buildroot}%{_datadir}/plasma/plasmoids/
 # Knöpfe der Taskleiste: Suche und Aktive Anwendungen (nicht im Startmenü sichtbar)
 install -d %{buildroot}%{_datadir}/applications
 install -p -m 0644 applications/fenstra-search.desktop applications/fenstra-taskview.desktop %{buildroot}%{_datadir}/applications/
@@ -110,10 +131,17 @@ fi
 %{_datadir}/applications/fenstra-taskview.desktop
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 
+%files -n fenstra-startmenu
+%{_datadir}/plasma/plasmoids/org.fenstra.startmenu/
+
 %files -n plymouth-theme-fenstra
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Sun Oct 04 2026 Fenstra-Projekt - 44.0-4
+- Baustein 4b-2: eigenes Startmenü (Unterpaket fenstra-startmenu, Plasmoid
+  org.fenstra.startmenu) statt Kickoff in der Taskleiste
+
 * Sun Oct 04 2026 Fenstra-Projekt - 44.0-3
 - Baustein 4b, Schritt 1: Taskleiste im Aufbau von Windows 11 (Layout im globalen
   Design: unten, volle Breite, nicht schwebend, Programme mittig, Start, Suche,

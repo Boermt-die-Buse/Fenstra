@@ -1,0 +1,25 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "Start menu in the style of Windows 11: pinned apps, recommended, all apps",
+        "Description[de]": "Startmenü im Stil von Windows 11: angeheftete Apps, Empfohlen, alle Apps",
+        "EnabledByDefault": true,
+        "Icon": "start-here",
+        "Id": "org.fenstra.startmenu",
+        "License": "GPL-2.0-or-later",
+        "Name": "Fenstra Start Menu",
+        "Name[de]": "Fenstra-Startmenü",
+        "Version": "44.0",
+        "Website": "https://github.com/Boermt-die-Buse/Fenstra"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.launchermenu"
+    ]
+}

@@ -24,13 +24,8 @@ if ("opacity" in panel) {
 
 panel.addWidget("org.kde.plasma.panelspacer");
 
-var start = panel.addWidget("org.kde.plasma.kickoff");
-start.currentConfigGroup = ["General"];
-start.writeConfig("icon", "start-here");
-start.writeConfig("favoritesDisplay", 0);      // angeheftete Apps als Raster
-start.writeConfig("applicationsDisplay", 1);   // "Alle Apps" als Liste
-start.writeConfig("showActionButtonCaptions", false);
-start.writeConfig("primaryActions", 3);        // unten: Ausschalten/Neu starten/...
+// Fenstra-Startmenü (Paket fenstra-startmenu, Baustein 4b-2)
+panel.addWidget("org.fenstra.startmenu");
 
 var search = panel.addWidget("org.kde.plasma.icon");
 search.currentConfigGroup = ["General"];

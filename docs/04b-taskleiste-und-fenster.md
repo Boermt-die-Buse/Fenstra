@@ -6,7 +6,7 @@ Build und VM-Test.
 | Schritt | Inhalt | Stand |
 |---|---|---|
 | 4b-1 | Taskleiste (Aufbau, Position, Knöpfe), Fensterrahmen, Suche | fertig, Build #4 in der VM geprüft (fenstra-theme 44.0-3) |
-| 4b-2 | eigenes Startmenü (angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten) | offen |
+| 4b-2 | eigenes Startmenü (angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten) | umgesetzt (fenstra-startmenu 44.0-4), in der VM geprüft |
 | 4b-3 | Schnelleinstellungen, Benachrichtigungscenter mit Kalender, Snap-Layouts, Widgets, Tastenkürzel (Win+Tab usw.) | offen |
 
 ## 4b-1: was umgesetzt ist
@@ -22,7 +22,7 @@ beim ersten Anmelden eines Benutzers aus, außerdem bei „Globales Design anwen
 |---|---|---|
 | Taskleiste unten, volle Breite, 48 px | ✅ 1:1 | Plasma-Panel, nicht schwebend, Höhe aus gridUnit |
 | Start, Suche, Task-Ansicht, Apps mittig | ✅ nachgebaut | flexible Abstandhalter links und rechts der Gruppe; mittig zwischen linkem Rand und Infobereich, nicht exakt zur Bildschirmmitte |
-| Start-Knopf | ✅ (Menü vorerst KDE) | Kickoff mit Symbol `start-here`; eigenes Startmenü in 4b-2 |
+| Start-Knopf | ✅ | Fenstra-Startmenü (4b-2), Symbol `start-here` |
 | Suche | ⚠️ nachgebaut | Knopf startet KRunner (Apps, Dateien, Einstellungen, Rechner); schwebt in der Mitte (`/etc/xdg/krunnerrc FreeFloating=true`). Kein Websuche-Panel wie bei Windows |
 | Task-Ansicht | ✅ nachgebaut | Knopf ruft die KWin-Übersicht auf (Fenster + Arbeitsflächen, „+“ für neue) |
 | angeheftete Programme | ✅ | Dolphin, Firefox, Discover (Windows: Explorer, Edge, Store) |
@@ -49,6 +49,34 @@ Die beiden Knöpfe sind normale Programmstarter (`/usr/share/applications/fenstr
 Die Taskleiste ist mit dem Plasma-Stil „default“ durchscheinend mit Unschärfe dahinter
 (KWin-Blur). Das entspricht Acrylic. Mica für Fensterhintergründe bleibt wie in 4a beschlossen
 eine Annäherung.
+
+## 4b-2: Startmenü
+
+Eigenes Plasmoid `org.fenstra.startmenu` (Unterpaket `fenstra-startmenu` von fenstra-theme,
+Quellen `packages/fenstra-theme/src/plasmoids/`). Reines QML, kein C++: Die Daten liefern die
+Kicker-Modelle von Plasma (`org.kde.plasma.private.kicker`), dieselben wie für KDEs eigene
+Menüs. Das Taskleisten-Layout setzt es statt Kickoff ein.
+
+| Windows 11 | Fenstra | Umsetzung |
+|---|---|---|
+| Suchfeld oben, Ergebnisse beim Tippen | ✅ | `RunnerModel` (dieselbe Suche wie KRunner), Enter startet den ersten Treffer, Pfeiltasten |
+| Angeheftet als Raster (6 Spalten) | ✅ | `RootModel.favoritesModel` (KActivities); Rechtsklick „Von Start lösen“ |
+| „Alle Apps“ alphabetisch mit Buchstaben | ✅ | Zeile 0 des `RootModel` (flach, sortiert); Rechtsklick „An Start anheften“ |
+| Empfohlen (zuletzt benutzt) | ✅ nachgebaut | `RecentUsageModel` (Dateien und Programme, max. 6); Windows zeigt zusätzlich neu installierte Apps |
+| Benutzer unten links | ⚠️ | Bild und Name; Klick öffnet noch nichts (Windows: Kontomenü) |
+| Ein/Aus unten rechts | ✅ | `SystemModel`: Sperren, Abmelden, Benutzer wechseln, Standby, Neu starten, Herunterfahren |
+| Windows-Taste öffnet Start | ✅ | `X-Plasma-Provides: org.kde.plasma.launchermenu` |
+| Menü mittig auf dem Bildschirm | ⚠️ | Plasma setzt das Popup mittig über den Start-Knopf; der sitzt links von der Mitte |
+| Acrylic-Hintergrund | ⚠️ | Plasma-Dialog mit Unschärfe plus fast deckende Fläche (lesbar auch ohne GPU/Blur) |
+| Seiten im Angeheftet-Bereich, Ordner | ❌ vorerst nicht | Raster scrollt stattdessen |
+
+Bekannt: Die Vorgabe-Liste „Angeheftet“ aus `main.xml` greift nur, wenn KActivities noch keine
+Favoriten hat; sonst übernimmt Plasma die globalen Vorgaben (Discover, Dolphin, Konsole, KWrite,
+Systemeinstellungen, Firefox).
+
+Entwickeln ohne Paket: `kpackagetool6 -t Plasma/Applet -u <verzeichnis>`, danach
+`systemctl --user restart plasma-plasmashell` (plasmashell hält geladene QML-Dateien im
+Speicher), Fehler mit `journalctl --user | grep -i startmenu`.
 
 ## Prototyp in der laufenden VM
 

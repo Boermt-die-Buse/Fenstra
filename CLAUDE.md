@@ -120,10 +120,17 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
   im Windows-11-Aufbau (Layout-Skript im globalen Design), Fensterrahmen (/etc/xdg/breezerc),
   Suche mittig (krunnerrc). Build #4 (20261004-1509, SHA256 af418d67…5b35f) in VM
   „Fenstra-Test4“ geprüft, RAM 1919 MB, Boot 6,83 s.
-- Nächster Schritt 4b-2: eigenes Startmenü als reines QML-Plasmoid auf Basis von
-  org.kde.plasma.private.kicker (Angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten).
-  Prototyp live in der VM über evaluateScript/Plasmoid-Installation, dann Paket.
-  Danach 4b-3 (Schnelleinstellungen, Benachrichtigungen, Snap-Layouts, Win+Tab usw.).
+- 4b-2 umgesetzt: Startmenü-Plasmoid org.fenstra.startmenu (Unterpaket fenstra-startmenu,
+  Quellen packages/fenstra-theme/src/plasmoids/), reines QML auf Kicker-Modellen; in VM
+  „Fenstra-Test4“ per RPM geprüft (Suche, Angeheftet, Alle Apps, Empfohlen, Ein/Aus,
+  Anheften/Lösen, Windows-Taste). Build #5 mit Startmenü: siehe unten.
+- Danach 4b-3 (Schnelleinstellungen, Benachrichtigungen, Snap-Layouts, Win+Tab usw.).
+- Lehren QML/Plasma 6: Avatar kommt aus org.kde.kirigamiaddons.components (nicht Kirigami);
+  „Alle Apps“ = rootModel.modelForRow(0) nach onRefreshed (eigenes AppsModel zeigt
+  Kategorien); plasmashell cacht QML → nach Änderung `systemctl --user restart
+  plasma-plasmashell`; QIcon-Rollen (decoration) nur über Kirigami.Icon anzeigen.
+- Test-VM-Sitzung: Autolock/Bildschirm aus für den Testbenutzer abgeschaltet
+  (kscreenlockerrc/powerdevilrc im Benutzerordner), sonst sperrt die VM beim Entwickeln.
 - Schnelles Testen ohne ISO: Prototyp per SSH in die laufende VM, Layout per
   `qdbus-qt6 org.kde.plasmashell /PlasmaShell …evaluateScript`, Paket per `dnf install` der
   neuen RPM und `plasma-apply-lookandfeel --resetLayout -a org.fenstra.desktop`.
