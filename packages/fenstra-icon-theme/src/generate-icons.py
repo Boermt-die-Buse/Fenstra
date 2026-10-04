@@ -106,7 +106,26 @@ def folder_svg(base_svg, glyph_svg, out_size, glyph_fill='#8A5A00'):
     return ''.join(out)
 
 
+ACCENT = '#0067C0'
+
+
+def accent_svg(src_svg, out_size, viewbox_size):
+    """Fluent-SVG fest in der Akzentfarbe (für Orte ohne Fluent-Farbvariante)."""
+    m = _svg_open.search(src_svg)
+    head = _wh.sub('', m.group(0))
+    if 'viewBox' not in head:
+        head = head[:-1] + f' viewBox="0 0 {viewbox_size} {viewbox_size}">'
+    head = head[:-1] + f' width="{out_size}" height="{out_size}">'
+    body = src_svg[m.end():]
+    body = _path_no_fill.sub(lambda mm: mm.group(0).replace('<' + mm.group(1), '<' + mm.group(1) + f' fill="{ACCENT}"', 1), body)
+    body = re.sub(r'fill="#(212121|242424|1f1f1f|000000)"', f'fill="{ACCENT}"', body)
+    return head + body
+
+
 def color_or_mono_place(fluent_dir, kind, base, out_size):
+    if kind == 'accent':
+        p, s, st = find_fluent(fluent_dir, base, (48, 32, 28, 24, 20, 16), styles=('regular', 'filled'))
+        return accent_svg(read(p), out_size, s) if p else None
     if kind == 'color':
         p, s, st = find_fluent(fluent_dir, base, (32, 48, 24, 28, 20, 16), styles=('color',))
         if p:
@@ -187,6 +206,22 @@ def main():
             made += 1
     dirs += [f'places/{s}' for s in PLACE_SIZES]
 
+    # 2b) Programmsymbole, die auf vorhandene Dateien anderer Pakete verweisen
+    #     (z. B. Installer -> Fenstra-Logo aus fenstra-logos). Wert: "link:<absoluter Pfad>"
+    apps = mapping.get('apps', {})
+    for kde_name, spec in apps.items():
+        kind, _, target = spec.partition(':')
+        if kind != 'link' or not target.startswith('/'):
+            raise SystemExit(f'apps/{kde_name}: nur "link:/absoluter/pfad" erlaubt, nicht {spec!r}')
+        lpath = os.path.join(a.out, 'apps', 'scalable', kde_name + os.path.splitext(target)[1])
+        os.makedirs(os.path.dirname(lpath), exist_ok=True)
+        if os.path.lexists(lpath):
+            os.remove(lpath)
+        os.symlink(target, lpath)
+        made += 1
+    if apps:
+        dirs.append('apps/scalable')
+
     # 3) Aliasse als Symlinks
     for target, names in mapping.get('aliases', {}).items():
         ctx, _, tname = target.partition('/')
@@ -202,7 +237,7 @@ def main():
                 os.symlink(tname + '.svg', lpath)
 
     # 4) index.theme
-    ctx_name = {'actions': 'Actions', 'status': 'Status', 'devices': 'Devices', 'places': 'Places', 'categories': 'Categories'}
+    ctx_name = {'actions': 'Actions', 'status': 'Status', 'devices': 'Devices', 'places': 'Places', 'categories': 'Categories', 'apps': 'Applications'}
     lines = ['[Icon Theme]', 'Name=Fenstra', 'Name[de]=Fenstra',
              'Comment=Fenstra icon theme based on Fluent UI System Icons (MIT), falls back to Breeze',
              'Comment[de]=Fenstra-Symbole auf Basis der Fluent UI System Icons (MIT), Rest aus Breeze',
@@ -210,7 +245,10 @@ def main():
              'Directories=' + ','.join(dirs), '']
     for d in dirs:
         ctx, size = d.split('/')
-        lines += [f'[{d}]', f'Size={size}', f'Context={ctx_name[ctx]}', 'Type=Fixed', '']
+        if size == 'scalable':
+            lines += [f'[{d}]', 'Size=48', 'MinSize=16', 'MaxSize=512', f'Context={ctx_name[ctx]}', 'Type=Scalable', '']
+        else:
+            lines += [f'[{d}]', f'Size={size}', f'Context={ctx_name[ctx]}', 'Type=Fixed', '']
     write(os.path.join(a.out, 'index.theme'), '\n'.join(lines))
 
     print(f'{made} Symbole erzeugt, {len(dirs)} Verzeichnisse')

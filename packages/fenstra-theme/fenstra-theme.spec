@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -53,8 +53,12 @@ rsvg-convert -w 128 -h 128 -o plymouth/frames/watermark.png look-and-feel/org.fe
 install -d %{buildroot}%{_datadir}/plasma/look-and-feel
 cp -a look-and-feel/org.fenstra.desktop %{buildroot}%{_datadir}/plasma/look-and-feel/
 cp -a look-and-feel/org.fenstra.desktop.dark %{buildroot}%{_datadir}/plasma/look-and-feel/
-# dunkle Variante nutzt denselben Startbildschirm
-ln -s ../../org.fenstra.desktop/contents/splash %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/splash
+# dunkle Variante nutzt denselben Startbildschirm. Als Kopie, nicht als Symlink:
+# KDE (kf.package) lehnt Verweise aus dem Paketverzeichnis heraus als
+# "Path traversal" ab, der Startbildschirm fehlte dann im dunklen Design.
+cp -a look-and-feel/org.fenstra.desktop/contents/splash %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
+# Begrüßungsassistent (plasma-welcome): Fenstra-Logo und -Text statt KDE-Maskottchen
+install -D -p -m 0644 plasma-welcome/intro-customization.desktop %{buildroot}%{_datadir}/plasma/plasma-welcome/intro-customization.desktop
 # Farbschemata
 install -d %{buildroot}%{_datadir}/color-schemes
 install -p -m 0644 color-schemes/*.colors %{buildroot}%{_datadir}/color-schemes/
@@ -85,6 +89,8 @@ fi
 %{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/
 %{_datadir}/color-schemes/FenstraLight.colors
 %{_datadir}/color-schemes/FenstraDark.colors
+%dir %{_datadir}/plasma/plasma-welcome
+%{_datadir}/plasma/plasma-welcome/intro-customization.desktop
 %config(noreplace) %{_sysconfdir}/xdg/kdeglobals
 %config(noreplace) %{_sysconfdir}/xdg/kcminputrc
 %config(noreplace) %{_sysconfdir}/xdg/kwinrc
@@ -96,5 +102,9 @@ fi
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Sun Oct 04 2026 Fenstra-Projekt - 44.0-2
+- Startbildschirm der dunklen Variante als Kopie statt Symlink (KDE: Path traversal)
+- Begrüßungsassistent: Fenstra-Logo und -Text (intro-customization.desktop)
+
 * Tue Sep 29 2026 Fenstra-Projekt - 44.0-1
 - Erste Fassung: Look-and-Feel hell/dunkel, Farbschemata, Vorgaben, Plymouth

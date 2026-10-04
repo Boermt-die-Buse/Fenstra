@@ -1,0 +1,12 @@
+[Desktop Entry]
+# Fenstra: Anpassung der Startseite des Begrüßungsassistenten (plasma-welcome).
+# plasma-welcome liest diese Datei als Distributions-Anpassung:
+#   Name    -> Einleitungstext oben (danach folgt KDEs Satz über Plasma)
+#   Comment -> Bildunterschrift unter dem Logo (ersetzt "Das KDE-Maskottchen Konqi ...")
+#   Icon    -> Bild statt Konqi
+#   URL     -> Ziel beim Klick auf das Bild
+Type=Link
+Name=Willkommen bei Fenstra! Fenstra sieht aus und bedient sich wie das System, das Sie kennen, und basiert auf Fedora Linux.
+Comment=Das Fenstra-Logo: ein geöffnetes Fenster.
+Icon=/usr/share/icons/hicolor/scalable/apps/fenstra-logo-icon.svg
+URL=https://github.com/Boermt-die-Buse/Fenstra

@@ -5,7 +5,7 @@
 # gerendert (librsvg).
 Name:           fenstra-logos
 Version:        44.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Logos und Markengrafiken für Fenstra
 License:        CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -40,8 +40,10 @@ mkdir -p out
 for s in 16 22 24 32 36 48 64 96 128 256 512; do
   render %{SOURCE0} $s $s out/fenstra-logo-icon-$s.png
 done
-# Systeminfo (kinfocenter, kcm-about-distrorc: LogoPath), weiß auf transparent
-render %{SOURCE1} 256 256 out/system-logo-white.png
+# Systeminfo: kde-settings setzt in /etc/xdg/kcm-about-distrorc LogoPath auf
+# system-logo-white.png. Trotz des Namens das farbige Logo (blaue Kachel), weil das
+# weiße auf hellem Design unsichtbar war. Einziger Nutzer ist das Info-Zentrum.
+render %{SOURCE0} 256 256 out/system-logo-white.png
 render %{SOURCE0} 256 256 out/fenstra-logo.png
 render %{SOURCE0} 64 64 out/fenstra-logo-small.png
 render %{SOURCE2} 256 256 out/fenstra-logo-dark.png
@@ -102,5 +104,8 @@ install -D -p -m 0644 out/fenstra-logo-icon-16.png %{buildroot}%{_sysconfdir}/fa
 %{_datadir}/plymouth/themes/spinner/watermark.png
 
 %changelog
+* Sun Oct 04 2026 Fenstra-Projekt - 44.0-2
+- Systeminfo-Logo farbig statt weiß (auf hellem Design unsichtbar)
+
 * Tue Sep 29 2026 Fenstra-Projekt - 44.0-1
 - Erste Fassung: Logo, Startmenü-Symbol, Anaconda- und Plymouth-Grafiken

@@ -1,5 +1,6 @@
 # =============================================================================
-# Fenstra – Kickstart für das Live-ISO (Build #2: Basis + Branding/Theme, Baustein 4a)
+# Fenstra – Kickstart für das Live-ISO (Build #3: Basis + Branding/Theme, Baustein 4a,
+#           Korrekturen aus dem VM-Test vom 2026-10-04)
 # =============================================================================
 # Ergebnis: startfähiges Live-ISO mit KDE Plasma (Wayland) und Installer.
 # Grundlage: Fedora Linux 44 (Remix). Der Aufbau ist an fedora-live-base.ks und
@@ -371,6 +372,16 @@ mkdir -p "$STATE"
 exec >>"$LOG" 2>&1
 echo "== $(date -Is) Fenstra Ersteinrichtung =="
 
+# 0) Rechnername: Der Installer schreibt /etc/hostname leer, Plasma Setup speichert
+#    seinen Vorschlag "fenstra" nur, wenn man ihn ändert. Ohne festen Namen übernimmt
+#    NetworkManager einen Namen aus DHCP/DNS (in Hyper-V z. B. "localhost-live").
+#    Läuft vor Plasma Setup; ein dort geänderter Name überschreibt diesen.
+if [ ! -s /etc/hostname ] || grep -qE '^[[:space:]]*(localhost(-live)?(\..*)?)?[[:space:]]*$' /etc/hostname; then
+  if hostnamectl hostname --static fenstra 2>/dev/null || echo fenstra > /etc/hostname; then
+    echo "Rechnername: fenstra gesetzt"
+  fi
+fi
+
 ROOT_FSTYPE=$(findmnt -no FSTYPE /)
 
 if [ "$ROOT_FSTYPE" = btrfs ]; then
@@ -390,7 +401,8 @@ if [ "$ROOT_FSTYPE" = btrfs ]; then
     snapper -c root create-config / \
       && snapper -c root set-config TIMELINE_CREATE=no NUMBER_CLEANUP=yes \
            NUMBER_LIMIT=10 NUMBER_LIMIT_IMPORTANT=5 NUMBER_MIN_AGE=1800 \
-      && echo "snapper: Konfiguration 'root' angelegt"
+           ALLOW_GROUPS=wheel SYNC_ACL=yes \
+      && echo "snapper: Konfiguration 'root' angelegt (Administratoren dürfen sie lesen)"
   fi
 
   # 3) Snapshots in ein eigenes Top-Level-Subvolume legen und einhängen
@@ -503,7 +515,7 @@ out="${1:-$HOME/fenstra-baseline-$(date +%Y%m%d-%H%M%S).txt}"
   ls /sys/class/drm 2>/dev/null | tr '\n' ' '; echo
   echo; echo "== Dateisysteme =="; findmnt -t btrfs,ext4,vfat,overlay -o TARGET,SOURCE,FSTYPE,OPTIONS 2>/dev/null
   echo; echo "== SELinux =="; getenforce 2>/dev/null; ls -Z /etc/passwd 2>/dev/null
-  echo; echo "== Wiederherstellungspunkte =="; snapper -c root list 2>/dev/null || echo "(keine Snapper-Konfiguration)"
+  echo; echo "== Wiederherstellungspunkte =="; snapper -c root list 2>/dev/null || echo "(keine Snapper-Konfiguration oder keine Berechtigung – mit sudo prüfen: sudo snapper -c root list)"
   echo; echo "== Ersteinrichtung =="; tail -n 20 /var/log/fenstra-firstboot.log 2>/dev/null || echo "(kein Protokoll)"
 } | tee "$out"
 echo; echo "Gespeichert: $out"

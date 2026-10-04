@@ -1,5 +1,5 @@
 {
-  "_comment": "Zuordnung KDE-/freedesktop-Symbolname -> Fluent-UI-System-Icon (Basisname ohne Größe/Stil). Kontexte: actions, status, devices, categories, places (Ordner mit Glyphe: 'folder:<glyph>', andere: 'mono:<name>' oder 'color:<name>'). aliases: Ziel -> weitere Namen (Symlinks).",
+  "_comment": "Zuordnung KDE-/freedesktop-Symbolname -> Fluent-UI-System-Icon (Basisname ohne Größe/Stil). Kontexte: actions, status, devices, categories, places (Ordner mit Glyphe: 'folder:<glyph>', andere: 'mono:<name>', 'color:<name>' oder 'accent:<name>' = Glyphe in Akzentblau). apps: Programmsymbol als Symlink auf eine Datei eines anderen Pakets ('link:/pfad'). aliases: Ziel -> weitere Namen (Symlinks).",
   "actions": {
     "document-new": "document_add",
     "document-open": "folder_open",
@@ -636,7 +636,8 @@
     "folder-wine": "folder:window",
     "folder-yellow": "folder:",
     "user-home": "color:home",
-    "user-desktop": "mono:desktop",
+    "user-desktop": "accent:desktop",
+    "user-desktop-symbolic": "mono:desktop",
     "user-trash": "mono:delete",
     "user-trash-full": "mono:delete",
     "user-bookmarks": "color:bookmark",
@@ -673,6 +674,10 @@
     "folder-black": "folder:",
     "folder-white": "folder:",
     "folder-magenta": "folder:"
+  },
+  "apps": {
+    "org.fedoraproject.AnacondaInstaller": "link:/usr/share/icons/hicolor/scalable/apps/fenstra-logo-icon.svg",
+    "anaconda": "link:/usr/share/icons/hicolor/scalable/apps/fenstra-logo-icon.svg"
   },
   "aliases": {
     "actions/edit-find": ["search", "system-search-symbolic"],
@@ -713,7 +718,7 @@
     "status/battery-full-charging": ["battery-full-charging-symbolic", "battery-charging"],
     "places/folder": ["folder-symbolic", "inode-directory-symbolic"],
     "places/user-home": ["user-home-symbolic", "go-home"],
-    "places/user-desktop": ["user-desktop-symbolic", "desktop"],
+    "places/user-desktop": ["desktop"],
     "places/user-trash": ["user-trash-symbolic", "trash-empty"],
     "places/user-trash-full": ["trash-full"],
     "places/folder-downloads": ["folder-download-symbolic"],

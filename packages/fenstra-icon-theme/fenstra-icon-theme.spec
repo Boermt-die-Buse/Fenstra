@@ -5,7 +5,7 @@
 
 Name:           fenstra-icon-theme
 Version:        44.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Symbolthema für Fenstra (Fluent UI System Icons)
 # Fluent-Symbole: MIT; Ordnersymbol und Generator: CC-BY-SA-4.0 bzw. MIT
 License:        MIT AND CC-BY-SA-4.0
@@ -19,6 +19,8 @@ BuildArch:      noarch
 BuildRequires:  python3
 Requires:       breeze-icon-theme
 Requires:       hicolor-icon-theme
+# Programmsymbole (Installer) verweisen auf das Logo aus fenstra-logos
+Requires:       fenstra-logos
 
 %description
 Symbolthema im Stil von Windows 11 auf Basis der frei lizenzierten Fluent UI
@@ -51,5 +53,9 @@ install -p -m 0755 %{SOURCE1} %{buildroot}%{_datadir}/fenstra/icon-theme/
 %{_datadir}/fenstra/icon-theme/
 
 %changelog
+* Sun Oct 04 2026 Fenstra-Projekt - 44.0-2
+- Arbeitsfläche (user-desktop) in Akzentblau statt schwarz, -symbolic bleibt einfarbig
+- Installer-Symbol (org.fedoraproject.AnacondaInstaller, anaconda) = Fenstra-Logo
+
 * Tue Sep 29 2026 Fenstra-Projekt - 44.0-1
 - Erste Fassung: Aktions-, Status-, Geräte- und Ordnersymbole aus Fluent, Rest Breeze
