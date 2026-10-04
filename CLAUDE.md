@@ -59,8 +59,8 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
-- Test-VMs „Fenstra-Test“ (Build #2), „Fenstra-Test3“ (Build #3), „Fenstra-Test4“ (Build #4)
-  existieren (Dateien
+- Test-VMs „Fenstra-Test“ (Build #2), „Fenstra-Test3“ (#3), „Fenstra-Test4“ (#4),
+  „Fenstra-Test5“ (#5) existieren (Dateien
   C:\Users\Daniel\Fenstra\vm\, Skript C:\Users\Daniel\Fenstra\neue-vm.ps1 -Name -Iso).
   In beiden Benutzer daniel (Passwort
   kennt der Nutzer; nicht ins Repo schreiben). SSH vom Windows-PC:
@@ -123,7 +123,10 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 - 4b-2 umgesetzt: Startmenü-Plasmoid org.fenstra.startmenu (Unterpaket fenstra-startmenu,
   Quellen packages/fenstra-theme/src/plasmoids/), reines QML auf Kicker-Modellen; in VM
   „Fenstra-Test4“ per RPM geprüft (Suche, Angeheftet, Alle Apps, Empfohlen, Ein/Aus,
-  Anheften/Lösen, Windows-Taste). Build #5 mit Startmenü: siehe unten.
+  Anheften/Lösen, Windows-Taste). Build #5 (20261004-1608, SHA256 9a7b68a8…1028) in VM
+  „Fenstra-Test5“: erstes Anmelden ok, RAM 1911 MB, Boot 6,60 s. 4b-2 abgeschlossen.
+- Präsentation des Fortschritts (Vorher/Nachher, orange Markierungen) liegt lokal unter
+  C:\Users\Daniel\Fenstra\praesentation\fenstra-fortschritt.html (nicht im Repo).
 - Danach 4b-3 (Schnelleinstellungen, Benachrichtigungen, Snap-Layouts, Win+Tab usw.).
 - Lehren QML/Plasma 6: Avatar kommt aus org.kde.kirigamiaddons.components (nicht Kirigami);
   „Alle Apps“ = rootModel.modelForRow(0) nach onRefreshed (eigenes AppsModel zeigt

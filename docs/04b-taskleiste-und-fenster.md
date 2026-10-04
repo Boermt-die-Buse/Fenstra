@@ -6,7 +6,7 @@ Build und VM-Test.
 | Schritt | Inhalt | Stand |
 |---|---|---|
 | 4b-1 | Taskleiste (Aufbau, Position, Knöpfe), Fensterrahmen, Suche | fertig, Build #4 in der VM geprüft (fenstra-theme 44.0-3) |
-| 4b-2 | eigenes Startmenü (angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten) | umgesetzt (fenstra-startmenu 44.0-4), in der VM geprüft |
+| 4b-2 | eigenes Startmenü (angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten) | fertig, Build #5 in der VM geprüft (fenstra-startmenu 44.0-4) |
 | 4b-3 | Schnelleinstellungen, Benachrichtigungscenter mit Kalender, Snap-Layouts, Widgets, Tastenkürzel (Win+Tab usw.) | offen |
 
 ## 4b-1: was umgesetzt ist
@@ -110,3 +110,13 @@ ISO `Fenstra-44-x86_64-20261004-1509.iso`, SHA256
 - ✅ Ecken oben und unten rund, Titel links.
 - ✅ Messung (`messungen/2026-10-04-hyperv-build4-4b1.txt`): Boot 6,83 s, RAM 1919 MB
   (Build #3: 6,36 s / 1917 MB), SELinux enforcing. Die Taskleiste kostet nichts Messbares.
+
+## Ergebnis Build #5 (2026-10-04)
+
+ISO `Fenstra-44-x86_64-20261004-1608.iso`, SHA256
+`9a7b68a8500efe5656b590bcbe0ee9358af4ecaa7b775232cf9c70531f351028`, VM „Fenstra-Test5“.
+
+- ✅ Live-Sitzung und erstes Anmelden: Fenstra-Startmenü in der Taskleiste, Windows-Taste öffnet es.
+- ✅ Angeheftet zeigt Plasmas Vorgaben (Firefox, Systemeinstellungen, Dolphin, KWrite, Konsole, Discover).
+- ✅ Messung (`messungen/2026-10-04-hyperv-build5-4b2.txt`): Boot 6,60 s, RAM 1911 MB
+  (Build #4: 1919 MB), plasmashell 423 MB statt 431 MB mit Kickoff. SELinux enforcing.
