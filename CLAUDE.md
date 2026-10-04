@@ -59,7 +59,8 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
-- Test-VMs „Fenstra-Test“ (Build #2) und „Fenstra-Test3“ (Build #3) existieren (Dateien
+- Test-VMs „Fenstra-Test“ (Build #2), „Fenstra-Test3“ (Build #3), „Fenstra-Test4“ (Build #4)
+  existieren (Dateien
   C:\Users\Daniel\Fenstra\vm\, Skript C:\Users\Daniel\Fenstra\neue-vm.ps1 -Name -Iso).
   In beiden Benutzer daniel (Passwort
   kennt der Nutzer; nicht ins Repo schreiben). SSH vom Windows-PC:
@@ -115,7 +116,17 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 - Bleibt offen: Plasma Setup „Willkommen bei Plasma Desktop“ + Konqi-Abschlussbild (nur per
   Paket-Patch), grauer Hintergrund in Plasma Setup, Ordnername „Schreibtisch“ vs.
   „Arbeitsfläche“ (Windows: „Desktop“, 4c).
-  Danach Baustein 4b (Taskleiste, Startmenü, Schnelleinstellungen, KWin-Rundungen/Blur).
+- Baustein 4b in drei Schritten (docs/04b-taskleiste-und-fenster.md). 4b-1 fertig: Taskleiste
+  im Windows-11-Aufbau (Layout-Skript im globalen Design), Fensterrahmen (/etc/xdg/breezerc),
+  Suche mittig (krunnerrc). Build #4 (20261004-1509, SHA256 af418d67…5b35f) in VM
+  „Fenstra-Test4“ geprüft, RAM 1919 MB, Boot 6,83 s.
+- Nächster Schritt 4b-2: eigenes Startmenü als reines QML-Plasmoid auf Basis von
+  org.kde.plasma.private.kicker (Angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten).
+  Prototyp live in der VM über evaluateScript/Plasmoid-Installation, dann Paket.
+  Danach 4b-3 (Schnelleinstellungen, Benachrichtigungen, Snap-Layouts, Win+Tab usw.).
+- Schnelles Testen ohne ISO: Prototyp per SSH in die laufende VM, Layout per
+  `qdbus-qt6 org.kde.plasmashell /PlasmaShell …evaluateScript`, Paket per `dnf install` der
+  neuen RPM und `plasma-apply-lookandfeel --resetLayout -a org.fenstra.desktop`.
   RAM-Abspecken (plasma-keyboard, xwaylandvideobridge, kdeconnect, DiscoverNotifier, abrt …)
   im Querschnitt Leistung. Hyper-V hat nur llvmpipe: fps/Blur dort nicht messbar.
 - Notiert für später: ISO 4 GB ist größer als Fedoras KDE-Spin (abspecken, Querschnitt

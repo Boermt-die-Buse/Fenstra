@@ -5,7 +5,7 @@ Build und VM-Test.
 
 | Schritt | Inhalt | Stand |
 |---|---|---|
-| 4b-1 | Taskleiste (Aufbau, Position, Knöpfe), Fensterrahmen, Suche | umgesetzt (fenstra-theme 44.0-3) |
+| 4b-1 | Taskleiste (Aufbau, Position, Knöpfe), Fensterrahmen, Suche | fertig, Build #4 in der VM geprüft (fenstra-theme 44.0-3) |
 | 4b-2 | eigenes Startmenü (angeheftet, Empfohlen, Alle Apps, Nutzer/Ausschalten) | offen |
 | 4b-3 | Schnelleinstellungen, Benachrichtigungscenter mit Kalender, Snap-Layouts, Widgets, Tastenkürzel (Win+Tab usw.) | offen |
 
@@ -70,3 +70,15 @@ prüfen: `plasma-apply-lookandfeel --resetLayout -a org.fenstra.desktop`.
 3. Fenster: Titel links, Ecken unten und oben rund, Schatten.
 4. Dunkles Design: Taskleiste dunkel, Layout bleibt.
 5. `fenstra-baseline`: RAM und Bootzeit wie Build #3 (keine neuen Dienste).
+
+## Ergebnis Build #4 (2026-10-04)
+
+ISO `Fenstra-44-x86_64-20261004-1509.iso`, SHA256
+`af418d67857461981101ee113c1d8bb6ebe936ff1e138799ac7dcfc00df5b35f`, VM „Fenstra-Test4“.
+
+- ✅ Live-Sitzung und erstes Anmelden des neuen Benutzers: Taskleiste und Fensterrahmen wie
+  oben, ohne Nacharbeit; bleibt nach Neustart erhalten.
+- ✅ Start, Suche (KRunner mittig), Aktive Anwendungen (KWin-Übersicht) funktionieren.
+- ✅ Ecken oben und unten rund, Titel links.
+- ✅ Messung (`messungen/2026-10-04-hyperv-build4-4b1.txt`): Boot 6,83 s, RAM 1919 MB
+  (Build #3: 6,36 s / 1917 MB), SELinux enforcing. Die Taskleiste kostet nichts Messbares.
