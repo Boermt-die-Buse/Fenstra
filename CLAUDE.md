@@ -55,6 +55,18 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
+- Test-VM „Fenstra-Test“ existiert (Dateien C:\Users\Daniel\Fenstra\vm\, Skript
+  C:\Users\Daniel\Fenstra\neue-vm.ps1). Installiert mit Build #2, Benutzer daniel (Passwort
+  kennt der Nutzer; nicht ins Repo schreiben). SSH vom Windows-PC:
+  `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_fenstra daniel@<IP>`
+  (IP per Default Switch, wechselt; im Gast `ip -4 -br a`). sudo per `echo <pw> | sudo -S`.
+- Claude Code kann die VM auch direkt bedienen (Windows-Sitzung mit Admin): Screenshots über
+  Msvm_VirtualSystemManagementService.GetVirtualSystemThumbnailImage, Eingaben über
+  Msvm_Keyboard/Msvm_SyntheticMouse. Lehren: Maus-Koordinaten = Gastpixel, aber das
+  vmconnect-Fenster muss in Ruhe sein (Nutzer-Maus stört); TypeText kommt im Gast nicht an,
+  einzelne TypeKey-Aufrufe schon; Gast hat DE-Belegung (y/z, Sonderzeichen umrechnen,
+  AltGr = rechte Alt-Taste VK 0xA5, <>|-Taste nur per Scancode 0x56); Qt-Knöpfe per
+  Leertaste, Tab-Fokus kann auf „Neu starten“ landen.
 - Aus der Claude-Umgebung sind GitHub, invent.kde.org, download.kde.org und jsdelivr
   gesperrt; src.fedoraproject.org, dl.fedoraproject.org, npmjs.org, pypi erreichbar.
   Fedora-44-Paketdaten lassen sich von dl.fedoraproject.org laden und auswerten.
@@ -72,18 +84,29 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
-## Stand (zuletzt 2026-09-29)
+## Stand (zuletzt 2026-10-04)
 
 - Schritt 1+2 erledigt: Analyse (docs/01), Kickstart, Build-Skripte, Doku.
 - Baustein 4a (Branding/Theme) als Pakete fertig: fenstra-release, fenstra-logos,
   fenstra-backgrounds, fenstra-theme (+ plymouth-theme-fenstra), fenstra-icon-theme,
   selawik-fonts. Alle 7 RPMs gebaut. Details docs/04a-branding-und-theme.md, packages/README.md.
 - Build #2 erfolgreich: Fenstra-44-x86_64-20260929-2148.iso, 4,0 GB,
-  SHA256 256c4b7b696cb993a689540a221da012b68c20883bdae08350921a4ac51b6d35. Noch nicht in
-  einer VM gestartet.
-- Offen: VM-Test nach Prüfliste in docs/04a, Installation, `fenstra-baseline` nach messungen/
-  (Name `<Datum>-hyperv-build2-4a.txt`). Erst danach Baustein 4b (Taskleiste, Startmenü,
-  Schnelleinstellungen, KWin-Rundungen/Blur, Anmeldebildschirm).
+  SHA256 256c4b7b696cb993a689540a221da012b68c20883bdae08350921a4ac51b6d35.
+- 2026-10-04 VM-Test Build #2 in Hyper-V durchgeführt, installiert, gemessen. Protokoll:
+  messungen/2026-10-04-hyperv-build2-4a-pruefung.md. Kurz: Secure Boot ok, Boot 6,4 s,
+  SELinux enforcing ohne AVC, Snapper-Snapshot 1 da, Branding/Theme/Schriften/Symbole ok,
+  Sperr-/Anmeldebildschirm bereits Windows-artig. RAM 1914 MB (Ziel 1,5 GB verfehlt).
+- Offen vor 4b (Korrekturen 4a, dann Build #3):
+  1. fenstra-theme.spec:57 Symlink splash im Dark-Paket → KDE „Path traversal“; kopieren.
+  2. Logo weiß, im hellen Design unsichtbar (Info-Zentrum) → farbige/dunkle Variante.
+  3. Rechnername leer → Ersteinrichtung setzt `fenstra`, wenn /etc/hostname leer.
+  4. Branding: Plasma Setup „Willkommen bei Plasma Desktop“, KDE-Maskottchen im
+     Begrüßungsassistenten, Installer-Symbol Fedora-„f“.
+  5. fenstra-baseline: Snapper nur mit root lesbar.
+  6. „Schreibtisch“-Ordner mit Monitor-Symbol / Doppelname Arbeitsfläche.
+  Danach Baustein 4b (Taskleiste, Startmenü, Schnelleinstellungen, KWin-Rundungen/Blur).
+  RAM-Abspecken (plasma-keyboard, xwaylandvideobridge, kdeconnect, DiscoverNotifier, abrt …)
+  im Querschnitt Leistung. Hyper-V hat nur llvmpipe: fps/Blur dort nicht messbar.
 - Notiert für später: ISO 4 GB ist größer als Fedoras KDE-Spin (abspecken, Querschnitt
   Leistung); squashfs-Packen 6 min, zstd testen (`FENSTRA_SQUASHFS=zstd`); Cursor-Thema,
   bunte Gerätesymbole (4c); Selawik-Archiv ist unversioniertes master (Prüfsumme eingetragen).
