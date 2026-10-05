@@ -48,13 +48,13 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 - Repo liegt unter /root/Fenstra (Linux-Dateisystem, nicht /mnt/c). Branch: claude/gifted-bell-sylvb0.
 - Bau-Verzeichnis /var/lib/fenstra-build (repo/, rpmbuild/, sources/, out/, logs/, tmp/).
   955 GB frei. ISO von Windows aus: `\\wsl$\FedoraLinux-44\var\lib\fenstra-build\out\…`.
-- `git push` direkt aus WSL scheitert (Git Credential Manager als Helfer: „Invalid argument“,
-  kein Token hinterlegt). Funktionierender Weg (Claude Code unter Windows, 2026-10-04):
-  in WSL `git bundle create <scratchpad>/fenstra.bundle <branch>`, unter Windows
-  `git clone --branch <branch> fenstra.bundle pushclone`, `git remote set-url origin
-  https://github.com/Boermt-die-Buse/Fenstra.git`, `git push` (Windows-GCM hat die
-  Anmeldung gespeichert), danach in WSL `git fetch origin`. Fetch/Pull aus WSL geht ohne
-  Anmeldung. Vor dem Bauen: `git pull --rebase`.
+- `git push` direkt aus WSL (seit 2026-10-05): GitHub CLI `gh` mit klassischem Token
+  (Scopes `repo`, `read:org`; Konto Boermt-die-Buse), gespeichert in /root/.config/gh/hosts.yml,
+  Git nutzt ihn über `gh auth git-credential`. Prüfen: `gh auth status`. Token läuft nach
+  ~90 Tagen ab → neuen klassischen Token erzeugen, `gh auth login` (Nutzer macht das selbst,
+  Token nie in Chat oder Repo). Fein-granulare Token gingen nicht (403, Schreibrecht im neuen
+  GitHub-Formular nicht einstellbar). Notlösung ohne Token: Git-Bundle nach Windows, dort
+  klonen und mit dem Windows-Git pushen. Vor dem Bauen: `git pull --rebase`.
 - WSL belegt beim Bauen bis ~39 GB RAM als Cache; `wsl --shutdown` gibt ihn frei. Optional
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
