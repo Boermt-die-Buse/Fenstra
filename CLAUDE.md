@@ -59,8 +59,10 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
   `C:\Users\Daniel\.wslconfig` mit `[wsl2]` `memory=20GB`.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
-- Test-VMs „Fenstra-Test“ (Build #2), „Fenstra-Test3“ (#3), „Fenstra-Test4“ (#4),
-  „Fenstra-Test5“ (#5) existieren (Dateien C:\Users\Daniel\Fenstra\vm\). Überall Benutzer
+- Test-VM „Fenstra-Test5“ (Build #5, Entwicklungs-VM; Dateien C:\Users\Daniel\Fenstra\vm\).
+  Ältere VMs und ISOs (Builds #2–#4) am 2026-10-05 gelöscht; ISO #5 liegt in
+  C:\Users\Daniel\Fenstra\ und /var/lib/fenstra-build/out/20261004-1608/. In Test5 ist das
+  Startmenü 44.0-5 zusätzlich als Benutzerkopie (~/.local/share/plasma/plasmoids) installiert. Überall Benutzer
   daniel (Passwort kennt der Nutzer; nicht ins Repo schreiben). sudo per `echo <pw> | sudo -S`.
 - VM-Werkzeuge im Repo: **tools/README.md** (Ablauf eines VM-Tests, Stolpersteine).
   tools/hyperv/*.ps1 (Windows, Admin): neue-vm, vm-screenshot, vm-input (Maus/Tastatur mit
