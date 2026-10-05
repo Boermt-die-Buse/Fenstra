@@ -1,8 +1,12 @@
-# Fenstra: Fensterknöpfe wie unter Windows (nur rechts: Minimieren, Maximieren, Schließen),
-# keine Fensterrahmen. Rundungen, Schatten und Titelausrichtung: /etc/xdg/breezerc.
+# Fenstra: Fensterdekoration im Stil von Windows 11 (Paket fenstra-style, Plugin
+# org.fenstra.decoration): Fenstersymbol links (Fenstermenü), rechts Minimieren,
+# Maximieren, Schließen; keine Seitenränder (die Dekoration zeichnet nur Titelleiste,
+# 1-px-Umriss und Schatten, Größe ändern über einen unsichtbaren Rand).
 [org.kde.kdecoration2]
-library=org.kde.breeze
-ButtonsOnLeft=
+library=org.fenstra.decoration
+theme=
+ButtonsOnLeft=M
 ButtonsOnRight=IAX
 BorderSize=None
 BorderSizeAuto=false
+CloseOnDoubleClickOnMenu=true

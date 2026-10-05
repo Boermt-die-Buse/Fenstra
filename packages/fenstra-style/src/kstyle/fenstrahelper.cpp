@@ -131,6 +131,209 @@ void Helper::removeEventFilter(QApplication *app) const
     }
 }
 
+//______________________________________________________________________________
+// Fenstra: WinUI-Zeichenroutinen
+void Helper::renderFocusVisual(QPainter *painter, const QRectF &rect, qreal radius, const QPalette &palette) const
+{
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    // Windows zeichnet den Fokusrahmen 3 px außerhalb; Qt-Widgets dürfen nicht über ihre
+    // Fläche hinaus malen, daher liegt er hier am Rand der Fläche (Abweichung dokumentiert).
+    QPainterPath outer;
+    outer.addRoundedRect(rect, radius + 1, radius + 1);
+    QPainterPath mid;
+    mid.addRoundedRect(rect.adjusted(2, 2, -2, -2), std::max<qreal>(0, radius - 1), std::max<qreal>(0, radius - 1));
+    QPainterPath inner;
+    inner.addRoundedRect(rect.adjusted(3, 3, -3, -3), std::max<qreal>(0, radius - 2), std::max<qreal>(0, radius - 2));
+    painter->setBrush(WinUi::focusOuter(palette));
+    painter->drawPath(outer.subtracted(mid));
+    painter->setBrush(WinUi::focusInner(palette));
+    painter->drawPath(mid.subtracted(inner));
+    painter->restore();
+}
+
+void Helper::renderTextBoxFrame(QPainter *painter, const QRectF &rect, const QPalette &palette, bool enabled, qreal hover, bool focus) const
+{
+    const qreal radius = WinUi::ControlRadius;
+    const QRectF r(rect);
+    QColor fill;
+    if (!enabled) {
+        fill = WinUi::controlFillDisabled(palette);
+    } else if (focus) {
+        fill = WinUi::controlFillInputActive(palette);
+    } else {
+        fill = WinUi::mix(WinUi::controlFill(palette), WinUi::controlFillHover(palette), hover);
+    }
+    const qreal bottom = (enabled && focus) ? 2 : 1;
+    const QColor stroke = WinUi::strokeDefault(palette);
+    const QColor bottomColor = !enabled ? stroke : (focus ? WinUi::accentFill(palette) : WinUi::strongStroke(palette));
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    QPainterPath outer;
+    outer.addRoundedRect(r, radius, radius);
+    QPainterPath inner;
+    inner.addRoundedRect(r.adjusted(1, 1, -1, -bottom), radius - 1, radius - 1);
+    // Rahmen: oben/seitlich ControlStroke, Unterkante kräftig bzw. Akzent
+    const qreal h = std::max<qreal>(1, r.height());
+    const qreal t = 1 - bottom / h;
+    QLinearGradient g(0, r.top(), 0, r.bottom());
+    g.setColorAt(0, stroke);
+    g.setColorAt(std::max<qreal>(0, t - 0.0001), stroke);
+    g.setColorAt(t, bottomColor);
+    g.setColorAt(1, bottomColor);
+    painter->setBrush(g);
+    painter->drawPath(outer.subtracted(inner));
+    painter->setBrush(fill);
+    painter->drawPath(inner);
+    painter->restore();
+}
+
+void Helper::renderWinUiCheckBox(QPainter *painter,
+                                 const QRectF &rect,
+                                 const QPalette &palette,
+                                 bool enabled,
+                                 bool hover,
+                                 bool pressed,
+                                 int state,
+                                 qreal checkProgress) const
+{
+    const qreal s = WinUi::CheckBoxSize;
+    const QRectF box(std::round(rect.center().x() - s / 2), std::round(rect.center().y() - s / 2), s, s);
+    const qreal radius = WinUi::ControlRadius;
+    const bool on = state != 0;
+
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    if (!on) {
+        QColor fill = !enabled ? WinUi::controlFillDisabled(palette)
+            : pressed          ? WinUi::controlAltFillPressed(palette)
+            : hover            ? WinUi::controlAltFillHover(palette)
+                               : WinUi::controlAltFill(palette);
+        const QColor stroke = enabled ? WinUi::strongStroke(palette) : WinUi::strongStrokeDisabled(palette);
+        QPainterPath outer;
+        outer.addRoundedRect(box, radius, radius);
+        QPainterPath inner;
+        inner.addRoundedRect(box.adjusted(1, 1, -1, -1), radius - 1, radius - 1);
+        painter->setBrush(stroke);
+        painter->drawPath(outer.subtracted(inner));
+        painter->setBrush(fill);
+        painter->drawPath(inner);
+    } else {
+        const QColor fill = !enabled ? WinUi::accentFillDisabled(palette)
+            : pressed                ? WinUi::accentFillPressed(palette)
+            : hover                  ? WinUi::accentFillHover(palette)
+                                     : WinUi::accentFill(palette);
+        painter->setBrush(fill);
+        painter->drawRoundedRect(box, radius, radius);
+
+        const QColor glyph = !enabled ? WinUi::textOnAccentDisabled(palette) : pressed ? WinUi::textOnAccentSecondary(palette) : WinUi::textOnAccent(palette);
+        QPen pen(glyph, 1.25);
+        pen.setCapStyle(Qt::FlatCap);
+        pen.setJoinStyle(Qt::MiterJoin);
+        painter->setPen(pen);
+        painter->setBrush(Qt::NoBrush);
+        if (state == 2) {
+            // teilweise: waagrechter Strich 8 px
+            painter->drawLine(QPointF(box.center().x() - 4, box.center().y()), QPointF(box.center().x() + 4, box.center().y()));
+        } else {
+            // Haken (Segoe-Fluent-Form, 12 px Glyphe in 20 px Kasten)
+            QPainterPath path;
+            path.moveTo(box.left() + 5.0, box.top() + 10.4);
+            path.lineTo(box.left() + 8.4, box.top() + 13.6);
+            path.lineTo(box.left() + 15.0, box.top() + 6.8);
+            if (checkProgress >= 0 && checkProgress < 1) {
+                pen.setDashPattern({path.length() * checkProgress / pen.widthF(), path.length() / pen.widthF()});
+                painter->setPen(pen);
+            }
+            painter->drawPath(path);
+        }
+    }
+    painter->restore();
+}
+
+void Helper::renderWinUiRadio(QPainter *painter,
+                              const QRectF &rect,
+                              const QPalette &palette,
+                              bool enabled,
+                              bool hover,
+                              bool pressed,
+                              bool checked,
+                              qreal checkProgress) const
+{
+    const qreal s = WinUi::CheckBoxSize;
+    const QRectF box(std::round(rect.center().x() - s / 2), std::round(rect.center().y() - s / 2), s, s);
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    if (!checked) {
+        const QColor fill = !enabled ? WinUi::controlFillDisabled(palette)
+            : pressed                ? WinUi::controlAltFillPressed(palette)
+            : hover                  ? WinUi::controlAltFillHover(palette)
+                                     : WinUi::controlAltFill(palette);
+        QPainterPath outer;
+        outer.addEllipse(box);
+        QPainterPath inner;
+        inner.addEllipse(box.adjusted(1, 1, -1, -1));
+        painter->setBrush(enabled ? WinUi::strongStroke(palette) : WinUi::strongStrokeDisabled(palette));
+        painter->drawPath(outer.subtracted(inner));
+        painter->setBrush(fill);
+        painter->drawPath(inner);
+        if (pressed && enabled) {
+            // WinUI: beim Drücken erscheint der Punkt schon (Ø 10)
+            painter->setBrush(WinUi::textOnAccent(palette));
+            painter->drawEllipse(box.center(), 5, 5);
+        }
+    } else {
+        const QColor fill = !enabled ? WinUi::accentFillDisabled(palette)
+            : pressed                ? WinUi::accentFillPressed(palette)
+            : hover                  ? WinUi::accentFillHover(palette)
+                                     : WinUi::accentFill(palette);
+        painter->setBrush(fill);
+        painter->drawEllipse(box);
+        // innerer Punkt Ø 12 / Hover 14 / gedrückt 10 (WinUI RadioButtonCheckGlyph…Size)
+        qreal d = pressed ? 10 : hover ? 14 : 12;
+        if (checkProgress >= 0 && checkProgress < 1) {
+            d *= checkProgress;
+        }
+        painter->setBrush(enabled ? WinUi::textOnAccent(palette) : WinUi::textOnAccentDisabled(palette));
+        painter->drawEllipse(box.center(), d / 2, d / 2);
+    }
+    painter->restore();
+}
+
+void Helper::renderSubtleItem(QPainter *painter, const QRectF &rect, const QPalette &palette, qreal hover, bool selected, bool pressed, bool pill, qreal radius) const
+{
+    QColor fill = WinUi::alpha(0x000000, 0);
+    if (selected) {
+        fill = WinUi::mix(WinUi::subtleHover(palette), WinUi::subtlePressed(palette), hover * 0.5);
+    } else if (hover > 0) {
+        QColor h = WinUi::subtleHover(palette);
+        h.setAlphaF(h.alphaF() * hover);
+        fill = h;
+    }
+    if (pressed) {
+        fill = WinUi::subtlePressed(palette);
+    }
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
+    if (fill.alpha() > 0) {
+        painter->setBrush(fill);
+        painter->drawRoundedRect(rect, radius, radius);
+    }
+    if (selected && pill) {
+        const qreal h = std::min<qreal>(WinUi::SelectionPillHeight, rect.height() - 8);
+        const QRectF p(rect.left(), rect.center().y() - h / 2, WinUi::SelectionPillWidth, h);
+        painter->setBrush(WinUi::accentFill(palette));
+        painter->drawRoundedRect(p, 1.5, 1.5);
+    }
+    painter->restore();
+}
+
 QColor transparentize(const QColor &color, qreal amount)
 {
     auto clone = color;
@@ -543,8 +746,13 @@ void Helper::renderSidePanelFrame(QPainter *painter, const QRectF &rect, const Q
 }
 
 //______________________________________________________________________________
-void Helper::renderMenuFrame(QPainter *painter, const QRectF &rect, const QColor &color, const QColor &outline, bool roundCorners, Qt::Edges seamlessEdges)
-    const
+void Helper::renderMenuFrame(QPainter *painter,
+                             const QRectF &rect,
+                             const QColor &color,
+                             const QColor &outline,
+                             bool roundCorners,
+                             Qt::Edges seamlessEdges,
+                             qreal cornerRadius) const
 {
     painter->save();
 
@@ -565,7 +773,7 @@ void Helper::renderMenuFrame(QPainter *painter, const QRectF &rect, const QColor
         painter->setRenderHint(QPainter::Antialiasing);
         QRectF frameRect(rect);
 
-        qreal radius(Metrics::Frame_FrameRadius);
+        qreal radius(cornerRadius);
 
         frameRect.adjust( //
             seamlessEdges.testFlag(Qt::LeftEdge) ? -radius : 0,
@@ -623,7 +831,7 @@ QRegion Helper::menuFrameRegion(const QMenu *widget)
     if (roundCorners) {
         QRectF frameRect(widget->rect());
 
-        qreal radius(Metrics::Frame_FrameRadius);
+        qreal radius(WinUi::OverlayRadius);
 
         frameRect.adjust( //
             seamlessEdges.testFlag(Qt::LeftEdge) ? -radius : 0,
@@ -651,6 +859,86 @@ void Helper::renderButtonFrame(QPainter *painter,
                                qreal bgAnimation,
                                qreal penAnimation) const
 {
+    // Fenstra: WinUI-Schaltfläche (docs/windows11-referenz.md 2.1). Die Breeze-Fassung
+    // folgt weiter unten und wird nicht mehr erreicht.
+    {
+        const bool enabled = stateProperties.value("enabled", true);
+        const bool visualFocus = stateProperties.value("visualFocus");
+        const bool hovered = stateProperties.value("hovered");
+        const bool down = stateProperties.value("down");
+        const bool checked = stateProperties.value("checked");
+        const bool flat = stateProperties.value("flat");
+        const bool defaultButton = stateProperties.value("defaultButton");
+        const bool roundButton = stateProperties.value("roundButton");
+
+        // Fortschritt der Hover-/Druck-Animation (0..1); ohne Animation aus dem Zustand
+        const qreal hover = penAnimation != AnimationData::OpacityInvalid ? penAnimation : ((hovered || down) ? 1.0 : 0.0);
+        const qreal press = bgAnimation != AnimationData::OpacityInvalid ? bgAnimation : (down ? 1.0 : 0.0);
+
+        if (flat && !(hovered || down || checked || visualFocus) && hover <= 0 && press <= 0) {
+            return;
+        }
+
+        const QRectF r(rect);
+        const qreal radius = roundButton ? std::min(r.width(), r.height()) / 2 : WinUi::ControlRadius;
+        const bool accent = enabled && (defaultButton || (checked && !flat));
+
+        QColor fill;
+        QColor stroke;
+        QColor strokeBottom;
+        if (accent) {
+            fill = WinUi::mix(WinUi::mix(WinUi::accentFill(palette), WinUi::accentFillHover(palette), hover), WinUi::accentFillPressed(palette), press);
+            stroke = WinUi::strokeOnAccent(palette);
+            strokeBottom = press > 0.5 ? stroke : WinUi::strokeOnAccentSecondary(palette);
+        } else if (flat) {
+            // Werkzeugknöpfe, flache Knöpfe: nur Hover-Fläche (SubtleFill)
+            QColor base = checked ? WinUi::subtleHover(palette) : WinUi::alpha(0x000000, 0);
+            fill = WinUi::mix(WinUi::mix(base, WinUi::subtleHover(palette), hover), WinUi::subtlePressed(palette), press);
+        } else if (!enabled) {
+            fill = WinUi::controlFillDisabled(palette);
+            stroke = WinUi::strokeDefault(palette);
+            strokeBottom = stroke;
+        } else {
+            fill = WinUi::mix(WinUi::mix(WinUi::controlFill(palette), WinUi::controlFillHover(palette), hover), WinUi::controlFillPressed(palette), press);
+            stroke = WinUi::strokeDefault(palette);
+            strokeBottom = press > 0.5 ? stroke : WinUi::strokeSecondary(palette);
+        }
+        if (!enabled && accent) {
+            fill = WinUi::accentFillDisabled(palette);
+        }
+
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        if (stroke.isValid()) {
+            // Rahmen 1 px: oben ControlStroke, an der Unterkante (letzte 3 px) zur dunkleren
+            // Sekundärlinie verlaufend (WinUI ControlElevationBorderBrush)
+            QLinearGradient g(0, r.top(), 0, r.bottom());
+            const qreal h = std::max<qreal>(1, r.height());
+            g.setColorAt(0, stroke);
+            g.setColorAt(std::max<qreal>(0, 1 - 3 / h), stroke);
+            g.setColorAt(1, strokeBottom);
+            // Rahmen als Ring, damit sich halbtransparente Füllung und Rahmen nicht addieren
+            QPainterPath outer;
+            outer.addRoundedRect(r, radius, radius);
+            QPainterPath inner;
+            inner.addRoundedRect(r.adjusted(1, 1, -1, -1), radius - 1, radius - 1);
+            painter->setBrush(g);
+            painter->drawPath(outer.subtracted(inner));
+            painter->setBrush(fill);
+            painter->drawPath(inner);
+        } else {
+            painter->setBrush(fill);
+            painter->drawRoundedRect(r, radius, radius);
+        }
+        painter->restore();
+
+        if (visualFocus && enabled) {
+            renderFocusVisual(painter, r, radius, palette);
+        }
+        return;
+    }
+
     bool enabled = stateProperties.value("enabled", true);
     bool visualFocus = stateProperties.value("visualFocus");
     bool hovered = stateProperties.value("hovered");

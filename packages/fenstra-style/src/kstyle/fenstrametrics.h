@@ -37,9 +37,9 @@ struct Metrics {
     static constexpr int ArrowSize = 10;
     static constexpr int SmallArrowSize = 5;
 
-    // frames
+    // frames (Fenstra: WinUI ControlCornerRadius 4)
     static constexpr int Frame_FrameWidth = 2;
-    static constexpr int Frame_FrameRadius = 5;
+    static constexpr int Frame_FrameRadius = 4;
 
     // layout
     static constexpr int Layout_TopLevelMarginWidth = 10;
@@ -70,10 +70,11 @@ struct Metrics {
     // groupbox title margin
     static constexpr int GroupBox_TitleMarginWidth = 4;
 
-    // buttons
+    // buttons (Fenstra: WinUI ButtonPadding 11,5,11,6 + Rahmen 1 px)
     static constexpr int Button_MinWidth = 80;
-    static constexpr int Button_MarginWidth = 6;
-    static constexpr int Button_ItemSpacing = 4;
+    static constexpr int Button_MarginWidth = 12;
+    static constexpr int Button_MarginHeight = 6;
+    static constexpr int Button_ItemSpacing = 8;
 
     // tool buttons
     static constexpr int ToolButton_MarginWidth = 6;
@@ -86,7 +87,7 @@ struct Metrics {
     // checkboxes and radio buttons
     static constexpr int CheckBox_Size = 20;
     static constexpr int CheckBox_FocusMarginWidth = 2;
-    static constexpr int CheckBox_ItemSpacing = 4;
+    static constexpr int CheckBox_ItemSpacing = 8; // Fenstra: WinUI CheckBoxPadding 8
     static constexpr int CheckBox_Radius = Frame_FrameRadius - 1;
 
     // menubar items
@@ -94,9 +95,10 @@ struct Metrics {
     static constexpr int MenuBarItem_MarginHeight = 6;
 
     // scrollbars
-    static constexpr int ScrollBar_Extend = 21;
-    static constexpr int ScrollBar_SliderWidth = 8;
-    static constexpr int ScrollBar_MinSliderHeight = 20;
+    // Fenstra: WinUI ScrollBarSize 12, Daumen 6, Mindestlänge 30
+    static constexpr int ScrollBar_Extend = 12;
+    static constexpr int ScrollBar_SliderWidth = 6;
+    static constexpr int ScrollBar_MinSliderHeight = 30;
     static constexpr int ScrollBar_NoButtonHeight = 3;
     static constexpr int ScrollBar_SingleButtonHeight = ScrollBar_Extend;
     static constexpr int ScrollBar_DoubleButtonHeight = 2 * ScrollBar_Extend;
@@ -113,7 +115,7 @@ struct Metrics {
 
     // progressbars
     static constexpr int ProgressBar_BusyIndicatorSize = 14;
-    static constexpr int ProgressBar_Thickness = 6;
+    static constexpr int ProgressBar_Thickness = 3; // Fenstra: WinUI ProgressBarMinHeight 3
     static constexpr int ProgressBar_ItemSpacing = 4;
 
     // mdi title bar
@@ -122,8 +124,10 @@ struct Metrics {
     // sliders
     static constexpr int Slider_TickLength = 8;
     static constexpr int Slider_TickMarginWidth = 2;
-    static constexpr int Slider_GrooveThickness = 6;
-    static constexpr int Slider_ControlThickness = 20;
+    // Fenstra: WinUI Slider Spur 4 px, Daumen 18 px, Gesamthöhe 32 px
+    static constexpr int Slider_GrooveThickness = 4;
+    static constexpr int Slider_ControlThickness = 18;
+    static constexpr int Slider_Height = 32;
 
     // tabbar
     static constexpr int TabBar_TabMarginHeight = 4;
@@ -145,7 +149,7 @@ struct Metrics {
     static constexpr int ToolBox_TabMarginWidth = 8;
 
     // tooltips
-    static constexpr int ToolTip_FrameWidth = 3;
+    static constexpr int ToolTip_FrameWidth = 6; // Fenstra: + 1 px von Qt ≈ WinUI 9,6,9,8
 
     // list headers
     static constexpr int Header_MarginWidth = 6;

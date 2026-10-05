@@ -9,6 +9,7 @@
 #include "fenstra.h"
 #include "fenstraanimationdata.h"
 #include "fenstrametrics.h"
+#include "fenstrawinui.h"
 
 #include <KConfigWatcher>
 #include <KSharedConfig>
@@ -53,6 +54,20 @@ public:
 
     //* uninstall event filter
     void removeEventFilter(QApplication *app) const;
+
+    //*@name Fenstra: WinUI-Zeichenroutinen (docs/windows11-referenz.md 2.x)
+    //@{
+    //* Fokusrahmen (nur Tastatur): außen 2 px, innen 1 px, innerhalb von rect gezeichnet
+    void renderFocusVisual(QPainter *, const QRectF &rect, qreal radius, const QPalette &) const;
+    //* Eingabefeld: Rahmen 1 px, Unterkante 1 px kräftig bzw. 2 px Akzent bei Fokus
+    void renderTextBoxFrame(QPainter *, const QRectF &rect, const QPalette &, bool enabled, qreal hover, bool focus) const;
+    //* Kontrollkästchen 20×20 (state: 0 aus, 1 an, 2 teilweise)
+    void renderWinUiCheckBox(QPainter *, const QRectF &rect, const QPalette &, bool enabled, bool hover, bool pressed, int state, qreal checkProgress) const;
+    //* Optionsfeld Ø 20
+    void renderWinUiRadio(QPainter *, const QRectF &rect, const QPalette &, bool enabled, bool hover, bool pressed, bool checked, qreal checkProgress) const;
+    //* Hover-/Auswahlfläche in Listen, Menüs, Bäumen mit optionalem Akzentbalken
+    void renderSubtleItem(QPainter *, const QRectF &rect, const QPalette &, qreal hover, bool selected, bool pressed, bool pill, qreal radius = WinUi::ControlRadius) const;
+    //@}
 
     //*@name color utilities
     //@{
@@ -191,7 +206,8 @@ public:
                          const QColor &color,
                          const QColor &outline,
                          bool roundCorners = true,
-                         Qt::Edges seamlessEdges = Qt::Edges()) const;
+                         Qt::Edges seamlessEdges = Qt::Edges(),
+                         qreal cornerRadius = WinUi::OverlayRadius) const;
 
     QRegion menuFrameRegion(const QMenu *widget);
 
@@ -373,8 +389,8 @@ public:
 
     static Qt::Edges menuSeamlessEdges(const QWidget *);
 
-protected:
     //* return rounded path in a given rect, with only selected corners rounded, and for a given radius
+    //  (Fenstra: öffentlich, für Listenauswahl über mehrere Zellen)
     QPainterPath roundedPath(const QRectF &, Corners, qreal) const;
 
 private:

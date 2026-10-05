@@ -128,6 +128,25 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
+## Stand M1 (abgeschlossen 2026-10-05) – nächster Schritt: M2 Eigene Assets
+
+- **fenstra-style** (packages/fenstra-style, x86_64, Fork Breeze 6.7.5): Qt-Stil „Fenstra“
+  (kstyle/, WinUI-Farbwerte zentral in kstyle/fenstrawinui.h, Änderungen im Code mit
+  „Fenstra:“ kommentiert, alte Breeze-Pfade teils unerreichbar dahinter) und Dekoration
+  org.fenstra.decoration (kdecoration/, komplett neu, schlank). Prüfliste
+  docs/checkliste-stil.md bestanden (41/41 Muss, 15/15 Soll), Abweichungen dort.
+- **fenstra-theme 44.0-7**: Vorgaben widgetStyle=Fenstra, Dekoration, Plasma-Designs
+  fenstra/fenstra-dark (desktoptheme/generate.py, Bau im %build), Schrift 10,5 pt,
+  kein AccentColor-Schlüssel.
+- Entwicklungsschleife Stil/Dekoration: `cmake -S packages/fenstra-style/src -B
+  /var/lib/fenstra-build/cmake-style -G Ninja …` (einmal), dann
+  `tools/hyperv/vm-dev.ps1 -Build /var/lib/fenstra-build/cmake-style [-KWin]`; Stiltest
+  `~/.local/bin/stiltest.py` + `fenster-setzen.sh "Fenstra Stiltest" 460 150`; Messen mit
+  tools/pruefen/*.ps1 und pixel.py.
+- Messung M1: Boot 6,47 s, RAM 1793 MB.
+- Offene Punkte aus M1 für später: Kombinationsliste über dem Feld, Fokusrahmen außen,
+  Mica (M5), Plasma-Popups schwebend (M3/M4), Dolphin-Ansicht (M8).
+
 ## Stand M0 (abgeschlossen 2026-10-05)
 
 - Rahmen neu, Roadmap M0–M13 (docs/roadmap.md), Arbeitskopie ws + sync-ws.sh,
@@ -233,6 +252,19 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
   /usr/share/pixmaps/system-logo-white.png (liefert fenstra-logos, farbig).
 - Das Symbol `user-desktop` nutzt auch der Taskleistenknopf „Arbeitsfläche anzeigen“:
   keine Ordnergrafik dafür verwenden.
+- (M1) KWin lädt Dekorations-/Effekt-Plugins nur beim Start: nach neuer .so
+  `kill -9 $(pgrep -x kwin_wayland)` (Wrapper startet neu, Sitzung bleibt, Programme enden).
+- (M1) KWin 6.7 mischt `setBorderOutline`-Farben vormultipliziert → RGB selbst mit Alpha
+  multiplizieren.
+- (M1) Gesetzte `AccentColor` in kdeglobals → Plasma hellt die Auswahlfarbe um 30 % auf.
+  Akzent nur im Farbschema führen.
+- (M1) RPM legt geänderte %config(noreplace)-Dateien als .rpmnew ab: in der Test-VM keine
+  Systemdateien von Hand ändern (oder danach .rpmnew einsetzen).
+- (M1) Hyper-V-Maus: `SetButtonState(ButtonIndex, IsDown)` zum Gedrückthalten; QMenu ignoriert
+  die ersten Bewegungen nach dem Öffnen (mehrere `move` senden).
+- (M1) PowerShell → wsl: `|`, `"`, mehrzeilige Argumente gehen kaputt; Skripte als Datei
+  übergeben. PowerShell 7 bricht bei stderr-Ausgabe nativer Befehle mit `$ErrorActionPreference
+  = 'Stop'` ab (dnf-Warnungen).
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 

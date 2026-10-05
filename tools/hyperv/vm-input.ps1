@@ -3,6 +3,8 @@
 #   vm-input.ps1 click X Y [right]    Mausklick an Gastpixel X/Y (links, oder rechts)
 #   vm-input.ps1 dclick X Y           Doppelklick
 #   vm-input.ps1 move X Y             Maus bewegen
+#   vm-input.ps1 down X Y / up        linke Taste an X/Y drücken und halten / loslassen
+#                                     (gedrückte Zustände prüfen; vor "up" wegbewegen = kein Klick)
 #   vm-input.ps1 text "ls -la | less" Text tippen, fuer DEUTSCHE Tastaturbelegung im Gast
 #   vm-input.ps1 key 13               eine Taste (virtueller Tastencode, s. u.)
 #   vm-input.ps1 combo 17 18 84       Tasten gleichzeitig (hier Strg+Alt+T = Konsole)
@@ -20,7 +22,7 @@
 #  - Die WMI-Methode TypeText kommt im Gast nicht an; deshalb Taste fuer Taste.
 #  - Qt-Knoepfe reagieren auf die Leertaste, nicht immer auf Enter.
 param(
-    [Parameter(Mandatory, Position = 0)][ValidateSet('click', 'dclick', 'move', 'text', 'key', 'combo')][string]$Action,
+    [Parameter(Mandatory, Position = 0)][ValidateSet('click', 'dclick', 'move', 'down', 'up', 'text', 'key', 'combo')][string]$Action,
     [Parameter(Position = 1)][string]$A,
     [Parameter(Position = 2)][string]$B,
     [Parameter(Position = 3)][string]$C,
@@ -57,6 +59,8 @@ switch ($Action) {
     'move'   { MoveTo $A $B }
     'click'  { MoveTo $A $B; Start-Sleep -Milliseconds 150; Click ($(if ($C -eq 'right') { 2 } else { 1 })) }
     'dclick' { MoveTo $A $B; Start-Sleep -Milliseconds 150; Click 1; Start-Sleep -Milliseconds 80; Click 1 }
+    'down'   { MoveTo $A $B; Start-Sleep -Milliseconds 150; Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $true }) 'SetButtonState' }
+    'up'     { Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $false }) 'SetButtonState' }
     'key'    { KeyType $A }
     'combo'  {
         $keys = @($A, $B, $C, $D) | Where-Object { $_ }

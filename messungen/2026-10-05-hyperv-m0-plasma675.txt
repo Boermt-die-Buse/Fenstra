@@ -1,3 +1,6 @@
+# M0: VM Fenstra-Test5 nach dnf upgrade (Plasma 6.7.5, Qt 6.11.2, Kernel 7.2.8), 1920x1080.
+# Ueber SSH gemessen (Sitzung daher tty). os-release zeigte Fedora: Trigger-Fehler in
+# fenstra-release 44.0-1, behoben in 44.0-2.
 Fenstra Basiswerte – 2026-10-05T17:40:25+02:00
 PRETTY_NAME="Fedora Linux 44 (KDE Plasma Desktop Edition)"
 VARIANT_ID=kde

@@ -51,7 +51,7 @@
     </entry>
 
     <entry name="AnimationsDuration" type="Int">
-      <default>100</default>
+      <default>83</default>
     </entry>
 
    <!-- transition flags -->
@@ -71,11 +71,11 @@
 
     <!-- scrollbar buttons -->
     <entry name="ScrollBarAddLineButtons" type="Int">
-      <default>0</default>
+      <default>1</default>
     </entry>
 
     <entry name="ScrollBarSubLineButtons" type="Int">
-      <default>0</default>
+      <default>1</default>
     </entry>
 
     <!-- mnemonics -->
@@ -105,7 +105,7 @@
 
     <!-- tree views -->
     <entry name="ViewDrawTreeBranchLines" type="Bool">
-      <default>true</default>
+      <default>false</default>
     </entry>
 
     <!-- Direction of sort order arrow in table view headers -->

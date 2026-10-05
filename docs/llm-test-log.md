@@ -61,3 +61,49 @@ Hyper-V-Fernsteuerung. Bewertung des übernommenen Stands (2026-10-05, Bild bei 
 - **Messung:** Boot 6,10 s, RAM 1837 MB (Plasma 6.7.5; vorher 1911 MB mit 6.6.4).
 - **Bewertung:** unverändert gegenüber dem Ausgangsstand (M0 ändert nichts Sichtbares).
 - **Bilder:** docs/bilder/m0/ (Ausgangsstand Desktop, Startmenü).
+
+## M1 Stil-Fundament (2026-10-05)
+
+- **Ziel:** Qt-Widget-Stil, Fensterdekoration, Plasma-Design, Farben/Akzent im WinUI-Look
+  (Prüfliste docs/checkliste-stil.md).
+- **Beginn/Ende:** ca. 18:05–18:52 (Wanduhr; sehr dicht gearbeitet, viele Bauläufe parallel
+  zu VM-Tests).
+- **Umsetzung:**
+  - Paket **fenstra-style** (neu, x86_64): Fork von Breeze 6.7.5. Dekoration komplett neu
+    geschrieben (Titelleiste 32 px, Knöpfe 46×32, Glyphen 10 px, Schließen #C42B1C, Ecken 8 px
+    über die KDecoration3-Radius-API, Umriss, Schatten, Tooltips „Verkleinern“ usw.).
+    Qt-Stil: zentrale WinUI-Farbtabelle (fenstrawinui.h, Werte aus den WinUI-Ressourcen),
+    neu gezeichnet: Schaltflächen (Elevation-Rand), Eingabefelder (Akzent-Unterkante),
+    Kontrollkästchen, Optionsfelder, Schieberegler, Fortschritt, überlagernde Bildlaufleisten
+    (Qt-Transient-Modus + eigenes Ein-/Ausblenden), Menüs, Menüleiste, Tooltips, Listen
+    (graue Auswahl + Akzentbalken), Register (Akzentstrich), Kopfzeilen, Gruppenrahmen,
+    Kombinationsfeld-Liste, Fokusrahmen.
+  - **Plasma-Designs** fenstra/fenstra-dark aus Code (generate.py): Flyouts, Taskleiste,
+    Tooltips, Widgets.
+  - fenstra-theme: Vorgaben auf Fenstra-Stil/-Dekoration/-Design, Schrift 10,5 pt,
+    Farbschemata (Auswahl #0078D4, Linkfarben).
+  - Werkzeuge: vm-dev.ps1 (Build direkt in die VM, optional KWin-Neustart),
+    fenster-setzen.sh (Fenster per KWin-Skript platzieren), Stiltest (PyQt6),
+    pixel.py/nebeneinander.py, Messskripte m1-messen.ps1/m1-nachpruefen.ps1,
+    vm-input.ps1 down/up (gedrückt halten).
+- **Probleme / Erkenntnisse:**
+  - KWin lädt Dekorations-Plugins nur beim Start → neue .so wirken erst nach KWin-Neustart
+    (kill -9 kwin_wayland; Sitzung bleibt, Programme werden beendet).
+  - KWin 6.7 mischt die Umrissfarbe der Dekoration vormultipliziert (40 % Grau wurde Weiß).
+  - Plasma mischt eine in kdeglobals gesetzte AccentColor mit 30 % Weiß in die Auswahlfarbe.
+  - Eine früher von Hand geänderte /etc/xdg-Datei ließ RPM die neue Fassung als .rpmnew ablegen
+    (nur Test-VM).
+  - QMenu ignoriert die ersten Mausbewegungen nach dem Öffnen (Hover-Test braucht mehrere
+    Bewegungen); QComboMenuDelegate zeichnet mit dem QComboBox als Widget.
+- **Fehlversuche:** Füllung per CompositionMode_Source „ausgestanzt“ (hätte Löcher in den
+  Fensterhintergrund gerissen, vor dem Test verworfen); erster Test der Dekoration lief noch
+  mit dem alten Plugin im Speicher (siehe oben); SetButtonState-Parameter falsch geraten.
+- **Messung:** Boot 6,47 s, RAM 1793 MB (M0: 6,10 s / 1837 MB), messungen/2026-10-05-hyperv-m1-stil.txt.
+- **Bewertung (0–10):**
+
+| Bereich | vorher | nachher | Begründung |
+|---|---|---|---|
+| Fensterrahmen | 3 | 8 | Maße, Farben, Knöpfe, Tooltips wie Windows; ohne Mica, Schatten nach Augenmaß |
+| Steuerelemente | 2 | 7 | WinUI-Werte gemessen; Fokusrahmen innen, Kombinationsliste unterhalb, Dolphin-Ansicht eigen |
+| Menüs/Tooltips | 2 | 8 | Aufbau und Maße wie WinUI; kein echtes Acrylic in Menüs |
+| Plasma-Flächen | 3 | 6 | Taskleisten-/Popup-Grafik passt; Popups noch am Panel angedockt, Applets selbst noch Plasma (M3/M4) |

@@ -68,6 +68,7 @@ Mit genau einer laufenden Fenstra-VM wird sie automatisch gewählt.
 | `vm-ssh-einrichten.ps1` | Schlüssel hinterlegen und sshd einschalten (über Tastatureingaben in der Konsole) |
 | `vm-ssh.ps1` | Befehl/Skript per SSH in der Sitzung ausführen (IP zwischengespeichert, CR wird entfernt) |
 | `vm-gastfoto.ps1` | pixelgenaues Bildschirmfoto (Spectacle im Gast) holen, optional Ausschnitt/aktives Fenster |
+| `vm-dev.ps1 -Build <cmake-build> [-KWin] [-Nach '<befehl>']` | CMake-Build aus WSL bauen und direkt in die VM installieren (ohne RPM); `-KWin` startet KWin neu (nötig für Dekoration/Effekte) |
 | `vm-rpm.ps1 <paket>… [-Reinstall]` | neueste RPMs aus der WSL-Paketquelle in die VM kopieren und mit dnf installieren (Passwort aus `$env:FENSTRA_VM_PW` oder Abfrage) |
 
 Tastencodes: 8 Rücktaste, 9 Tab, 13 Enter, 27 Esc, 32 Leertaste, 37–40 Pfeile, 91 Windows-Taste;
@@ -81,6 +82,16 @@ Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
 | `testsitzung.sh` | Sperren/Dimmen/Bildschirm-Aus abschalten, 1920×1080, Helfer installieren |
 | `fenstra-shot.sh [datei] [--region X,Y,B,H] [--fenster]` | Bildschirmfoto der Sitzung (weckt vorher den Bildschirm) |
 | `fenstra-ssh-env.sh` | nach `~/.bashrc.d`: Sitzungsumgebung für SSH-Befehle |
+| `fenster-setzen.sh "Titel" X Y [B H]` | Fenster per KWin-Skript an feste Stelle setzen (reproduzierbare Bilder) |
+
+## pruefen/
+
+| Datei | Zweck |
+|---|---|
+| `pixel.py BILD at/row/col/crop/box …` | Pixelwerte, Farbläufe, Ausschnitte (läuft in WSL oder VM) |
+| `nebeneinander.py AUS --zoom N BILD…` | Vergleichsbilder zusammensetzen |
+| `stiltest.py` | PyQt6-Testfenster mit allen Steuerelementen (in die VM nach `~/.local/bin`, braucht python3-pyqt6) |
+| `m1-messen.ps1`, `m1-nachpruefen.ps1` | Messläufe zur Prüfliste M1 (Bilder nach docs/bilder/m1) |
 
 Hinbringen: `scp -r tools/vm <plasmoid-ordner> daniel@<IP>:/tmp/` (von Windows aus mit
 denselben `-i`/`-o`-Optionen wie bei ssh).

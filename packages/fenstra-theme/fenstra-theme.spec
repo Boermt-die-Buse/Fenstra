@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        5%{?dist}
+Release:        7%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -15,6 +15,8 @@ Requires:       plasma-workspace
 Requires:       plasma-desktop
 Requires:       plasma-breeze
 Requires:       breeze-cursor-theme
+# Qt-Stil und Fensterdekoration "Fenstra" (Meilenstein M1)
+Requires:       fenstra-style
 Requires:       fenstra-backgrounds
 Requires:       fenstra-icon-theme
 Requires:       fenstra-logos
@@ -68,6 +70,8 @@ for f in plymouth/frames/*.svg; do
   rsvg-convert -o "${f%.svg}.png" "$f"
 done
 rsvg-convert -w 128 -h 128 -o plymouth/frames/watermark.png look-and-feel/org.fenstra.desktop/contents/splash/images/fenstra-logo-white.svg
+# Plasma-Designs fenstra / fenstra-dark (Taskleiste, Popups, Tooltips) aus Code erzeugen
+python3 desktoptheme/generate.py desktoptheme-build
 
 %install
 # Globale Designs (Look-and-Feel)
@@ -93,7 +97,10 @@ install -d %{buildroot}%{_datadir}/color-schemes
 install -p -m 0644 color-schemes/*.colors %{buildroot}%{_datadir}/color-schemes/
 # systemweite Vorgaben (KConfig liest /etc/xdg vor den Fedora-Profilen)
 install -d %{buildroot}%{_sysconfdir}/xdg
-install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/breezerc xdg/krunnerrc %{buildroot}%{_sysconfdir}/xdg/
+install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/krunnerrc %{buildroot}%{_sysconfdir}/xdg/
+# Plasma-Designs
+install -d %{buildroot}%{_datadir}/plasma/desktoptheme
+cp -a desktoptheme-build/fenstra desktoptheme-build/fenstra-dark %{buildroot}%{_datadir}/plasma/desktoptheme/
 # fontconfig
 install -D -p -m 0644 fontconfig/61-fenstra-ui.conf %{buildroot}%{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 # Plymouth
@@ -125,8 +132,9 @@ fi
 %config(noreplace) %{_sysconfdir}/xdg/kwinrc
 %config(noreplace) %{_sysconfdir}/xdg/kscreenlockerrc
 %config(noreplace) %{_sysconfdir}/xdg/ksplashrc
-%config(noreplace) %{_sysconfdir}/xdg/breezerc
 %config(noreplace) %{_sysconfdir}/xdg/krunnerrc
+%{_datadir}/plasma/desktoptheme/fenstra/
+%{_datadir}/plasma/desktoptheme/fenstra-dark/
 %{_datadir}/applications/fenstra-search.desktop
 %{_datadir}/applications/fenstra-taskview.desktop
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
@@ -138,6 +146,15 @@ fi
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Mon Oct 05 2026 Fenstra-Projekt - 44.0-7
+- Linkfarben wie Windows (hell #003E92, dunkel #99EBFF)
+
+* Mon Oct 05 2026 Fenstra-Projekt - 44.0-6
+- M1: Qt-Stil und Fensterdekoration "Fenstra" (fenstra-style) als Vorgabe,
+  Plasma-Designs fenstra/fenstra-dark (aus Code erzeugt), Schrift 10,5 pt,
+  kein AccentColor-Schlüssel mehr (Plasma hellte die Auswahlfarbe auf),
+  dunkles Farbschema: Textauswahl #0078D4 mit weißer Schrift, breezerc entfällt
+
 * Mon Oct 05 2026 Fenstra-Projekt - 44.0-5
 - Startmenü: Fenstra-Vorgaben für "Angeheftet" werden ergänzt, auch wenn Plasma
   schon eigene Favoriten mitbringt (vorher wirkungslos)

@@ -1,5 +1,5 @@
 [kdeglobals][KDE]
-widgetStyle=Breeze
+widgetStyle=Fenstra
 
 [kdeglobals][General]
 ColorScheme=FenstraLight
@@ -8,14 +8,14 @@ ColorScheme=FenstraLight
 Theme=fenstra
 
 [plasmarc][Theme]
-name=default
+name=fenstra
 
 [kcminputrc][Mouse]
 cursorTheme=Breeze_Light
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.breeze
-ButtonsOnLeft=
+library=org.fenstra.decoration
+ButtonsOnLeft=M
 ButtonsOnRight=IAX
 
 [kwinrc][WindowSwitcher]

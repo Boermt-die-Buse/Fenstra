@@ -1,18 +1,20 @@
 # Fenstra: systemweite Vorgaben für alle Benutzer (überschreibbar in ~/.config/kdeglobals)
+# Schrift: Windows-Fließtext 14 px = 10,5 pt bei 96 dpi (docs/windows11-referenz.md 1.3).
+# Kein AccentColor-Schlüssel: Plasma mischt eine gesetzte Akzentfarbe beim Anwenden mit 30 %
+# Weiß (#0078D4 -> #4CA0E0). Die Akzentfarbe steht im Farbschema (Selection = #0078D4).
 [General]
 ColorScheme=FenstraLight
-AccentColor=0,120,212
-font=Selawik,10,-1,5,50,0,0,0,0,0
-menuFont=Selawik,10,-1,5,50,0,0,0,0,0
-toolBarFont=Selawik,10,-1,5,50,0,0,0,0,0
-smallestReadableFont=Selawik,8,-1,5,50,0,0,0,0,0
-fixed=Cascadia Code,10,-1,5,50,0,0,0,0,0
+font=Selawik,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+menuFont=Selawik,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+toolBarFont=Selawik,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+smallestReadableFont=Selawik,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
+fixed=Cascadia Code,10.5,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 XftAntialias=true
 XftHintStyle=hintslight
 XftSubPixel=rgb
 
 [WM]
-activeFont=Selawik,10,-1,5,50,0,0,0,0,0
+activeFont=Selawik,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1
 
 [Icons]
 Theme=fenstra
@@ -20,4 +22,5 @@ Theme=fenstra
 [KDE]
 LookAndFeelPackage=org.fenstra.desktop
 SingleClick=false
-widgetStyle=Breeze
+widgetStyle=Fenstra
+AnimationDurationFactor=1

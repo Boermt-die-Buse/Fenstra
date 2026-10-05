@@ -1,7 +1,0 @@
-File=fenstrasettingsdata.kcfg
-ClassName=InternalSettings
-NameSpace=Fenstra
-Singleton=false
-Mutators=true
-GlobalEnums=true
-Notifiers=OutlineCloseButton

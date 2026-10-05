@@ -54,7 +54,6 @@ set(fenstra_PART_SRCS
     fenstratoolsareamanager.cpp
 )
 
-kconfig_add_kcfg_files(fenstra_PART_SRCS ../kdecoration/fenstrasettings.kcfgc)
 kconfig_add_kcfg_files(fenstra_PART_SRCS fenstrastyleconfigdata.kcfgc)
 
 

@@ -45,9 +45,11 @@
 #include <QMenuBar>
 #include <QMetaEnum>
 #include <QPainter>
+#include <QPointer>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QScrollBar>
+#include <QTimer>
 #include <QSplitterHandle>
 #include <QStackedLayout>
 #include <QTableView>
@@ -438,6 +440,10 @@ void Style::polish(QWidget *widget)
 
     } else if (widget->inherits("QTipLabel")) {
         setTranslucentBackground(widget);
+        // Fenstra: Tooltip-Schrift 12 px (WinUI ToolTipContentThemeFontSize)
+        QFont f = widget->font();
+        f.setPixelSize(12);
+        widget->setFont(f);
 
     } else if (widget->inherits("KMultiTabBar")) {
         enum class Position {
@@ -534,6 +540,18 @@ void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
 
     // add event filter, to make sure proper background is rendered behind scrollbars
     addEventFilter(scrollArea);
+
+    // Fenstra: Enter/Leave des Inhalts und der Leisten beobachten (Leisten einblenden)
+    if (scrollArea->viewport()) {
+        scrollArea->viewport()->removeEventFilter(this);
+        scrollArea->viewport()->installEventFilter(this);
+    }
+    for (QScrollBar *bar : {scrollArea->verticalScrollBar(), scrollArea->horizontalScrollBar()}) {
+        if (bar) {
+            bar->removeEventFilter(this);
+            bar->installEventFilter(this);
+        }
+    }
 
     // force side panels as flat, on option
     if (scrollArea->inherits("KDEPrivate::KPageListView") || scrollArea->inherits("KDEPrivate::KPageTreeView")) {
@@ -646,9 +664,11 @@ int Style::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWi
 {
     // handle special cases
     switch (metric) {
+    // Fenstra: Menürand 1 px + oben/unten 2 px Innenabstand (WinUI MenuFlyoutPresenterThemePadding)
     case PM_MenuHMargin:
+        return 1;
     case PM_MenuVMargin:
-        return Metrics::MenuItem_HighlightGap;
+        return 3;
 
     // small icon size
     case PM_SmallIconSize: {
@@ -838,7 +858,7 @@ int Style::pixelMetric(PixelMetric metric, const QStyleOption *option, const QWi
 
     // sliders
     case PM_SliderThickness:
-        return Metrics::Slider_ControlThickness;
+        return Metrics::Slider_Height;
     case PM_SliderControlThickness:
         return Metrics::Slider_ControlThickness;
     case PM_SliderLength:
@@ -947,6 +967,12 @@ int Style::styleHint(StyleHint hint, const QStyleOption *option, const QWidget *
     case SH_ToolBox_SelectedPageTitleBold:
         return false;
     case SH_ScrollBar_MiddleClickAbsolutePosition:
+        return true;
+    // Fenstra: Bildlaufleisten liegen über dem Inhalt (Windows 11, 2.8)
+    case SH_ScrollBar_Transient:
+        return true;
+    // Fenstra: Kombinationsfeld-Liste öffnet über dem Feld, gewählter Eintrag deckungsgleich (2.9)
+    case SH_ComboBox_Popup:
         return true;
     case SH_ScrollView_FrameOnlyAroundContents:
         return false;
@@ -1538,6 +1564,23 @@ void Style::drawControl(ControlElement element, const QStyleOption *option, QPai
 
     painter->save();
 
+    // Fenstra: In Windows-11-Listen bleibt markierter Text in der normalen Textfarbe
+    // (graue Auswahlfläche + Akzentbalken statt blauer Fläche mit weißer Schrift)
+    if (element == CE_ItemViewItem && (option->state & State_Selected)) {
+        if (const auto vopt = qstyleoption_cast<const QStyleOptionViewItem *>(option)) {
+            const bool customBackground = vopt->backgroundBrush.style() != Qt::NoBrush;
+            if (!customBackground) {
+                QStyleOptionViewItem copy(*vopt);
+                for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
+                    copy.palette.setColor(group, QPalette::HighlightedText, copy.palette.color(group, QPalette::Text));
+                }
+                ParentStyleClass::drawControl(element, &copy, painter, widget);
+                painter->restore();
+                return;
+            }
+        }
+    }
+
     // call function if implemented
     if (!(fcn && fcn(*this, option, painter, widget))) {
         ParentStyleClass::drawControl(element, option, painter, widget);
@@ -1681,6 +1724,9 @@ bool Style::event(QEvent *e)
 }
 
 //_____________________________________________________________________
+// Fenstra: siehe unten bei drawScrollBarComplexControl
+static void fenstraShowScrollBars(QAbstractScrollArea *area, bool show);
+
 bool Style::eventFilter(QObject *object, QEvent *event)
 {
     if (auto dockWidget = qobject_cast<QDockWidget *>(object)) {
@@ -1698,6 +1744,21 @@ bool Style::eventFilter(QObject *object, QEvent *event)
 
     if (object->isWidgetType()) {
         QWidget *widget = static_cast<QWidget *>(object);
+
+        // Fenstra: Bildlaufleisten zeigen, solange die Maus über dem Inhalt oder der Leiste ist
+        if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
+            QAbstractScrollArea *area = qobject_cast<QAbstractScrollArea *>(widget->parentWidget());
+            if (area && area->viewport() == widget) {
+                fenstraShowScrollBars(area, event->type() == QEvent::Enter);
+            } else if (auto bar = qobject_cast<QScrollBar *>(widget)) {
+                // Leiste liegt in einem Container des Bereichs
+                QWidget *p = bar->parentWidget();
+                while (p && !qobject_cast<QAbstractScrollArea *>(p)) {
+                    p = p->parentWidget();
+                }
+                fenstraShowScrollBars(qobject_cast<QAbstractScrollArea *>(p), event->type() == QEvent::Enter);
+            }
+        }
 
         if (widget->objectName() == QLatin1String("KPageView::Search") || widget->objectName() == QLatin1String("KPageView::TitleWidget")) {
             return eventFilterPageViewHeader(widget, event);
@@ -2885,8 +2946,8 @@ QRect Style::groupBoxSubControlRect(const QStyleOptionComplex *option, SubContro
         titleRect.setHeight(titleHeight);
         titleRect.translate(0, Metrics::GroupBox_TitleMarginWidth);
 
-        // center
-        titleRect = centerRect(titleRect, titleWidth, titleHeight);
+        // Fenstra: Titel links (Windows), nicht zentriert
+        titleRect = QRect(titleRect.left() + 12, titleRect.top(), titleWidth, titleHeight);
 
         if (subControl == SC_GroupBoxCheckBox) {
             // vertical centering
@@ -3344,7 +3405,13 @@ QSize Style::lineEditSizeFromContents(const QStyleOption *option, const QSize &c
 
     const bool flat(frameOption->lineWidth == 0);
     const int frameWidth(pixelMetric(PM_DefaultFrameWidth, option, widget));
-    return flat ? contentsSize : expandSize(contentsSize, frameWidth);
+    if (flat) {
+        return contentsSize;
+    }
+    // Fenstra: Eingabefelder mindestens 32 px hoch (2.2)
+    QSize size = expandSize(contentsSize, frameWidth);
+    size.setHeight(qMax(size.height(), int(WinUi::ControlHeight)));
+    return size;
 }
 
 //______________________________________________________________
@@ -3370,6 +3437,8 @@ QSize Style::comboBoxSizeFromContents(const QStyleOption *option, const QSize &c
     size.rwidth() += Metrics::MenuButton_IndicatorWidth + 2;
     size.rwidth() += Metrics::Button_ItemSpacing;
 
+    // Fenstra: Kombinationsfelder 32 px hoch (2.9)
+    size.setHeight(qMax(size.height(), int(WinUi::ControlHeight)));
     return size;
 }
 
@@ -3402,6 +3471,10 @@ QSize Style::spinBoxSizeFromContents(const QStyleOption *option, const QSize &co
         size.rwidth() += Metrics::SpinBox_ArrowButtonWidth;
     }
 
+    // Fenstra: wie Eingabefeld 32 px hoch
+    if (!flat) {
+        size.setHeight(qMax(size.height(), int(WinUi::ControlHeight)));
+    }
     return size;
 }
 
@@ -3552,16 +3625,16 @@ QSize Style::pushButtonSizeFromContents(const QStyleOption *option, const QSize 
         }
     }
 
-    // expand with buttons margin
-    size = expandSize(size, Metrics::Button_MarginWidth);
+    // Fenstra: WinUI-Innenabstand 11,5,11,6 + 1 px Rahmen, Höhe mindestens 32 px (2.1)
+    size = expandSize(size, Metrics::Button_MarginWidth, 0);
+    size.setHeight(qMax(size.height() + 2 * Metrics::Button_MarginHeight, int(WinUi::ControlHeight)));
 
     // make sure buttons have a minimum width
     if (hasText) {
         size.setWidth(qMax(size.width(), int(Metrics::Button_MinWidth)));
     }
 
-    // finally add frame margins
-    return expandSize(size, Metrics::Frame_FrameWidth);
+    return size;
 }
 
 //______________________________________________________________
@@ -3611,6 +3684,42 @@ QSize Style::menuItemSizeFromContents(const QStyleOption *option, const QSize &c
      * First calculate the intrinsic size of the item.
      * this must be kept consistent with what's in drawMenuItemControl
      */
+    // Fenstra: WinUI-Maße (2.11): Eintrag 32 px hoch + 2 px Rand oben/unten,
+    // Innenabstand 11 + Rand 4 links/rechts, Symbolspalte 16 + 12, Kürzel mit 24 px Abstand,
+    // Untermenü-Pfeil 12 + 8, Trennlinie 1 px mit 4 px Luft darüber/darunter.
+    switch (menuItemOption->menuItemType) {
+    case QStyleOptionMenuItem::Normal:
+    case QStyleOptionMenuItem::DefaultItem:
+    case QStyleOptionMenuItem::SubMenu: {
+        QString text = menuItemOption->text;
+        const qsizetype tabPos = text.indexOf(QLatin1Char('\t'));
+        if (tabPos >= 0) {
+            text = text.left(tabPos);
+        }
+        QFontMetrics fm(menuItemOption->font);
+        int w = fm.horizontalAdvance(text.remove(QLatin1Char('&')));
+        const bool iconColumn = (showIconsInMenuItems() && menuItemOption->maxIconWidth > 0) || menuItemOption->menuHasCheckableItems;
+        if (iconColumn) {
+            w += 28;
+        }
+        if (tabPos >= 0) {
+            w += 24; // Abstand zum Kürzel; dessen Breite addiert Qt selbst
+        }
+        if (menuItemOption->menuItemType == QStyleOptionMenuItem::SubMenu) {
+            w += 12 + 8;
+        }
+        w += 2 * (WinUi::MenuItemMargin + 11);
+        return QSize(qMax(w, 120), WinUi::MenuItemHeight + 4);
+    }
+    case QStyleOptionMenuItem::Separator:
+        if (menuItemOption->text.isEmpty()) {
+            return QSize(1, 9);
+        }
+        return QSize(QFontMetrics(menuItemOption->font).horizontalAdvance(menuItemOption->text) + 2 * (WinUi::MenuItemMargin + 11), WinUi::MenuItemHeight);
+    default:
+        break;
+    }
+
     switch (menuItemOption->menuItemType) {
     case QStyleOptionMenuItem::Normal:
     case QStyleOptionMenuItem::DefaultItem:
@@ -3906,9 +4015,14 @@ QSize Style::itemViewItemSizeFromContents(const QStyleOption *option, const QSiz
     if (!qobject_cast<const QTableView *>(widget)) {
         const QMargins margins = _helper->itemViewItemMargins(qstyleoption_cast<const QStyleOptionViewItem *>(option));
 
-        return size
+        QSize result = size
             + QSize(margins.left() + margins.right() + Metrics::ItemView_ItemPaddingWidth * 2,
                     margins.top() + margins.bottom() + Metrics::ItemView_ItemPaddingHeight * 2);
+        // Fenstra: Baumzeilen (Navigationsbereiche) 32 px wie WinUI TreeView/NavigationView
+        if (qobject_cast<const QTreeView *>(widget) && !widget->inherits("QComboBoxListView")) {
+            result.setHeight(qMax(result.height(), 32));
+        }
+        return result;
     }
     return expandSize(size,
                       Metrics::ItemView_ItemMarginLeft + Metrics::ItemView_ItemMarginRight,
@@ -4073,11 +4187,9 @@ bool Style::drawFrameLineEditPrimitive(const QStyleOption *option, QPainter *pai
         const AnimationMode mode(_animations->inputWidgetEngine().frameAnimationMode(widget));
         const qreal opacity(_animations->inputWidgetEngine().frameOpacity(widget));
 
-        // render
-        const auto &background = palette.color(QPalette::Base);
-        const auto outline(hasHighlightNeutral(widget, option, mouseOver, hasFocus) ? _helper->neutralText(palette).lighter(mouseOver || hasFocus ? 150 : 100)
-                                                                                    : _helper->frameOutlineColor(palette, mouseOver, hasFocus, opacity, mode));
-        _helper->renderFrame(painter, rect, background, outline);
+        // Fenstra: WinUI-Eingabefeld (Unterkante 2 px Akzent bei Fokus)
+        const qreal hover = mode == AnimationHover ? opacity : (mouseOver ? 1.0 : 0.0);
+        _helper->renderTextBoxFrame(painter, rect, palette, enabled, hover, hasFocus);
     }
 
     return true;
@@ -4204,19 +4316,13 @@ bool Style::drawFrameGroupBoxPrimitive(const QStyleOption *option, QPainter *pai
         return true;
     }
 
-    // normal frame
+    // Fenstra: Gruppenrahmen wie Windows: nur 1-px-Linie, Radius 4, keine Fläche
     const auto &palette(option->palette);
-    const auto background(_helper->frameBackgroundColor(palette));
-    const auto outline(_helper->frameOutlineColor(palette));
-
-    /*
-     * need to reset painter's clip region in order to paint behind textbox label
-     * (was taken out in QCommonStyle)
-     */
-
-    painter->setClipRegion(option->rect);
-    _helper->renderFrame(painter, option->rect, background, outline);
-
+    const QColor outline = WinUi::over(WinUi::isDark(palette) ? WinUi::alpha(0xFFFFFF, 0x24) : WinUi::alpha(0x000000, 0x1F), palette.color(QPalette::Window));
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(QPen(outline, 1));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRoundedRect(QRectF(option->rect).adjusted(0.5, 0.5, -0.5, -0.5), WinUi::ControlRadius, WinUi::ControlRadius);
     return true;
 }
 
@@ -4232,6 +4338,21 @@ bool Style::drawFrameTabWidgetPrimitive(const QStyleOption *option, QPainter *pa
     // do nothing if tabbar is hidden
     const bool isQtQuickControl(this->isQtQuickControl(option, widget));
     if (tabOption->tabBarSize.isEmpty() && !isQtQuickControl) {
+        return true;
+    }
+
+    // Fenstra: Registerinhalt als Karte (Radius 8, Rahmen CardStroke, CardBackground)
+    {
+        const auto &palette = option->palette;
+        const QRectF r(option->rect);
+        const QColor bg = WinUi::over(WinUi::isDark(palette) ? WinUi::alpha(0xFFFFFF, 0x0D) : WinUi::alpha(0xFFFFFF, 0xB3), palette.color(QPalette::Window));
+        const QColor stroke = WinUi::over(WinUi::cardStroke(palette), bg);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(QPen(stroke, 1));
+        painter->setBrush(bg);
+        painter->drawRoundedRect(r.adjusted(0.5, 0.5, -0.5, -0.5), WinUi::OverlayRadius, WinUi::OverlayRadius);
+        painter->restore();
         return true;
     }
 
@@ -4331,6 +4452,11 @@ bool Style::drawFrameTabBarBasePrimitive(const QStyleOption *option, QPainter *p
     // cast option and check
     const auto tabOption(qstyleoption_cast<const QStyleOptionTabBarBase *>(option));
     if (!tabOption) {
+        return true;
+    }
+
+    // Fenstra: keine Grundlinie unter Reitern (WinUI)
+    if (tabOption) {
         return true;
     }
 
@@ -4705,8 +4831,9 @@ bool Style::drawPanelMenuPrimitive(const QStyleOption *option, QPainter *painter
     const auto &palette(option->palette);
     const bool hasAlpha(_helper->hasAlphaChannel(widget));
     const auto seamlessEdges = _helper->menuSeamlessEdges(widget);
-    auto background(_helper->frameBackgroundColor(palette));
-    auto outline(_helper->frameOutlineColor(palette));
+    // Fenstra: Acrylic-Ersatzfarbe und Flyout-Rahmen (1.8, 2.11)
+    auto background(WinUi::flyoutBackground(palette));
+    auto outline(WinUi::over(WinUi::surfaceStrokeFlyout(palette), background));
 
     painter->save();
 
@@ -4734,11 +4861,12 @@ bool Style::drawPanelTipLabelPrimitive(const QStyleOption *option, QPainter *pai
     }
 
     const auto &palette(option->palette);
-    const auto &background = palette.color(QPalette::ToolTipBase);
-    const auto outline(KColorUtils::mix(palette.color(QPalette::ToolTipBase), palette.color(QPalette::ToolTipText), _helper->frameIntensityBias()));
+    // Fenstra: Tooltip wie WinUI (2.12): Radius 4 (u), Rahmen 1 px
+    const auto background = WinUi::tooltipBackground(palette);
+    const auto outline(WinUi::over(WinUi::surfaceStrokeFlyout(palette), background));
     const bool hasAlpha(_helper->hasAlphaChannel(widget));
 
-    _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha);
+    _helper->renderMenuFrame(painter, option->rect, background, outline, hasAlpha, {}, WinUi::ControlRadius);
     return true;
 }
 
@@ -4859,6 +4987,65 @@ bool Style::drawPanelItemViewItemPrimitive(const QStyleOption *option, QPainter 
         return true;
     }
 
+    // Fenstra: WinUI-Listeneintrag (2.10): Hover/Auswahl als dezente Fläche, Radius 4,
+    // bei Auswahl Akzentbalken 3×16 links. Zeilenweise Auswahl in Bäumen/Tabellen wird
+    // über die Zellen hinweg als eine Fläche gezeichnet (Rundung nur außen).
+    if (!hasCustomBackground) {
+        const bool isTable = qobject_cast<const QTableView *>(viewItemOption->widget);
+        Corners corners = AllCorners;
+        bool pill = true;
+        switch (viewItemPosition) {
+        case QStyleOptionViewItem::Beginning:
+            corners = viewItemOption->direction == Qt::RightToLeft ? (CornerTopRight | CornerBottomRight) : (CornerTopLeft | CornerBottomLeft);
+            break;
+        case QStyleOptionViewItem::Middle:
+            corners = {};
+            pill = false;
+            break;
+        case QStyleOptionViewItem::End:
+            corners = viewItemOption->direction == Qt::RightToLeft ? (CornerTopLeft | CornerBottomLeft) : (CornerTopRight | CornerBottomRight);
+            pill = false;
+            break;
+        default:
+            break;
+        }
+        if (isTable) {
+            corners = {};
+            pill = false;
+        }
+        // Zellen ohne Abstand aneinander (Rand nur außen)
+        QRectF r(rect);
+        if (viewItemPosition == QStyleOptionViewItem::Middle || viewItemPosition == QStyleOptionViewItem::End) {
+            r.setLeft(option->rect.left());
+        }
+        if (viewItemPosition == QStyleOptionViewItem::Middle || viewItemPosition == QStyleOptionViewItem::Beginning) {
+            r.setRight(option->rect.right() + 1);
+        }
+        QColor fill = WinUi::alpha(0x000000, 0);
+        if (selected) {
+            // WinUI ListViewItem: Selected = SubtleFillSecondary, Selected+Hover etwas kräftiger
+            fill = WinUi::isDark(palette) ? WinUi::alpha(0xFFFFFF, mouseOver ? 0x15 : 0x0F) : WinUi::alpha(0x000000, mouseOver ? 0x0F : 0x09);
+        } else if (mouseOver) {
+            fill = WinUi::subtleHover(palette);
+        }
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(fill);
+        painter->drawPath(_helper->roundedPath(r, corners, WinUi::ControlRadius));
+        if (selected && pill && enabled) {
+            const qreal h = std::min<qreal>(WinUi::SelectionPillHeight, r.height() - 8);
+            const QRectF p(viewItemOption->direction == Qt::RightToLeft ? r.right() - WinUi::SelectionPillWidth : r.left(),
+                           r.center().y() - h / 2,
+                           WinUi::SelectionPillWidth,
+                           h);
+            painter->setBrush(WinUi::accentFill(palette));
+            painter->drawRoundedRect(p, 1.5, 1.5);
+        }
+        painter->restore();
+        return true;
+    }
+
     // render selection
     // define color
     QColor color;
@@ -4929,12 +5116,10 @@ bool Style::drawIndicatorCheckBoxPrimitive(const QStyleOption *option, QPainter 
     }
     const qreal animation(_animations->widgetStateEngine().opacity(styleObject, AnimationPressed));
 
-    const qreal opacity(_animations->widgetStateEngine().opacity(styleObject, AnimationHover));
-
-    // render
-    _helper->renderCheckBoxBackground(painter, rect, palette, checkBoxState, hasHighlightNeutral(widget, option, mouseOver), sunken, animation);
-    _helper
-        ->renderCheckBox(painter, rect, palette, mouseOver, checkBoxState, target, hasHighlightNeutral(widget, option, mouseOver), sunken, animation, opacity);
+    // Fenstra: WinUI-Kontrollkästchen
+    const int winuiState = target == CheckPartial ? 2 : (target == CheckOn ? 1 : 0);
+    const qreal progress = (checkBoxState == CheckAnimated && target == CheckOn) ? animation : -1;
+    _helper->renderWinUiCheckBox(painter, rect, palette, enabled, mouseOver, sunken && enabled, winuiState, progress);
     return true;
 }
 
@@ -4965,20 +5150,10 @@ bool Style::drawIndicatorRadioButtonPrimitive(const QStyleOption *option, QPaint
     }
     const qreal animation(_animations->widgetStateEngine().opacity(styleObject, AnimationPressed));
 
-    // colors
-    const qreal opacity(_animations->widgetStateEngine().opacity(styleObject, AnimationHover));
-
-    // render
-    _helper->renderRadioButtonBackground(painter, rect, palette, radioButtonState, hasHighlightNeutral(styleObject, option, mouseOver), sunken, animation);
-    _helper->renderRadioButton(painter,
-                               rect,
-                               palette,
-                               mouseOver,
-                               radioButtonState,
-                               hasHighlightNeutral(styleObject, option, mouseOver),
-                               sunken,
-                               animation,
-                               opacity);
+    // Fenstra: WinUI-Optionsfeld
+    const bool checked = state & State_On;
+    const qreal progress = radioButtonState == RadioAnimated ? animation : -1;
+    _helper->renderWinUiRadio(painter, rect, palette, enabled, mouseOver, sunken && enabled, checked, progress);
 
     return true;
 }
@@ -5440,7 +5615,17 @@ bool Style::drawPushButtonLabelControl(const QStyleOption *option, QPainter *pai
 
     // render text
     if (hasText && textRect.isValid()) {
-        drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, textRole);
+        // Fenstra: Text auf Akzentschaltflächen (Standardknopf, eingerastete Knöpfe) wie WinUI
+        const bool accent = enabled && !flat && ((buttonOption->features & QStyleOptionButton::DefaultButton) || (state & State_On));
+        if (accent) {
+            QPalette accentPalette(palette);
+            const QColor c = (state & State_Sunken) ? WinUi::over(WinUi::textOnAccentSecondary(palette), WinUi::accentFill(palette)) : WinUi::textOnAccent(palette);
+            accentPalette.setColor(QPalette::Active, textRole, c);
+            accentPalette.setColor(QPalette::Inactive, textRole, c);
+            drawItemText(painter, textRect, textFlags, accentPalette, enabled, buttonOption->text, textRole);
+        } else {
+            drawItemText(painter, textRect, textFlags, palette, enabled, buttonOption->text, textRole);
+        }
     }
 
     return true;
@@ -5857,6 +6042,22 @@ bool Style::drawMenuBarItemControl(const QStyleOption *option, QPainter *painter
     const bool sunken(enabled && (state & State_Sunken));
     const bool useStrongFocus(StyleConfigData::menuItemDrawStrongFocus());
 
+    // Fenstra: Menüleisten-Eintrag wie WinUI MenuBarItem: graue Fläche Radius 4, Text normal
+    if (menuItemOption->icon.isNull()) {
+        painter->save();
+        painter->setRenderHints(QPainter::Antialiasing);
+        if (selected || sunken) {
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(sunken ? WinUi::subtlePressed(palette) : WinUi::subtleHover(palette));
+            painter->drawRoundedRect(QRectF(rect).adjusted(2, 3, -2, -3), WinUi::ControlRadius, WinUi::ControlRadius);
+        }
+        const int textFlags(Qt::AlignCenter | _mnemonics->textFlags());
+        painter->setPen(enabled ? WinUi::textPrimary(palette) : WinUi::textDisabled(palette));
+        painter->drawText(rect, textFlags, menuItemOption->text);
+        painter->restore();
+        return true;
+    }
+
     painter->save();
     painter->setRenderHints(QPainter::Antialiasing);
 
@@ -5973,7 +6174,144 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
     const bool reverseLayout = option->direction == Qt::RightToLeft;
     const bool useStrongFocus = StyleConfigData::menuItemDrawStrongFocus();
 
-    // deal with separators
+    // Fenstra: WinUI-Menüeintrag (docs/windows11-referenz.md 2.11)
+    {
+        const bool isQuick = isQtQuickControl(option, widget);
+        Q_UNUSED(isQuick)
+        if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
+            if (!menuItemOption->text.isEmpty()) {
+                // Abschnittsüberschrift: kleine graue Schrift
+                QFont font = menuItemOption->font;
+                font.setWeight(QFont::DemiBold);
+                painter->setFont(font);
+                painter->setPen(WinUi::textSecondary(palette));
+                const QRect textRect = rect.adjusted(WinUi::MenuItemMargin + 11, 2, -(WinUi::MenuItemMargin + 11), 0);
+                painter->drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextHideMnemonic, menuItemOption->text);
+                return true;
+            }
+            // Trennlinie 1 px über die volle Menübreite
+            painter->setRenderHint(QPainter::Antialiasing, false);
+            painter->fillRect(QRect(rect.left(), rect.center().y(), rect.width(), 1), WinUi::divider(palette));
+            return true;
+        }
+
+        // Hover-/Druckfläche: 4 px Rand links/rechts, 2 px oben/unten, Radius 4
+        const QRectF itemRect = QRectF(rect).adjusted(WinUi::MenuItemMargin, 2, -WinUi::MenuItemMargin, -2);
+
+        // Kombinationsfeld-Liste (WinUI ComboBoxItem): gewählter Eintrag mit grauer Fläche und
+        // Akzentbalken 3×16 links statt Häkchen, Text ab 11 px
+        // (QComboMenuDelegate zeichnet mit dem QComboBox als widget, ältere Wege mit der Liste)
+        if (widget && (qobject_cast<const QComboBox *>(widget) || widget->inherits("QComboBoxListView"))) {
+            const bool current = menuItemOption->checked;
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->setPen(Qt::NoPen);
+            if (selected || sunken || current) {
+                QColor f = sunken ? WinUi::subtlePressed(palette) : WinUi::subtleHover(palette);
+                if (current && selected && !sunken) {
+                    f = WinUi::isDark(palette) ? WinUi::alpha(0xFFFFFF, 0x15) : WinUi::alpha(0x000000, 0x0F);
+                }
+                painter->setBrush(f);
+                painter->drawRoundedRect(itemRect, 3, 3);
+            }
+            if (current) {
+                const QRectF pill(itemRect.left(), itemRect.center().y() - 8, 3, 16);
+                painter->setBrush(WinUi::accentFill(palette));
+                painter->drawRoundedRect(pill, 1.5, 1.5);
+            }
+            painter->restore();
+            QRect textRect = itemRect.toRect().adjusted(11, 0, -11, 0);
+            if (showIconsInMenuItems() && !menuItemOption->icon.isNull()) {
+                const QRect iconRect(textRect.left(), textRect.center().y() - 7, 16, 16);
+                const qreal dpr = painter->device() ? painter->device()->devicePixelRatioF() : qApp->devicePixelRatio();
+                drawItemPixmap(painter, visualRect(option, iconRect), Qt::AlignCenter,
+                               _helper->coloredIcon(menuItemOption->icon, palette, iconRect.size(), dpr, enabled ? QIcon::Normal : QIcon::Disabled, QIcon::Off));
+                textRect.setLeft(iconRect.right() + 12);
+            }
+            painter->setFont(menuItemOption->font);
+            painter->setPen(enabled ? WinUi::textPrimary(palette) : WinUi::textDisabled(palette));
+            painter->drawText(visualRect(option, textRect), Qt::AlignVCenter | Qt::AlignLeft | Qt::TextSingleLine, menuItemOption->text);
+            return true;
+        }
+
+        if (selected || sunken) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(sunken ? WinUi::subtlePressed(palette) : WinUi::subtleHover(palette));
+            painter->drawRoundedRect(itemRect, WinUi::ControlRadius, WinUi::ControlRadius);
+            painter->restore();
+        }
+
+        const QColor textColor = enabled ? WinUi::textPrimary(palette) : WinUi::textDisabled(palette);
+        const int padL = 11;
+        const int padR = 11;
+        QRect contents = itemRect.toRect().adjusted(padL, 0, -padR, 0);
+
+        // Symbolspalte (16 px + 12 Abstand), wenn das Menü Symbole oder Häkchen hat
+        const bool showIcon = showIconsInMenuItems();
+        const bool iconColumn = (showIcon && menuItemOption->maxIconWidth > 0) || menuItemOption->menuHasCheckableItems;
+        const QRect iconRect(contents.left(), contents.center().y() - 7, 16, 16);
+        if (iconColumn) {
+            contents.setLeft(contents.left() + 28);
+        }
+        const QRect visIcon = visualRect(option, iconRect);
+
+        if (menuItemOption->checkType != QStyleOptionMenuItem::NotCheckable && menuItemOption->checked) {
+            painter->save();
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            if (menuItemOption->checkType == QStyleOptionMenuItem::Exclusive) {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(textColor);
+                painter->drawEllipse(QRectF(visIcon).center(), 3, 3);
+            } else {
+                QPen pen(textColor, 1.25);
+                pen.setJoinStyle(Qt::MiterJoin);
+                painter->setPen(pen);
+                const QRectF b(visIcon);
+                QPainterPath path;
+                path.moveTo(b.left() + 2.5, b.top() + 8.4);
+                path.lineTo(b.left() + 6.0, b.top() + 11.8);
+                path.lineTo(b.left() + 13.5, b.top() + 4.3);
+                painter->drawPath(path);
+            }
+            painter->restore();
+        } else if (showIcon && !menuItemOption->icon.isNull()) {
+            const qreal dpr = painter->device() ? painter->device()->devicePixelRatioF() : qApp->devicePixelRatio();
+            const QPixmap pixmap = _helper->coloredIcon(menuItemOption->icon,
+                                                        menuItemOption->palette,
+                                                        visIcon.size(),
+                                                        dpr,
+                                                        enabled ? QIcon::Normal : QIcon::Disabled,
+                                                        QIcon::Off);
+            drawItemPixmap(painter, visIcon, Qt::AlignCenter, pixmap);
+        }
+
+        // Untermenü-Pfeil rechts (Chevron 12 px)
+        if (menuItemOption->menuItemType == QStyleOptionMenuItem::SubMenu) {
+            const QRect arrowRect = visualRect(option, QRect(contents.right() - 12, contents.center().y() - 6, 12, 12));
+            _helper->renderArrow(painter, arrowRect, textColor, reverseLayout ? ArrowLeft : ArrowRight);
+            contents.setRight(contents.right() - 12 - 8);
+        }
+
+        // Text und Tastenkürzel
+        QString text = menuItemOption->text;
+        painter->setFont(menuItemOption->font);
+        const int tabPosition = text.indexOf(QLatin1Char('\t'));
+        if (tabPosition >= 0) {
+            const QString accelerator = text.mid(tabPosition + 1);
+            text = text.left(tabPosition);
+            painter->setPen(enabled ? WinUi::textSecondary(palette) : WinUi::textDisabled(palette));
+            painter->drawText(visualRect(option, contents), Qt::AlignVCenter | (reverseLayout ? Qt::AlignLeft : Qt::AlignRight) | Qt::TextSingleLine, accelerator);
+        }
+        painter->setPen(textColor);
+        painter->drawText(visualRect(option, contents),
+                          Qt::AlignVCenter | (reverseLayout ? Qt::AlignRight : Qt::AlignLeft) | Qt::TextSingleLine | _mnemonics->textFlags(),
+                          text);
+        return true;
+    }
+
+    // deal with separators (Breeze-Fassung, nicht mehr erreicht)
     if (menuItemOption->menuItemType == QStyleOptionMenuItem::Separator) {
         auto contentsRect = rect.adjusted(Metrics::MenuItem_MarginWidth, 0,
                                          -Metrics::MenuItem_MarginWidth, 0);
@@ -6256,6 +6594,38 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
 
     // check if anything is to be drawn
     const bool busy((progressBarOption->minimum == 0 && progressBarOption->maximum == 0));
+    // Fenstra: WinUI-Fortschrittsbalken (2.7): 3 px, Radius 1,5, Akzent; unbestimmt ein
+    // laufendes Segment (40 % der Breite)
+    {
+        const QColor accent = (option->state & State_Enabled) ? WinUi::accentFill(palette) : WinUi::accentFillDisabled(palette);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(accent);
+        QRectF r(rect);
+        if (busy) {
+            const int progress(_animations->busyIndicatorEngine().value());
+            const qreal phase = (progress % 60) / 60.0; // ca. 2–3 s pro Durchlauf
+            painter->setClipRect(rect);
+            if (horizontal) {
+                const qreal len = r.width() * 0.4;
+                qreal x = r.left() - len + (r.width() + len) * phase;
+                if (reverse) {
+                    x = r.right() - (x - r.left()) - len;
+                }
+                painter->drawRoundedRect(QRectF(x, r.top(), len, r.height()), 1.5, 1.5);
+            } else {
+                const qreal len = r.height() * 0.4;
+                const qreal y = r.bottom() - (r.height() + len) * phase;
+                painter->drawRoundedRect(QRectF(r.left(), y, r.width(), len), 1.5, 1.5);
+            }
+        } else if (r.width() > 0 && r.height() > 0) {
+            painter->drawRoundedRect(r, 1.5, 1.5);
+        }
+        painter->restore();
+        return true;
+    }
+
     if (busy) {
         const int progress(_animations->busyIndicatorEngine().value());
 
@@ -6298,9 +6668,16 @@ bool Style::drawProgressBarContentsControl(const QStyleOption *option, QPainter 
 //___________________________________________________________________________________
 bool Style::drawProgressBarGrooveControl(const QStyleOption *option, QPainter *painter, const QWidget *) const
 {
+    // Fenstra: Spur 1 px (ControlStrongStroke), mittig im 3-px-Balken
     const auto &palette(option->palette);
-    const auto color(_helper->alphaColor(palette.color(QPalette::WindowText), 0.2));
-    _helper->renderProgressBarGroove(painter, option->rect, color, palette.color(QPalette::Window));
+    const QRectF r(option->rect);
+    const QColor color = WinUi::strongStroke(palette);
+    painter->setRenderHint(QPainter::Antialiasing, false);
+    if (r.width() >= r.height()) {
+        painter->fillRect(QRectF(r.left(), std::floor(r.center().y()), r.width(), 1), color);
+    } else {
+        painter->fillRect(QRectF(std::floor(r.center().x()), r.top(), 1, r.height()), color);
+    }
     return true;
 }
 
@@ -6823,6 +7200,30 @@ bool Style::drawHeaderSectionControl(const QStyleOption *option, QPainter *paint
     const bool animated(enabled && _animations->headerViewEngine().isAnimated(widget, rect.topLeft()));
     const qreal opacity(_animations->headerViewEngine().opacity(widget, rect.topLeft()));
 
+    // Fenstra: Spaltenkopf wie im Explorer: keine Fläche, Hover grau, senkrechter Trenner
+    // 1 px (oben/unten eingerückt), keine Grundlinie
+    if (horizontal && !isCorner) {
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        const qreal hover = animated ? opacity : (mouseOver ? 1.0 : 0.0);
+        if (sunken || hover > 0) {
+            QColor c = sunken ? WinUi::subtlePressed(palette) : WinUi::subtleHover(palette);
+            if (!sunken) {
+                c.setAlphaF(c.alphaF() * hover);
+            }
+            painter->setBrush(c);
+            painter->drawRoundedRect(QRectF(rect).adjusted(1, 2, -1, -2), WinUi::ControlRadius, WinUi::ControlRadius);
+        }
+        if (headerOption->position != QStyleOptionHeader::End && headerOption->position != QStyleOptionHeader::OnlyOneSection) {
+            const int x = reverseLayout ? rect.left() : rect.right();
+            painter->setRenderHint(QPainter::Antialiasing, false);
+            painter->fillRect(QRect(x, rect.top() + 6, 1, rect.height() - 12), WinUi::divider(palette));
+        }
+        painter->restore();
+        return true;
+    }
+
     // fill
     const auto &normal = palette.color(QPalette::Button);
     const auto focus(KColorUtils::mix(normal, _helper->focusColor(palette), 0.2));
@@ -6901,6 +7302,11 @@ bool Style::drawHeaderEmptyAreaControl(const QStyleOption *option, QPainter *pai
 
     const bool horizontal(option->state & QStyle::State_Horizontal);
     const bool reverseLayout(option->direction == Qt::RightToLeft);
+
+    // Fenstra: leerer Kopfbereich ohne Fläche/Linien
+    if (horizontal) {
+        return true;
+    }
 
     // fill
     painter->setRenderHint(QPainter::Antialiasing, false);
@@ -7070,10 +7476,19 @@ bool Style::drawTabBarTabLabelControl(const QStyleOption *option, QPainter *pain
             painter->drawPixmap(iconRect.x(), iconRect.y(), tabIcon);
         }
 
+        // Fenstra: nicht gewählte Reiter in Sekundärfarbe (WinUI SelectorBar)
+        QPalette tabPalette = tab->palette;
+        if (!(tab->state & State_Selected)) {
+            const QPalette::ColorRole role = widget ? widget->foregroundRole() : QPalette::WindowText;
+            const QColor secondary = WinUi::over(WinUi::textSecondary(tab->palette), tab->palette.color(QPalette::Window));
+            for (auto group : {QPalette::Active, QPalette::Inactive}) {
+                tabPalette.setColor(group, role, secondary);
+            }
+        }
         proxy()->drawItemText(painter,
                               tr,
                               alignment,
-                              tab->palette,
+                              tabPalette,
                               tab->state & State_Enabled,
                               tab->text,
                               widget ? widget->foregroundRole() : QPalette::WindowText);
@@ -7190,6 +7605,39 @@ bool Style::drawTabBarTabShapeControl(const QStyleOption *option, QPainter *pain
     const bool south = tabOption->shape == QTabBar::RoundedSouth || tabOption->shape == QTabBar::TriangularSouth;
     const bool west = tabOption->shape == QTabBar::RoundedWest || tabOption->shape == QTabBar::TriangularWest;
     const bool east = tabOption->shape == QTabBar::RoundedEast || tabOption->shape == QTabBar::TriangularEast;
+
+    // Fenstra: Reiter wie WinUI SelectorBar/Pivot: transparent, Hover graue Fläche (Radius 4),
+    // gewählter Reiter mit Akzentstrich 16×3 px an der Innenkante
+    {
+        Q_UNUSED(visualFocus)
+        const QRectF r(option->rect);
+        const auto &palette = option->palette;
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        if ((hovered || down) && enabled && !selected) {
+            painter->setBrush(down ? WinUi::subtlePressed(palette) : WinUi::subtleHover(palette));
+            painter->drawRoundedRect(r.adjusted(2, 3, -2, -3), WinUi::ControlRadius, WinUi::ControlRadius);
+        }
+        if (selected) {
+            painter->setBrush(enabled ? WinUi::accentFill(palette) : WinUi::accentFillDisabled(palette));
+            const qreal len = 16;
+            const qreal th = 3;
+            QRectF pill;
+            if (north) {
+                pill = QRectF(r.center().x() - len / 2, r.bottom() - th - 1, len, th);
+            } else if (south) {
+                pill = QRectF(r.center().x() - len / 2, r.top() + 1, len, th);
+            } else if (west) {
+                pill = QRectF(r.right() - th - 1, r.center().y() - len / 2, th, len);
+            } else if (east) {
+                pill = QRectF(r.left() + 1, r.center().y() - len / 2, th, len);
+            }
+            painter->drawRoundedRect(pill, 1.5, 1.5);
+        }
+        painter->restore();
+        return true;
+    }
 
     // check if tab is being dragged
     const bool isDragged(widget && selected && painter->device() != widget);
@@ -8063,6 +8511,57 @@ bool Style::drawSliderComplexControl(const QStyleOptionComplex *option, QPainter
         }
     }
 
+    // Fenstra: WinUI-Schieberegler (2.6)
+    {
+        const bool upsideDown(sliderOption->upsideDown);
+        const bool handleActive(sliderOption->activeSubControls & SC_SliderHandle);
+        const bool pressed = handleActive && (state & State_Sunken);
+        const bool hoverHandle = handleActive && mouseOver;
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(Qt::NoPen);
+        if (sliderOption->subControls & SC_SliderGroove) {
+            const QRectF g(grooveRect);
+            const QPointF hc = QRectF(handleRect).center();
+            const QColor rest = enabled ? WinUi::controlStrongFill(palette) : WinUi::controlStrongFillDisabled(palette);
+            const QColor fill = enabled ? WinUi::accentFill(palette) : WinUi::accentFillDisabled(palette);
+            painter->setBrush(rest);
+            painter->drawRoundedRect(g, 2, 2);
+            QRectF valueRect(g);
+            if (horizontal) {
+                const bool fromRight = (option->direction == Qt::RightToLeft) != upsideDown;
+                if (fromRight) {
+                    valueRect.setLeft(hc.x());
+                } else {
+                    valueRect.setRight(hc.x());
+                }
+            } else {
+                if (upsideDown) {
+                    valueRect.setTop(hc.y());
+                } else {
+                    valueRect.setBottom(hc.y());
+                }
+            }
+            painter->setBrush(fill);
+            painter->drawRoundedRect(valueRect, 2, 2);
+        }
+        if (sliderOption->subControls & SC_SliderHandle) {
+            const QRectF h = QRectF(handleRect);
+            const qreal d = WinUi::SliderThumbSize;
+            const QRectF outer(h.center().x() - d / 2, h.center().y() - d / 2, d, d);
+            // Rand wie Schaltfläche (Elevation), Fläche ControlSolidFill
+            painter->setBrush(WinUi::strokeSecondary(palette));
+            painter->drawEllipse(outer);
+            painter->setBrush(WinUi::controlSolidFill(palette));
+            painter->drawEllipse(outer.adjusted(1, 1, -1, -1));
+            const qreal inner = pressed ? 10 : (hoverHandle ? 14 : 12);
+            painter->setBrush(enabled ? WinUi::accentFill(palette) : WinUi::accentFillDisabled(palette));
+            painter->drawEllipse(outer.center(), inner / 2, inner / 2);
+        }
+        painter->restore();
+        return true;
+    }
+
     // groove
     if (sliderOption->subControls & SC_SliderGroove) {
         // base color
@@ -8217,19 +8716,142 @@ bool Style::drawScrollBarComplexControl(const QStyleOptionComplex *option, QPain
         return true;
     }
 
-    QRect separatorRect;
-    if (option->state & State_Horizontal) {
-        separatorRect = QRect(0, 0, option->rect.width(), PenWidth::Frame);
-    } else {
-        separatorRect = alignedRect(option->direction, Qt::AlignLeft, QSize(PenWidth::Frame, option->rect.height()), option->rect);
+    // Fenstra: Bildlaufleiste wie Windows 11 (2.8): liegt über dem Inhalt; in Ruhe eine
+    // schmale Linie (nur sichtbar, solange die Maus im Bereich ist oder gerade gescrollt wird),
+    // beim Hover 12 px breit mit Spur, Pfeilen und 6 px Daumen (Ausklappen 167 ms).
+    const auto sliderOption = qstyleoption_cast<const QStyleOptionSlider *>(option);
+    if (!sliderOption) {
+        return true;
+    }
+    const auto &palette = option->palette;
+    const State &state = option->state;
+    const bool horizontal = state & State_Horizontal;
+    const bool enabled = state & State_Enabled;
+    const bool rtl = option->direction == Qt::RightToLeft;
+
+    // Ausklapp-Fortschritt aus der Hover-Animation der ganzen Leiste
+    qreal expand = (state & State_MouseOver) ? 1.0 : 0.0;
+    if (widget) {
+        const bool hovered = _animations->scrollBarEngine().isHovered(widget, SC_ScrollBarGroove);
+        const qreal op = _animations->scrollBarEngine().opacity(widget, SC_ScrollBarGroove);
+        expand = op == AnimationData::OpacityInvalid ? (hovered ? 1.0 : 0.0) : op;
+    } else if (option->styleObject) {
+        expand = option->styleObject->property("hover").toBool() ? 1.0 : 0.0;
+    }
+    if ((sliderOption->activeSubControls & SC_ScrollBarSlider) && (state & State_Sunken)) {
+        expand = 1.0;
+    }
+    const bool transient = styleHint(SH_ScrollBar_Transient, option, widget);
+    const bool shown = (state & State_On) || (widget && widget->property("_fenstra_shown").toBool()) || !transient;
+    if (!shown && expand <= 0) {
+        return true;
+    }
+    if (sliderOption->minimum == sliderOption->maximum) {
+        return true;
     }
 
-    _helper->renderScrollBarBorder(painter, separatorRect, _helper->alphaColor(option->palette.color(QPalette::Text), _helper->frameIntensityBias()));
+    const QRectF r(option->rect);
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);
+    painter->setPen(Qt::NoPen);
 
-    // call base class primitive
-    ParentStyleClass::drawComplexControl(CC_ScrollBar, option, painter, widget);
+    // Spur und Pfeile (nur ausgeklappt)
+    if (expand > 0) {
+        painter->setOpacity(expand);
+        const QColor track = WinUi::flyoutBackground(palette);
+        painter->setBrush(track);
+        painter->drawRoundedRect(r.adjusted(1, 1, -1, -1), 5, 5);
 
+        const QColor arrow = enabled ? WinUi::controlStrongFill(palette) : WinUi::controlStrongFillDisabled(palette);
+        auto triangle = [&](const QRectF &box, ArrowOrientation o) {
+            const QPointF c = box.center();
+            const qreal a = 3.0; // halbe Breite (Glyphe 8 px, Dreieck ca. 6×4)
+            QPolygonF poly;
+            switch (o) {
+            case ArrowUp:
+                poly << QPointF(c.x() - a, c.y() + 1.5) << QPointF(c.x() + a, c.y() + 1.5) << QPointF(c.x(), c.y() - 2.0);
+                break;
+            case ArrowDown:
+                poly << QPointF(c.x() - a, c.y() - 1.5) << QPointF(c.x() + a, c.y() - 1.5) << QPointF(c.x(), c.y() + 2.0);
+                break;
+            case ArrowLeft:
+                poly << QPointF(c.x() + 1.5, c.y() - a) << QPointF(c.x() + 1.5, c.y() + a) << QPointF(c.x() - 2.0, c.y());
+                break;
+            default:
+                poly << QPointF(c.x() - 1.5, c.y() - a) << QPointF(c.x() - 1.5, c.y() + a) << QPointF(c.x() + 2.0, c.y());
+                break;
+            }
+            painter->setBrush(arrow);
+            painter->drawPolygon(poly);
+        };
+        const QRectF sub = subControlRect(CC_ScrollBar, option, SC_ScrollBarSubLine, widget);
+        const QRectF add = subControlRect(CC_ScrollBar, option, SC_ScrollBarAddLine, widget);
+        if (!sub.isEmpty()) {
+            triangle(sub, horizontal ? (rtl ? ArrowRight : ArrowLeft) : ArrowUp);
+        }
+        if (!add.isEmpty()) {
+            triangle(add, horizontal ? (rtl ? ArrowLeft : ArrowRight) : ArrowDown);
+        }
+        painter->setOpacity(1.0);
+    }
+
+    // Daumen: 2 px nahe der Außenkante (eingeklappt) -> 6 px mittig (ausgeklappt)
+    const QRectF slider = subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget);
+    const qreal thin = WinUi::ScrollBarThinWidth;
+    const qreal thick = WinUi::ScrollBarThumbWidth;
+    const qreal t = thin + (thick - thin) * expand;
+    const qreal extent = horizontal ? r.height() : r.width();
+    const qreal centerThin = extent - 3.0; // Linie 2 px vor der Außenkante
+    const qreal centerThick = extent / 2.0;
+    const qreal center = centerThin + (centerThick - centerThin) * expand;
+    QRectF thumb;
+    if (horizontal) {
+        thumb = QRectF(slider.left() + 1, r.top() + center - t / 2, slider.width() - 2, t);
+    } else {
+        const qreal x = rtl ? r.left() + (extent - center) - t / 2 : r.left() + center - t / 2;
+        thumb = QRectF(x, slider.top() + 1, t, slider.height() - 2);
+    }
+    painter->setBrush(enabled ? WinUi::controlStrongFill(palette) : WinUi::controlStrongFillDisabled(palette));
+    painter->drawRoundedRect(thumb, t / 2, t / 2);
+    painter->restore();
     return true;
+}
+
+//___________________________________________________________________________________
+// Fenstra: Bildlaufleisten eines Bereichs ein-/ausblenden (Maus im Bereich)
+static void fenstraShowScrollBars(QAbstractScrollArea *area, bool show)
+{
+    if (!area) {
+        return;
+    }
+    const QList<QScrollBar *> bars{area->verticalScrollBar(), area->horizontalScrollBar()};
+    for (QScrollBar *bar : bars) {
+        if (!bar) {
+            continue;
+        }
+        if (show) {
+            if (!bar->property("_fenstra_shown").toBool()) {
+                bar->setProperty("_fenstra_shown", true);
+                bar->update();
+            }
+        } else {
+            QPointer<QScrollBar> guard(bar);
+            QPointer<QAbstractScrollArea> areaGuard(area);
+            QTimer::singleShot(1200, bar, [guard, areaGuard]() {
+                if (!guard || !areaGuard) {
+                    return;
+                }
+                if (areaGuard->viewport() && areaGuard->viewport()->underMouse()) {
+                    return;
+                }
+                if (guard->underMouse()) {
+                    return;
+                }
+                guard->setProperty("_fenstra_shown", false);
+                guard->update();
+            });
+        }
+    }
 }
 
 //______________________________________________________________
