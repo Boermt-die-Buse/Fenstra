@@ -256,6 +256,29 @@ Item {
                             pinnable: true
                             onActivated: menu.launch(searchList.model, index)
                         }
+                        // Weitertippen, Rücktaste und Escape gehen zurück ins Suchfeld.
+                        // onPressed läuft vor den Einzel-Handlern; Return/Enter und Pfeile
+                        // bleiben unbehandelt und landen dort.
+                        Keys.onPressed: event => {
+                            const c = event.text.length > 0 ? event.text.charCodeAt(0) : 0;
+                            const plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier));
+                            if (event.key === Qt.Key_Escape) {
+                                searchField.forceActiveFocus();
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Backspace) {
+                                searchField.text = searchField.text.slice(0, -1);
+                                searchField.cursorPosition = searchField.text.length;
+                                searchField.forceActiveFocus();
+                                event.accepted = true;
+                            } else if (plain && c >= 32 && c !== 127) {
+                                searchField.text += event.text;
+                                searchField.cursorPosition = searchField.text.length;
+                                searchField.forceActiveFocus();
+                                event.accepted = true;
+                            } else {
+                                event.accepted = false;
+                            }
+                        }
                         Keys.onReturnPressed: menu.launch(searchList.model, currentIndex)
                         Keys.onEnterPressed: menu.launch(searchList.model, currentIndex)
                         Keys.onUpPressed: {

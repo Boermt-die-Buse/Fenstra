@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -138,6 +138,12 @@ fi
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Mon Oct 05 2026 Fenstra-Projekt - 44.0-5
+- Startmenü: Fenstra-Vorgaben für "Angeheftet" werden ergänzt, auch wenn Plasma
+  schon eigene Favoriten mitbringt (vorher wirkungslos)
+- Startmenü: in den Suchergebnissen gehen Tippen, Rücktaste und Escape zurück
+  ins Suchfeld
+
 * Sun Oct 04 2026 Fenstra-Projekt - 44.0-4
 - Baustein 4b-2: eigenes Startmenü (Unterpaket fenstra-startmenu, Plasmoid
   org.fenstra.startmenu) statt Kickoff in der Taskleiste

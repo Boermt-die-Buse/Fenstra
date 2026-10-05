@@ -45,9 +45,15 @@ PlasmoidItem {
 
         Component.onCompleted: {
             favoritesModel.initForClient("org.fenstra.startmenu.favorites.instance-" + Plasmoid.id);
+            // Einmalig die Fenstra-Vorgaben anheften. Plasma bringt beim ersten Start schon
+            // eigene Favoriten mit (count > 0); deshalb fehlende Einträge ergänzen statt nur
+            // bei leerer Liste zu übernehmen. Bereits Angeheftetes bleibt unverändert.
             if (!Plasmoid.configuration.favoritesPortedToKAstats) {
-                if (favoritesModel.count < 1) {
-                    favoritesModel.portOldFavorites(Plasmoid.configuration.favorites);
+                const wanted = Plasmoid.configuration.favorites;
+                for (let i = 0; i < wanted.length; ++i) {
+                    if (!favoritesModel.isFavorite(wanted[i])) {
+                        favoritesModel.addFavorite(wanted[i], -1);
+                    }
                 }
                 Plasmoid.configuration.favoritesPortedToKAstats = true;
             }

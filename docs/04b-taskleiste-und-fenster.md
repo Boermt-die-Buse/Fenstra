@@ -70,9 +70,14 @@ Menüs. Das Taskleisten-Layout setzt es statt Kickoff ein.
 | Acrylic-Hintergrund | ⚠️ | Plasma-Dialog mit Unschärfe plus fast deckende Fläche (lesbar auch ohne GPU/Blur) |
 | Seiten im Angeheftet-Bereich, Ordner | ❌ vorerst nicht | Raster scrollt stattdessen |
 
-Bekannt: Die Vorgabe-Liste „Angeheftet“ aus `main.xml` greift nur, wenn KActivities noch keine
-Favoriten hat; sonst übernimmt Plasma die globalen Vorgaben (Discover, Dolphin, Konsole, KWrite,
-Systemeinstellungen, Firefox).
+Angeheftet beim ersten Start: Plasma bringt eigene Favoriten mit (Discover, Dolphin, Konsole,
+KWrite, Systemeinstellungen, Firefox als `preferred://browser`). Das Startmenü ergänzt einmalig
+die fehlenden Einträge aus `main.xml` (Gwenview, Okular, KCalc, Spectacle, Ark; Kate ist in
+Fedora KDE nicht installiert). Favoriten speichert KActivities global (`:global`), nicht pro
+Applet. (Fix 44.0-5 nach Code-Review; vorher griff die Liste nur bei leerer Favoritenliste.)
+
+Tastatur: Pfeil nach unten springt aus dem Suchfeld in die Treffer; dort gehen Tippen,
+Rücktaste und Escape zurück ins Suchfeld (Fix 44.0-5).
 
 Entwickeln ohne Paket: `kpackagetool6 -t Plasma/Applet -u <verzeichnis>`, danach
 `systemctl --user restart plasma-plasmashell` (plasmashell hält geladene QML-Dateien im
