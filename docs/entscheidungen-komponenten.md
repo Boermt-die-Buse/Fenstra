@@ -63,7 +63,7 @@ Meilenstein ändern; dann hier mit Datum nachtragen.
 | Medienwiedergabe | **Eigenbau** (QML, QtMultimedia oder libmpv – in M11 entscheiden) | |
 | Store | **Eigenbau** (Python/QML, Flatpak/dnf) | |
 | .exe per Doppelklick | **Wine aus Fedora + MIME-Handler** | |
-| Mauszeiger, Symbole, Klänge, Wallpaper | **Eigene Generatoren** (Python → SVG/Xcursor/WAV) | Vorgabe des Projekts |
+| Mauszeiger, Symbole, Klänge, Wallpaper | **Eigene Generatoren** (Python → SVG/Xcursor/Ogg) | Vorgabe des Projekts; umgesetzt in M2: glyphs.py/farbig.py/generate.py, zeiger.py, klaenge.py, hintergrund.py |
 | Firefox (statt Edge) | **bleibt Firefox**, nur Voreinstellungen (Titelleiste mit Tabs, Design hell/dunkel) | Browser-Nachbau außerhalb des Rahmens |
 
 ## Folgen für die Pakete

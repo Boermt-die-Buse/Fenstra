@@ -1,5 +1,10 @@
 # Baustein 4a: Branding und Theme
 
+> **Hinweis (M2, 2026-10-06):** Das Symbolthema besteht inzwischen nur noch aus eigenen,
+> per Code erzeugten Symbolen (packages/fenstra-icon-theme/src/glyphs.py, farbig.py).
+> Fluent UI System Icons und der Breeze-Rückfall sind entfernt. Die Angaben zu Fluent
+> unten beschreiben den Stand von 4a.
+
 Stand: Paketquellen geschrieben und geprüft (Syntax, JSON, XML, Kickstart), Symbolthema
 mit den echten Fluent-Dateien erzeugt (3663 Symbole). Gebaut und im Bild getestet ist
 noch nichts, weil der Build in deiner WSL läuft. Dieser Baustein ersetzt die

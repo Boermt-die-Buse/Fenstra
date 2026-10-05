@@ -11,7 +11,7 @@ Theme=fenstra
 name=fenstra-dark
 
 [kcminputrc][Mouse]
-cursorTheme=Breeze_Light
+cursorTheme=fenstra-cursors
 
 [kwinrc][org.kde.kdecoration2]
 library=org.fenstra.decoration

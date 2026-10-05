@@ -83,6 +83,7 @@ Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
 | `fenstra-shot.sh [datei] [--region X,Y,B,H] [--fenster]` | Bildschirmfoto der Sitzung (weckt vorher den Bildschirm) |
 | `fenstra-ssh-env.sh` | nach `~/.bashrc.d`: Sitzungsumgebung für SSH-Befehle |
 | `fenster-setzen.sh "Titel" X Y [B H]` | Fenster per KWin-Skript an feste Stelle setzen (reproduzierbare Bilder) |
+| `symbolbedarf.sh [--kern]` | Symbolnamen, die Plasma und die Programme vermutlich anfragen (Schnitt mit Breeze-Namen) → `/tmp/symbolbedarf[-kern].txt`; Eingabe für `generate.py --bedarf` |
 
 ## pruefen/
 

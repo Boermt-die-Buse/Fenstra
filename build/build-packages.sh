@@ -9,7 +9,7 @@
 #           und repodata. build-iso.sh bindet dieses Verzeichnis als Paketquelle
 #           "fenstra" in den Kickstart ein.
 #
-# Externe Quellen (Fluent-Symbole von npmjs.org, Selawik von GitHub) werden
+# Externe Quellen (Selawik von GitHub) werden
 # heruntergeladen und gegen packages/sources.sha256 geprüft. Eine noch nicht
 # eingetragene Datei wird NICHT blind akzeptiert: das Skript zeigt die Prüfsumme
 # an und schreibt sie nach packages/sources.sha256.neu, damit du sie nach

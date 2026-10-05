@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -14,11 +14,12 @@ BuildRequires:  python3
 Requires:       plasma-workspace
 Requires:       plasma-desktop
 Requires:       plasma-breeze
-Requires:       breeze-cursor-theme
 # Qt-Stil und Fensterdekoration "Fenstra" (Meilenstein M1)
 Requires:       fenstra-style
 Requires:       fenstra-backgrounds
 Requires:       fenstra-icon-theme
+Requires:       fenstra-cursor-theme
+Requires:       fenstra-sound-theme
 Requires:       fenstra-logos
 Requires:       selawik-fonts
 Requires:       cascadia-code-fonts
@@ -146,6 +147,10 @@ fi
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-8
+- M2: eigene Mauszeiger (fenstra-cursors) und eigenes Klangschema (fenstra) als Vorgabe,
+  Breeze-Zeiger entfallen
+
 * Mon Oct 05 2026 Fenstra-Projekt - 44.0-7
 - Linkfarben wie Windows (hell #003E92, dunkel #99EBFF)
 

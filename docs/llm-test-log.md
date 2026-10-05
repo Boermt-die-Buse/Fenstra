@@ -107,3 +107,50 @@ Hyper-V-Fernsteuerung. Bewertung des übernommenen Stands (2026-10-05, Bild bei 
 | Steuerelemente | 2 | 7 | WinUI-Werte gemessen; Fokusrahmen innen, Kombinationsliste unterhalb, Dolphin-Ansicht eigen |
 | Menüs/Tooltips | 2 | 8 | Aufbau und Maße wie WinUI; kein echtes Acrylic in Menüs |
 | Plasma-Flächen | 3 | 6 | Taskleisten-/Popup-Grafik passt; Popups noch am Panel angedockt, Applets selbst noch Plasma (M3/M4) |
+## M2 Eigene Assets (2026-10-05/06)
+
+- **Ziel:** Symbole, Mauszeiger, Klänge und Hintergründe vollständig selbst erzeugen; Fluent UI
+  System Icons, Breeze-Symbole/-Zeiger und Ocean-Klänge ablösen (Prüfliste
+  docs/checkliste-assets.md).
+- **Beginn/Ende:** abends 05.10. bis ca. 01:00 am 06.10. (Wanduhr, über einen Sitzungswechsel
+  hinweg; genaue Zeit nicht erfasst).
+- **Umsetzung:**
+  - **Symbolthema** (fenstra-icon-theme 44.0-3): eigene Glyphenbibliothek glyphs.py (321
+    Strichmotive im 16er-Raster, Abzeichen über SVG-Masken), farbig.py (Ordner mit Motiven,
+    Laufwerke, Computer, Papierkorb, 25 Dateiarten, 12 App-Motive + Kacheln, Hinweise,
+    Abzeichen), generate.py (einfarbig 16/22/24/32/48 pixelgenau, farbig scalable, eigene
+    16-px-Bibliothekssymbole, Akzent-Glyphen für Einstellungen, Abdeckungsbericht).
+    mapping.json neu gegliedert: 1591 Namen. Kein Fluent, kein Breeze-Rückfall.
+  - **Mauszeiger** (fenstra-cursor-theme, neu): zeiger.py zeichnet 25 Formen (Pfeil, Hand,
+    I-Balken, Doppelpfeile, Beschäftigt-Ring mit 24 Bildern …), xcursorgen, 112 Verweisnamen.
+  - **Klänge** (fenstra-sound-theme, neu): klaenge.py synthetisiert 58 Ereignisklänge
+    (Glocke/Marimba/Pad mit Faltungshall, Rascheln aus gefiltertem Rauschen), Lautheit
+    normiert, Abmelden still.
+  - **Hintergründe** (fenstra-backgrounds 44.0-2): hintergrund.py erzeugt eine eigene Blüte
+    (hell/dunkel) und sechs Benutzerbilder.
+  - fenstra-theme 44.0-8: Vorgaben Zeiger/Klänge; Werkzeuge: kontaktblatt.py (auch für fertige
+    Themen), symbolbedarf.sh --kern.
+- **Probleme / Erkenntnisse:**
+  - Kirigami.Icon zeigt fehlende Symbole als „unknown“. Ein vorübergehend magentafarbenes
+    „unknown“ im Benutzerordner macht Lücken auf Bildschirmfotos sofort sichtbar (so wurde
+    das fehlende Helligkeits-Symbol gefunden).
+  - KWin lädt das Zeiger-Thema nicht neu, wenn nur die Datei geändert wird; erst
+    `plasma-apply-cursortheme` (mit einem Wechsel hin und zurück) wirkt sofort.
+  - Die statische Bedarfsliste (strings über Bibliotheken) enthält viel Wortrauschen.
+    Deshalb gibt es eine Kernliste, und Lücken werden per Laufzeit-Sichtprüfung bestätigt.
+  - QIcon ohne Plattform-Thema sucht nur in `:/icons`; für den Qt-Test muss der Suchpfad gesetzt
+    werden.
+- **Fehlversuche:** Verlauf-ID-Fehler im Laufwerkssymbol (Definition statt ID eingesetzt,
+  per Kontaktblatt gefunden); Verweise, die auf sich selbst zeigten; eine Zeile der Spec-Datei
+  im falschen Abschnitt; das erste Zeigerfoto zeigte noch Breeze (KWin nicht neu geladen).
+- **Messung:** Boot 5,56 s, RAM 1767 MB (M1: 6,47 s / 1793 MB),
+  messungen/2026-10-06-hyperv-m2-assets.txt.
+- **Bewertung (0–10):**
+
+| Bereich | vorher | nachher | Begründung |
+|---|---|---|---|
+| Symbole (Strich) | 6 | 7 | eigene, stimmige Glyphen im Segoe-Fluent-Stil; einzelne Motive (Puzzle, Tacho) noch grob |
+| Symbole (farbig) | 3 | 7 | Ordner, Laufwerke, Dateitypen, Hinweise wie Windows 11; App-Symbole teils nur Kacheln |
+| Mauszeiger | 5 | 8 | Formen und Größen wie Windows; Beschäftigt-Ring vereinfacht |
+| Klänge | 2 | 6 | Charakter getroffen, aber nur rechnerisch geprüft (VM ohne Ton) |
+| Hintergrund | 4 | 7 | eigene Blüte, Bloom-artig; weniger plastisch als das Original |

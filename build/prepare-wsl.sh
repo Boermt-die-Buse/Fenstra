@@ -37,7 +37,7 @@ ENTWICKLUNG=(gcc-c++ cmake ninja-build extra-cmake-modules
          kf6-networkmanager-qt-devel kf6-bluez-qt-devel kf6-solid-devel
          kdecoration-devel kwin-devel libplasma-devel plasma-workspace-devel libksysguard-devel
          libkscreen-devel pulseaudio-qt-qt6-devel polkit-qt6-1-devel
-         xcursorgen python3-numpy python3-pillow optipng rsync)
+         xcursorgen vorbis-tools python3-numpy python3-pillow optipng rsync)
 dnf install -y "${ENTWICKLUNG[@]}"
 # Referenz-Kickstarts des Fedora-Projekts (nur zum Vergleichen, nicht Pflicht)
 dnf install -y --skip-unavailable fedora-kickstarts || true

@@ -10,14 +10,16 @@ und wird von `build/build-iso.sh` in den Kickstart eingebunden.
 |---|---|---|
 | `fenstra-release` | os-release mit Fenstra-Namen (per RPM-Dateitrigger, übersteht fedora-release-Updates), deutsches `/etc/issue` | ergänzt `fedora-release` |
 | `fenstra-logos` | Logo (SVG + PNG in allen Größen), Startmenü-Symbol `start-here`, Systeminfo-Logo, Anaconda-Grafiken, Plymouth-Wasserzeichen, Favicon | ersetzt `fedora-logos` (Provides `system-logos`) |
-| `fenstra-backgrounds` | Wallpaper „Fenstra“ hell/dunkel, 18 Auflösungen, `/usr/share/wallpapers/Default` | ersetzt `desktop-backgrounds-kde` (Provides `system-backgrounds-kde`) |
+| `fenstra-backgrounds` | Wallpaper „Fenstra“ (Blüte) hell/dunkel aus `hintergrund.py`, 18 Auflösungen, `/usr/share/wallpapers/Default`, sechs Benutzerbilder | ersetzt `desktop-backgrounds-kde` (Provides `system-backgrounds-kde`) |
 | `fenstra-theme` | Globale Designs `org.fenstra.desktop` (hell) und `.dark`, Farbschemata, `/etc/xdg`-Vorgaben (Schriften, Symbole, Fensterknöpfe, Sperrbildschirm), fontconfig | ergänzt Breeze |
 | `plymouth-theme-fenstra` (aus `fenstra-theme`) | Bootscreen: Firmware-Logo oder Fenstra-Logo, Ladering, deutsche Update-Texte | wie `bgrt`/`spinner` |
-| `fenstra-icon-theme` | Symbolthema `fenstra` aus Fluent UI System Icons (MIT), erbt von Breeze | ergänzt Breeze |
+| `fenstra-icon-theme` | Symbolthema `fenstra`, komplett eigene Motive aus Code (`glyphs.py`, `farbig.py`, `generate.py`, `mapping.json`), erbt nur von hicolor | ersetzt Breeze-Symbole |
+| `fenstra-cursor-theme` | Mauszeiger `fenstra-cursors` aus `zeiger.py` (SVG → Xcursor, 24–96 px) | ersetzt Breeze-Zeiger |
+| `fenstra-sound-theme` | Klangschema `fenstra` aus `klaenge.py` (synthetisiert, Ogg Vorbis) | ersetzt Ocean |
 | `selawik-fonts` | Selawik (OFL), fontconfig-Alias „Segoe UI“ → Selawik | – |
 
 Quellen externer Inhalte und ihre Prüfsummen stehen in `sources.sha256`.
-Eigene Grafiken (Logo, Wallpaper, Ordnersymbol) sind unter CC-BY-SA-4.0
+Eigene Grafiken und Klänge (Logo, Wallpaper, Symbole, Zeiger, Klänge) sind unter CC-BY-SA-4.0
 veröffentlicht, Skripte und Specs unter MIT.
 
 ## Ein Paket ändern

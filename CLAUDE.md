@@ -120,7 +120,7 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 ```
 bash build/prepare-wsl.sh      # Werkzeuge
 bash build/validate.sh         # ksvalidator, Bash, JSON, SVG/XML, Python, rpmspec
-bash build/build-packages.sh   # 7 RPMs -> /var/lib/fenstra-build/repo (createrepo_c)
+bash build/build-packages.sh [paket …]  # alle oder einzelne RPMs -> /var/lib/fenstra-build/repo
 bash build/build-iso.sh        # livemedia-creator --no-virt, ~20 min, ISO + SHA256
 bash build/report.sh <stamp>   # Auszüge nach berichte/ bei Fehlern
 ```
@@ -128,7 +128,31 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
-## Stand M1 (abgeschlossen 2026-10-05) – nächster Schritt: M2 Eigene Assets
+## Stand M2 (abgeschlossen 2026-10-06) – nächster Schritt: M3 Taskleiste
+
+- **Alle Assets eigen, aus Code erzeugt** (Prüfliste docs/checkliste-assets.md bestanden,
+  31/31 Muss, 11/11 Soll, Abweichungen dort):
+  - fenstra-icon-theme 44.0-3: src/glyphs.py (Strichmotive, 16er-Raster), src/farbig.py
+    (farbige Motive), src/generate.py (Thema + Abdeckungsbericht), src/mapping.json (Name →
+    Motiv; Format im `_comment`). `Inherits=hicolor`, kein Fluent, kein Breeze. Sichtprüfung:
+    `kontaktblatt.py AUS.png [--dunkel]` bzw. `--verzeichnis <thema>/apps/scalable`.
+    Bedarf: `tools/vm/symbolbedarf.sh --kern` in der VM, dann
+    `generate.py --out … --bedarf symbolbedarf-kern.txt --fehlend fehlend.txt` (97,6 %).
+  - fenstra-cursor-theme 44.0-1 (neu): src/zeiger.py → /usr/share/icons/fenstra-cursors.
+  - fenstra-sound-theme 44.0-1 (neu): src/klaenge.py → /usr/share/sounds/fenstra (oggenc).
+  - fenstra-backgrounds 44.0-2: src/hintergrund.py (Blüte hell/dunkel, sechs Benutzerbilder
+    unter /usr/share/plasma/avatars/Fenstra *.png).
+  - fenstra-theme 44.0-8: `cursorTheme=fenstra-cursors`, `[Sounds] Theme=fenstra`.
+- Fehlende Symbole finden: in der VM `~/.local/share/icons/fenstra/mimetypes/scalable/unknown.svg`
+  als Magenta-Quadrat anlegen (Kirigami zeigt fehlende Symbole als „unknown“), Oberflächen
+  fotografieren, danach den Ordner wieder löschen.
+- Messung M2: Boot 5,56 s, RAM 1767 MB.
+- Offene Punkte aus M2: Kirigami-Listen zeigen den ausgewählten Eintrag mit weißer Schrift auf
+  der hellgrauen WinUI-Auswahl (z. B. Seitenleiste der Systemeinstellungen) → beim nächsten
+  Stil-Durchgang beheben (M3/M4). Konqi-Benutzerbilder ausblenden (M7). Dolphin-Orte mit 16 px
+  (M8). Klänge auf echter Hardware anhören (M13).
+
+## Stand M1 (abgeschlossen 2026-10-05)
 
 - **fenstra-style** (packages/fenstra-style, x86_64, Fork Breeze 6.7.5): Qt-Stil „Fenstra“
   (kstyle/, WinUI-Farbwerte zentral in kstyle/fenstrawinui.h, Änderungen im Code mit
@@ -265,6 +289,14 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 - (M1) PowerShell → wsl: `|`, `"`, mehrzeilige Argumente gehen kaputt; Skripte als Datei
   übergeben. PowerShell 7 bricht bei stderr-Ausgabe nativer Befehle mit `$ErrorActionPreference
   = 'Stop'` ab (dnf-Warnungen).
+- (M2) KWin lädt das Zeiger-Thema nicht neu, wenn sich nur kcminputrc ändert:
+  `plasma-apply-cursortheme Breeze_Light; plasma-apply-cursortheme fenstra-cursors`.
+- (M2) Symbol-Cache: nach neuem Symbolpaket `rm ~/.cache/icon-cache.kcache` und
+  `systemctl --user restart plasma-plasmashell`.
+- (M2) Fehlende Klangnamen fallen sonst auf das freedesktop-Thema zurück (fremde Klänge):
+  jeden benutzten Namen selbst liefern, „still“ als 50 ms Stille.
+- (M2) In SVG-Generatoren Verlaufs-IDs nie mit der Definition verwechseln (`url(#{id})`);
+  jedes erzeugte SVG mit rsvg-convert rendern lassen (Fehler zeigen sich sonst erst in Qt).
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 

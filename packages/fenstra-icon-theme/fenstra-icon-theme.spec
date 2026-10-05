@@ -1,58 +1,59 @@
-# Fenstra-Symbolthema: Fluent UI System Icons (Microsoft, MIT) als KDE-Symbolthema,
-# erbt von Breeze. Erzeugt beim Bauen aus dem npm-Paket @fluentui/svg-icons
-# (nur SVGs, ~13 MB) mit src/generate-icons.py und der Zuordnung src/mapping.json.
-%global fluent_version 1.1.343
-
+# Fenstra-Symbolthema: alle Symbole eigene Werke, beim Bauen aus Code erzeugt
+# (src/glyphs.py = einfarbige Strichsymbole, src/farbig.py = farbige Symbole,
+# src/mapping.json = Zuordnung der KDE-/freedesktop-Namen). Keine fremden Symbolsätze,
+# kein Rückfall auf Breeze (erbt nur von hicolor).
 Name:           fenstra-icon-theme
 Version:        44.0
-Release:        2%{?dist}
-Summary:        Symbolthema für Fenstra (Fluent UI System Icons)
-# Fluent-Symbole: MIT; Ordnersymbol und Generator: CC-BY-SA-4.0 bzw. MIT
-License:        MIT AND CC-BY-SA-4.0
+Release:        3%{?dist}
+Summary:        Symbolthema für Fenstra (eigene Symbole im Stil von Windows 11)
+# Motive: CC-BY-SA-4.0; Generator: MIT
+License:        CC-BY-SA-4.0 AND MIT
 URL:            https://github.com/Boermt-die-Buse/Fenstra
-Source0:        https://registry.npmjs.org/@fluentui/svg-icons/-/svg-icons-%{fluent_version}.tgz
-Source1:        generate-icons.py
-Source2:        mapping.json
-Source3:        folder-base.svg
-Source4:        LICENSE.fluent-ui-system-icons
+Source1:        generate.py
+Source2:        glyphs.py
+Source3:        farbig.py
+Source4:        mapping.json
 BuildArch:      noarch
 BuildRequires:  python3
-Requires:       breeze-icon-theme
 Requires:       hicolor-icon-theme
-# Programmsymbole (Installer) verweisen auf das Logo aus fenstra-logos
+# Programmsymbole (Installer, Startknopf) verweisen auf das Logo aus fenstra-logos
 Requires:       fenstra-logos
 
 %description
-Symbolthema im Stil von Windows 11 auf Basis der frei lizenzierten Fluent UI
-System Icons. Aktions-, Status-, Geräte- und Ordnersymbole stammen aus Fluent,
-alle übrigen Symbole (Programme, Dateitypen) aus Breeze.
+Symbolthema im Stil von Windows 11: einfarbige Strichsymbole für Aktionen, Status und
+Geräte (folgen dem Farbschema), gelbe Ordner mit Motiv, farbige Laufwerke, Dateitypen,
+Hinweis- und Programmsymbole. Alle Motive sind eigene Werke und werden beim Bauen aus
+Python-Code als SVG erzeugt.
 
 %prep
-%setup -q -c -n fluent
-# npm-Tarball entpackt nach fluent/package/{icons,package.json,...}; Lizenztext (MIT) liegt als Source4 bei
-grep -q '"license": "MIT"' package/package.json
-cp -p %{SOURCE4} LICENSE
+%setup -q -c -T
+cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} .
 
 %build
-mkdir -p src
-cp -p %{SOURCE1} %{SOURCE2} %{SOURCE3} src/
-python3 src/generate-icons.py --fluent package/icons --src src --out fenstra
+python3 generate.py --out fenstra
 
 %install
 install -d %{buildroot}%{_datadir}/icons
 cp -a fenstra %{buildroot}%{_datadir}/icons/fenstra
 # Quellen des Generators mitliefern (Nachvollziehbarkeit)
 install -d %{buildroot}%{_datadir}/fenstra/icon-theme
-install -p -m 0644 %{SOURCE2} %{SOURCE3} %{buildroot}%{_datadir}/fenstra/icon-theme/
-install -p -m 0755 %{SOURCE1} %{buildroot}%{_datadir}/fenstra/icon-theme/
+install -p -m 0644 glyphs.py farbig.py mapping.json %{buildroot}%{_datadir}/fenstra/icon-theme/
+install -p -m 0755 generate.py %{buildroot}%{_datadir}/fenstra/icon-theme/
+
+%transfiletriggerin -- %{_datadir}/icons/fenstra
+gtk-update-icon-cache --force %{_datadir}/icons/fenstra &>/dev/null || :
 
 %files
-%license LICENSE
 %{_datadir}/icons/fenstra/
 %dir %{_datadir}/fenstra
 %{_datadir}/fenstra/icon-theme/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-3
+- Komplett eigene Symbole (M2): Strichsymbole aus glyphs.py, farbige Symbole aus farbig.py
+- Fluent UI System Icons und Breeze-Rückfall entfernt (Inherits=hicolor)
+- Bibliotheken mit eigenen 16-px-Motiven, Programmsymbole als Kacheln, Hinweise farbig
+
 * Sun Oct 04 2026 Fenstra-Projekt - 44.0-2
 - Arbeitsfläche (user-desktop) in Akzentblau statt schwarz, -symbolic bleibt einfarbig
 - Installer-Symbol (org.fedoraproject.AnacondaInstaller, anaconda) = Fenstra-Logo

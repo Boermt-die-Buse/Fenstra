@@ -26,7 +26,7 @@ Was die Skripte tun:
 
 - `prepare-wsl.sh` installiert nur Pakete aus den Fedora-Quellen (lorax, lorax-lmc-novirt, pykickstart, xorriso, squashfs-tools, dosfstools, isomd5sum) und macht einen Loop-Mount-Test mit einer temporären 64-MB-Datei. Es berührt keine Platten oder Partitionen.
 - `validate.sh` prüft die Kickstart-Dateien mit `ksvalidator -v F44`, die Bash-Syntax aller eingebetteten Skripte und die Paketquellen unter `packages/` (JSON, SVG/XML, Python, Specs).
-- `build-packages.sh` baut die Fenstra-eigenen RPMs (Logo, Theme, Symbole, Schriften, Systemkennung) und legt sie als Paketquelle unter `/var/lib/fenstra-build/repo` ab. Externe Quellen (Fluent-Symbole, Selawik) werden geladen und gegen `packages/sources.sha256` geprüft.
+- `build-packages.sh` baut die Fenstra-eigenen RPMs (Logo, Theme, Symbole, Schriften, Systemkennung) und legt sie als Paketquelle unter `/var/lib/fenstra-build/repo` ab. Externe Quellen (Selawik) werden geladen und gegen `packages/sources.sha256` geprüft.
 - `build-iso.sh` ruft `livemedia-creator --make-iso --no-virt` auf. Ergebnis und SHA256 liegen unter `/var/lib/fenstra-build/out/<Zeitstempel>/`, die Protokolle unter `/var/lib/fenstra-build/logs/<Zeitstempel>/`. Das ISO ist von Windows aus unter `\\wsl$\FedoraLinux-44\var\lib\fenstra-build\out\...` erreichbar, oder du lässt es kopieren:
 
 ```bash
