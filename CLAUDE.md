@@ -3,42 +3,76 @@
 Diese Datei wird in jeder Sitzung zuerst gelesen. Sie hält fest, was gilt, was erreicht ist
 und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 
-## Ziel und Rahmen
+## Ziel und Rahmen (Fassung 2026-10-05, ersetzt alle früheren)
 
-- Fenstra: Desktop-OS auf Fedora 44 + KDE Plasma (Wayland), das Windows 11 in Aussehen und
-  Bedienung so nah wie möglich nachbildet. Zielgruppe: Menschen, die nur Windows kennen.
-- Fedora Remix. Keine Microsoft-Dateien, -Marken, -Wallpaper, -Schriften, kein „Windows“ im
-  Namen. Nur frei lizenzierte oder eigene Assets: Fluent UI System Icons (MIT), Cascadia Code
-  (OFL), Selawik (OFL), eigene Grafiken (CC-BY-SA-4.0). Systeminfo: „basiert auf Fedora Linux“.
-- Bei jedem Baustein ehrlich sagen, was 1:1 geht, was nachgebaut wird, was nicht geht.
-- Immer erst in der VM testen. Vor riskanten Aktionen (Partitionieren, USB-Sticks schreiben,
-  Änderungen am laufenden System) ausdrücklich warnen.
-- Erst messen (Baseline), dann optimieren, dann erneut messen. Richtwerte: Boot < 15 s auf SSD,
-  RAM im Leerlauf < 1,5 GB, 60 fps mit Blur.
-- Der Nutzer (Daniel) spricht Deutsch, hat fortgeschrittene Linux-Erfahrung, keine mit
-  Distro-Build-Systemen. Antworten auf Deutsch, Kommandos kurz erklären, Schritt für Schritt.
+- **Zweck:** privater Fähigkeitstest für LLMs. Fenstra wird nie veröffentlicht oder
+  weitergegeben. (Frühere Annahmen – Zielgruppe „Windows-Umsteiger“, spätere
+  Veröffentlichung, Markenrecht-Vorsicht – sind hinfällig.)
+- **Ziel:** 1:1-Klon von Windows 11 (24H2) in Aussehen und Verhalten: Layout, Optik,
+  Bedienung, Tastenkürzel, Animationen und Texte so nah am Original wie möglich. Technische
+  Basis: Fedora 44 + KDE Plasma 6 (Wayland). Alle sichtbaren Texte deutsch wie in einem
+  deutschen Windows 11. Wo Windows seinen Produktnamen zeigt, steht „Fenstra“;
+  Microsoft-Dienste (Konto, OneDrive, Copilot, Edge, Store) werden durch Gleichwertiges
+  ersetzt oder entfallen – jeweils dokumentiert.
+- **Assets:** Alles Sichtbare und Hörbare wird selbst erstellt, als SVG/Code generiert, nie
+  heruntergeladen: Grafiken, Symbole, Wallpaper, Mauszeiger, Klänge, Fensterdekoration,
+  Aussehen aller Bedienelemente. Schriften Selawik und Cascadia Code (frei) dürfen bleiben.
+- **Erlaubt:** Fedora/KDE/Qt als Unterbau (Plasma, KWin, KDE Frameworks und -Anwendungen,
+  Kvantum, Wine, systemd, NetworkManager, PipeWire); KDE-Software anpassen (umstylen,
+  konfigurieren, patchen, erweitern); eigener C++/QML/Python-Code; eigene RPMs.
+- **Nicht erlaubt:** Microsoft-Dateien kopieren oder aus Windows-Medien extrahieren; fertige
+  Windows-11-Themes, Symbolpakete oder Plasma-Designs aus dem Netz; fremde Symbolsätze. Die
+  bisher genutzten Fluent UI System Icons und die Breeze-Symbole als Rückfall werden
+  schrittweise durch eigene ersetzt (Meilenstein M2).
+- **KDE oder Eigenbau:** Pro Windows-App und Shell-Bestandteil wird entschieden, ob eine
+  angepasste KDE-Anwendung oder ein Eigenbau näher an 1:1 kommt. Entscheidungen mit
+  Begründung: docs/entscheidungen-komponenten.md.
+- **Abweichungen:** Wo 1:1 technisch nicht geht, die nächstbeste Annäherung bauen und die
+  Abweichung dokumentieren (in der Prüfliste des Bereichs).
+- **Vorgehen:** Meilensteine nach docs/roadmap.md, selbstständig. Fragen nur bei echter
+  Blockade oder vor riskanten Aktionen außerhalb der Test-VMs (USB-Stick, Partitionieren,
+  Host-System). Vor jedem Bereich eine Prüfliste `docs/checkliste-<bereich>.md` mit messbaren
+  Punkten (px, Hex-Farben, Schriftgrößen, Radien, Animationsdauern, Verhalten, Texte) und
+  Bestehensschwelle. Jeder Meilenstein endet mit: Prüfliste bestanden, Bildschirmfotos aller
+  geänderten Teile (docs/bilder/<meilenstein>/), Messung (`fenstra-baseline` nach Neustart),
+  `git push` aus WSL, kurzer Bericht an den Nutzer. Testprotokoll: docs/llm-test-log.md (Ziel,
+  Umsetzung, Probleme, Fehlversuche, Zeitaufwand, ehrliche Bewertung 0–10 je Bereich).
+- **Testen:** in der laufenden Test-VM bei 1920×1080 (SSH, plasmoid-deploy, evaluateScript,
+  Programme direkt starten, `dnf install` der RPMs). Bildschirmfotos in voller Auflösung im
+  Gast (Spectacle über SSH), das Hyper-V-Vorschaubild nur zur Orientierung. Ein neues ISO nur,
+  wenn eine Änderung anders nicht prüfbar ist (Installer, Ersteinrichtung, Bootscreen, erstes
+  Anmelden eines neuen Benutzers) und einmal ganz am Ende. USB-Stick erst ganz am Schluss.
+- **Vergleich:** Referenz-Bildschirmfotos von Windows 11 legt der Nutzer ggf. nach
+  C:\Users\Daniel\Fenstra\referenz\ – dann Bild-für-Bild vergleichen.
+- **Leistung:** Boot < 15 s, RAM im Leerlauf < 1,5 GB, flüssige Effekte. Hyper-V hat keine GPU
+  (llvmpipe): Leistung dort nur grob prüfbar; Feinschliff auf echter Hardware am Ende.
+- Passwort des Testbenutzers und GitHub-Zugangsdaten nie ins Repo. Hilfsskripte gehören ins
+  Repo (tools/), nicht in temporäre Ordner.
+- Kommunikation mit dem Nutzer auf Deutsch; Berichte kurz, mit den wichtigsten Bildern.
 
 ## Entscheidungen (nicht erneut diskutieren)
 
 - Registry: wird nicht nachgebaut, kein Registrierungs-Editor.
-- „Windows Update“ = Fedora-Updates + Flatpak + fwupd in einer Oberfläche „Updates“, davor
-  Snapper-Wiederherstellungspunkt.
+- „Windows Update“ = Fedora-Updates + Flatpak + fwupd in der Einstellungen-Seite „Updates“,
+  davor Snapper-Wiederherstellungspunkt (M9).
 - „Defender“: kein Echtzeitscanner. Schichten SELinux (enforcing), firewalld, signierte Pakete,
   Secure Boot, Flatpak-Sandbox. ClamAV nur als Prüfung von .exe vor dem ersten Wine-Start.
 - Mica: KWin-Blur entspricht Acrylic (Startmenü, Schnelleinstellungen). Mica für
   Fensterhintergründe als getönte, verwischte Kopie des Wallpapers, neu berechnet beim
   Wallpaper-Wechsel (günstig, kein Live-Blur).
 - EU OS als Basis: nein (bootc/Kinoite, unveränderlich; passt nicht zu RPM/Wine/Snapper).
-- Name „Fenstra“: für privaten Test unproblematisch; vor Veröffentlichung TMview/DPMA Klassen
-  9 und 42 prüfen (Fenstra AG Schweiz, fenstra.no, FENSTRA LTD UK existieren).
+- Name „Fenstra“ bleibt; Markenprüfung entfällt (nie veröffentlicht).
 - fenstra-release ersetzt fedora-release NICHT (exakte Versionsabhängigkeit). Stattdessen
   RPM-Dateitrigger auf /usr/lib/os-release, der die Fenstra-Kennung nach jedem Update erneut
   schreibt. ID bleibt „fedora“.
 - Fedora 44 KDE nutzt den Plasma Login Manager (nicht SDDM) und die Anaconda-Weboberfläche.
-  Kein SDDM-Thema bauen. Anmeldebildschirm im Windows-Aufbau wird in 4b am Plasma Login
-  Manager geprüft.
+  Kein SDDM-Thema bauen. Anmelde-/Sperrbildschirm im Windows-Aufbau: M7.
+- Plasma Setup (Ersteinrichtung) wird durch eine eigene OOBE im Windows-Aufbau ersetzt (M7);
+  die früheren Notizen zu „Willkommen bei Plasma Desktop“/Konqi sind damit hinfällig.
+- Symbole, Mauszeiger, Klänge: eigene Sätze (M2) statt Fluent UI System Icons, Breeze-Symbole,
+  Breeze_Light-Cursor und Ocean-Klängen.
 - Subvolume-Namen im grafischen Installer sind fest „root“/„home“ (nicht @/@home); gleichwertig.
-- grub-btrfs ist nicht in Fedora; kommt in 4d als eigenes Paket.
+- grub-btrfs ist nicht in Fedora; kommt mit den Wiederherstellungspunkten (M9) als eigenes Paket.
 
 ## Umgebung des Nutzers
 
@@ -67,11 +101,16 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 - VM-Werkzeuge im Repo: **tools/README.md** (Ablauf eines VM-Tests, Stolpersteine).
   tools/hyperv/*.ps1 (Windows, Admin): neue-vm, vm-screenshot, vm-input (Maus/Tastatur mit
   DE-Belegung), vm-bootshots, vm-ip, vm-von-platte-starten, vm-ssh-einrichten.
-  tools/vm/*.sh (in der VM): plasmoid-deploy, testsitzung. Windows kann /root in WSL nicht
-  lesen → Arbeitskopie: `wsl -d FedoraLinux-44 -u root -- cp -r /root/Fenstra/tools/hyperv
-  /mnt/c/Users/Daniel/Fenstra/tools/`, Aufruf aus C:\Users\Daniel\Fenstra\tools\hyperv\.
-  SSH: `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_<vm> daniel@<IP>`,
+  tools/vm/*.sh (in der VM): plasmoid-deploy, testsitzung.
+  SSH: `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_fenstra daniel@<IP>`,
   IP mit vm-ip.ps1 (wechselt nach jedem Neustart).
+- **Arbeitskopie für Windows-Werkzeuge** (seit 2026-10-05): Windows (und Claude Codes
+  Read/Edit/Write) kann /root in WSL nicht lesen. Bearbeitet wird in
+  `C:\Users\Daniel\Fenstra\ws` (Spiegel ohne .git), abgeglichen mit
+  `wsl -d FedoraLinux-44 -u root -- /root/Fenstra/tools/sync-ws.sh` (beide Richtungen, neuere
+  Datei gewinnt, löscht nie; `sync-ws.sh rm <pfad>` löscht in beiden). Vor jedem Build,
+  VM-Test und Commit abgleichen. Neue Skripte im Repo mit `chmod +x` versehen.
+  Hyper-V-Skripte direkt aus `C:\Users\Daniel\Fenstra\ws\tools\hyperv\` aufrufen.
 - Aus der Claude-Umgebung sind GitHub, invent.kde.org, download.kde.org und jsdelivr
   gesperrt; src.fedoraproject.org, dl.fedoraproject.org, npmjs.org, pypi erreichbar.
   Fedora-44-Paketdaten lassen sich von dl.fedoraproject.org laden und auswerten.
@@ -88,6 +127,28 @@ bash build/report.sh <stamp>   # Auszüge nach berichte/ bei Fehlern
 Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann konsole.log,
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
+
+## Stand M0 (2026-10-05, unterbrochen durch Nutzungslimit)
+
+- Erledigt: Rahmen neu, Roadmap M0–M13 (docs/roadmap.md), Arbeitskopie ws + sync-ws.sh,
+  VM-Helfer (vm-ssh.ps1, vm-gastfoto.ps1, fenstra-shot.sh, fenstra-ssh-env.sh,
+  testsitzung.sh für Plasma 6), VM läuft bei 1920×1080, C++-Toolchain in WSL
+  (prepare-wsl.sh ergänzt), build-packages.sh lässt Debug-RPMs weg, docs/llm-test-log.md.
+- Breeze 6.7.5 als `packages/fenstra-style/src` geforkt (kstyle, kdecoration,
+  libfenstracommon; Breeze→Fenstra umbenannt, eigene CMakeLists, baut in WSL). Noch offen:
+  Spec, Plugin-Id der Dekoration (heute org.kde.fenstra), Übersetzungen in themerc/json
+  aufräumen.
+- WSL hat Plasma 6.7.5/Qt 6.11.2/KF 6.30; die VM wurde per `systemd-run --unit
+  fenstra-upgrade dnf -y upgrade` auf denselben Stand gebracht (Log
+  /var/log/fenstra-upgrade.log in der VM; danach Neustart nötig, Sitzung prüfen).
+- Recherche-Workflow (Windows-11-Referenzwerte + KDE-Erweiterungspunkte) wurde abgebrochen;
+  fortsetzen mit Workflow({scriptPath: "C:\Users\Daniel\.claude\projects\C--Users-Daniel-Fenstra\6cfdadb6-317c-4df6-9455-7e29d8000c6c\workflows\scripts\fenstra-m0-recherche-wf_ca7dcb23-461.js",
+  resumeFromRunId: "wf_ca7dcb23-461"}) (fertige Agenten kommen aus dem Cache) oder neu
+  starten. Ergebnis soll docs/windows11-referenz.md werden; danach
+  docs/entscheidungen-komponenten.md schreiben und M0 abschließen (Messung, Bericht).
+- Ad-hoc-Skripte für WSL: in C:\Users\Daniel\Fenstra\tmp schreiben und mit
+  `wsl -d FedoraLinux-44 -u root -- bash /mnt/c/Users/Daniel/Fenstra/tmp/<x>.sh` ausführen
+  (mehrzeilige Argumente über PowerShell verlieren Anführungszeichen).
 
 ## Stand (zuletzt 2026-10-04)
 
@@ -172,7 +233,7 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 
-0 Build+Baseline → 4a Branding (fertig, Test offen) → 4b Taskleiste/Startmenü/Schnell-
-einstellungen/KWin → 4c Dateimanager mit Laufwerksbuchstaben → 4d Wiederherstellungspunkte
-(grub-btrfs, Zurücksetzen) → 4e Wine/Proton → 4f Einstellungen-App → 4g Fenstra Store →
-5 Abschluss: USB-Stick erst, wenn alles in der VM läuft.
+Bis 2026-10-04 erledigt: Build-Pipeline, 4a Branding, 4b-1 Taskleiste (Grundaufbau),
+4b-2 Startmenü (Grundfassung). Seit 2026-10-05 gilt der Meilensteinplan M0–M13 in
+docs/roadmap.md (Stil zuerst, dann Assets, Shell, Systemoberflächen, Explorer/Einstellungen,
+übrige Apps, Leistung, finales ISO, USB-Stick).

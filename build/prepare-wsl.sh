@@ -23,6 +23,22 @@ echo "== Pakete =="
 PFLICHT=(lorax lorax-lmc-novirt anaconda-tui pykickstart squashfs-tools xorriso dosfstools isomd5sum e2fsprogs util-linux git
          rpm-build rpmdevtools createrepo_c librsvg2-tools ImageMagick python3 fonts-rpm-macros curl)
 dnf install -y "${PFLICHT[@]}"
+# C++/Qt/KDE-Entwicklung für eigene Programme und Plugins (Qt-Stil, Fensterdekoration,
+# KWin-Effekte, Apps). Die meisten Specs ziehen ihre BuildRequires ohnehin selbst nach
+# (build-packages.sh); diese Liste macht WSL vorab vollständig.
+ENTWICKLUNG=(gcc-c++ cmake ninja-build extra-cmake-modules
+         qt6-qtbase-devel qt6-qtbase-private-devel qt6-qtdeclarative-devel qt6-qtsvg-devel
+         qt6-qttools-devel qt6-qtwayland-devel qt6-qtmultimedia-devel
+         kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel
+         kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel kf6-kcmutils-devel
+         kf6-kio-devel kf6-kxmlgui-devel kf6-knotifications-devel kf6-kcolorscheme-devel
+         kf6-kirigami-devel kf6-kpackage-devel kf6-kglobalaccel-devel kf6-kservice-devel
+         kf6-kparts-devel kf6-kitemviews-devel kf6-kwidgetsaddons-devel kf6-frameworkintegration-devel
+         kf6-networkmanager-qt-devel kf6-bluez-qt-devel kf6-solid-devel
+         kdecoration-devel kwin-devel libplasma-devel plasma-workspace-devel libksysguard-devel
+         libkscreen-devel pulseaudio-qt-qt6-devel polkit-qt6-1-devel
+         xcursorgen python3-numpy python3-pillow optipng rsync)
+dnf install -y "${ENTWICKLUNG[@]}"
 # Referenz-Kickstarts des Fedora-Projekts (nur zum Vergleichen, nicht Pflicht)
 dnf install -y --skip-unavailable fedora-kickstarts || true
 

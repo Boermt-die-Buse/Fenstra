@@ -1,87 +1,155 @@
-# Roadmap: Bausteine nach dem ersten ISO
+# Roadmap: Meilensteinplan M0–M13 (ab 2026-10-05)
 
-Reihenfolge wie besprochen. Jeder Baustein endet mit einem Build, einem VM-Test und einer Messung (`fenstra-baseline`, Bootzeit, RAM, fps). Bei jedem Baustein steht, was 1:1 geht, was nachgebaut wird und was nicht geht.
+Ziel: 1:1-Klon von Windows 11 (24H2) in Aussehen und Verhalten auf Fedora 44 + KDE Plasma 6
+(Wayland), privater LLM-Fähigkeitstest (siehe CLAUDE.md, „Ziel und Rahmen“). Dieser Plan
+ersetzt die frühere Bausteinfolge 4a–4g/5. Erledigt war bis dahin: Build-Pipeline
+(Kickstart + livemedia-creator), 4a Branding/Theme, 4b-1 Taskleiste (Grundaufbau),
+4b-2 Startmenü (Grundfassung), VM-Werkzeuge (Build #5).
 
-## 0. Erster Build und Basiswerte (jetzt)
+Jeder Meilenstein:
+1. vorher Prüfliste `docs/checkliste-<bereich>.md` (messbare Punkte, Bestehensschwelle),
+2. Umsetzung und Test in der laufenden Test-VM (1920×1080),
+3. Abschluss: Prüfliste bestanden, Bildschirmfotos (`docs/bilder/<meilenstein>/`), Messung
+   `fenstra-baseline` nach Neustart (`messungen/`), `git push`, Eintrag in
+   `docs/llm-test-log.md`, kurzer Bericht an den Nutzer.
 
-- `build/build-packages.sh` und `build/build-iso.sh` in WSL, ISO in Hyper-V testen, installieren, `fenstra-baseline` nach `messungen/`.
-- Ergebnis: Fedora-KDE-Live-ISO mit Fenstra-Branding (4a), Btrfs-Installer-Profil, Snapper-Vorbereitung, zRAM.
-- Erledigt: alle Paketnamen des Kickstarts gegen die Fedora-44-Paketdaten geprüft (vorhanden).
-- Offen: SELinux-Labels prüfen, Bootzeit/RAM als Vergleichsbasis.
-- Erkenntnisse aus den F44-Paketdaten: der KDE-Spin nutzt den **Plasma Login Manager** (nicht SDDM) und die **Anaconda-Weboberfläche** als Installer. Beides beeinflusst 4a/4b (Anmeldebildschirm) und die Installer-Optik.
+Umfang (grobe Schätzung, menschliche Arbeitstage als Maß): **S** ≈ ½ Tag, **M** ≈ 1–2 Tage,
+**L** ≈ 3–5 Tage, **XL** ≈ 6–10 Tage.
 
-## 4a. Branding und Theme (Paketquellen fertig, Build und VM-Test offen)
+| # | Meilenstein | Umfang | Kern |
+|---|---|---|---|
+| M0 | Vorbereitung | S | Rahmen, Arbeitskopie, VM 1920×1080, Gast-Screenshots, C++-Toolchain, Windows-11-Referenzwerte, Entscheidungen KDE/Eigenbau |
+| M1 | Stil-Fundament | L | Qt-Stil, Fensterdekoration, Plasma-Design, Farben/Akzent, Menüs |
+| M2 | Eigene Assets | L | Symbolthema komplett eigen, Mauszeiger, Klänge, Wallpaper |
+| M3 | Taskleiste | L | eigenes Taskleisten-Applet, Infobereich, Uhr, Widgets-Knopf, Kontextmenüs |
+| M4 | Startmenü, Suche, Flyouts | L | Startmenü fertig, Suchpanel, Schnelleinstellungen, Benachrichtigungen/Kalender, Widgets |
+| M5 | Fenster und Multitasking | L | Alt+Tab, Task-Ansicht, virtuelle Desktops, Snap Layouts/Assist, Animationen, Mica |
+| M6 | Desktop und Shell-Dialoge | M | Desktop-Symbole, Kontextmenü, Win+X, Ausführen, OSD, Win+V, Tastenkürzel |
+| M7 | Systemoberflächen | L | Bootscreen, Anmeldung, Sperrbildschirm, Abmelden, UAC-Abfrage, OOBE (ISO-Build) |
+| M8 | Datei-Explorer | XL | Eigenbau auf KIO: Tabs, Befehlsleiste, Navigationsbereich, „Dieser PC“ |
+| M9 | Einstellungen und Updates | XL | Einstellungen-App mit allen Hauptkategorien, Updates mit Wiederherstellungspunkt |
+| M10 | Werkzeug-Apps | L | Task-Manager, Terminal, Editor, Rechner, Snipping Tool |
+| M11 | Medien, Store, Wine | L | Fotos, Medienwiedergabe, Store-Ersatz, .exe per Doppelklick |
+| M12 | Leistung und Gesamtabnahme | M | RAM < 1,5 GB, Boot < 15 s, finales ISO, alle Prüflisten |
+| M13 | USB-Stick | S | erst nach Rückfrage beim Nutzer |
 
-Details: [04a-branding-und-theme.md](04a-branding-und-theme.md), Pakete: [../packages/README.md](../packages/README.md).
+## M0 Vorbereitung (S)
 
-- Erledigt: Pakete `fenstra-release` (os-release per Dateitrigger, ergänzt fedora-release), `fenstra-logos` (ersetzt fedora-logos), `fenstra-backgrounds` (ersetzt Fedora-Hintergründe, auch Anmelde-/Sperrbildschirm), `fenstra-theme` (globales Design hell/dunkel, Farbschemata, Vorgaben, Plymouth-Thema), `fenstra-icon-theme` (Fluent UI System Icons, MIT), `selawik-fonts`. Lokale RPM-Quelle im Build (`build/build-packages.sh`, `createrepo_c`, `repo --baseurl=file://…`).
-- Offen: erster Build mit den Paketen, VM-Test nach Prüfliste, Messung. Cursor-Thema verschoben (Breeze Light ist nah dran).
-- Geändert gegenüber Plan: kein SDDM-Thema, weil Fedora 44 KDE den Plasma Login Manager nutzt. Anmeldebildschirm im Windows-Aufbau wird in 4b am Plasma Login Manager geprüft.
-- Ehrlich: Segoe UI, Windows-Icons, Windows-Wallpaper bleiben außen vor. Selawik ist Microsofts eigener freier Segoe-Ersatz, die Metrik passt, die Formen sind etwas anders.
-- Messpunkt: Bootzeit (Plymouth), RAM unverändert.
+- CLAUDE.md „Ziel und Rahmen“ neu, überholte Entscheidungen korrigiert.
+- Arbeitskopie `C:\Users\Daniel\Fenstra\ws` + `tools/sync-ws.sh`.
+- Test-VM auf 1920×1080 (Gast: KScreen; Host: Hyper-V-Video), Gast-Bildschirmfotos über
+  SSH (`tools/hyperv/vm-gastfoto.ps1`), `vm-input.ps1`/`vm-screenshot.ps1` für 1920×1080,
+  Testsitzung ohne Dimmen/Sperren.
+- WSL: C++-Toolchain (cmake, extra-cmake-modules, Qt6/KF6/KWin/KDecoration-devel),
+  `build/build-packages.sh` für architekturabhängige RPMs.
+- `docs/windows11-referenz.md`: Designwerte von Windows 11 (Farben hell/dunkel, Typografie,
+  Radien, Abstände, Größen, Animationsdauern, Tastenkürzel) als Quelle aller Prüflisten.
+- `docs/entscheidungen-komponenten.md`: KDE anpassen oder Eigenbau, je Bestandteil.
+- `docs/llm-test-log.md` angelegt.
 
-## 4b. Taskleiste, Startmenü, Schnelleinstellungen, Benachrichtigungen
+## M1 Stil-Fundament (L)
 
-Details und Stand: [04b-taskleiste-und-fenster.md](04b-taskleiste-und-fenster.md). 4b-1 (Taskleiste, Fensterrahmen, Suche) und 4b-2 (Startmenü) umgesetzt; 4b-3 Schnelleinstellungen/Snap-Layouts offen.
+Alles Weitere baut darauf auf.
+- Qt-Widget-Stil „Fenstra“ (C++, Fork von Breeze, Paket `fenstra-style`): Schaltflächen,
+  Eingabefelder (Akzentlinie unten bei Fokus), Kombinationsfelder, Kontrollkästchen,
+  Optionsfelder, Schieberegler, Fortschrittsbalken, Bildlaufleisten (schmal, beim Hover
+  breiter), Menüs (8 px Ecken, Schatten), Tooltips, Register, Listen/Bäume (Auswahl mit
+  Akzentbalken), Kopfzeilen, Werkzeugleisten. Wirkt auch für Kirigami/QtQuick-Apps
+  (qqc2-desktop-style).
+- Fensterdekoration „Fenstra“ (C++, KDecoration3): Titelleiste 32 px, Knöpfe 46×32 px
+  rechteckig, Schließen-Hover #C42B1C, Symbole wie Segoe Fluent, inaktive Fenster blasser,
+  Ecken 8 px, 1-px-Rand, Schatten wie Windows; Haken für Snap Layouts (M5).
+- Plasma-Design „fenstra“ (eigene SVGs): Taskleiste, Flyouts/Popups (8 px, Acrylic),
+  Tooltips, Widget-Hintergründe.
+- Farbschemata hell/dunkel nachgeschärft, Akzentfarben (Windows-Palette, Ableitungen
+  hell/dunkel 1–3), Umschaltung hell/dunkel.
 
-- Panel unten, Symbole zentriert, Start-Schaltfläche, Suche, Task-Ansicht, Widgets-Knopf, Systray rechts mit Uhr.
-- Startmenü als eigenes Plasma-Applet (QML): angepinnte Apps, „Empfohlen“, Nutzer und Ausschalten unten, Suche oben, „Alle Apps“.
-- Schnelleinstellungen (WLAN, Bluetooth, Flugmodus, Helligkeit, Lautstärke) als eigenes Applet; Benachrichtigungscenter mit Kalender.
-- KWin: Fensterrundungen, Schatten, Blur, Animationsgeschwindigkeit; Snap-Layouts als KWin-Skript; Widgets-Panel links ausklappbar.
-- Ehrlich: Mica nur angenähert (Blur + Farbüberlagerung). Copilot-Knopf entfällt. Windows-Suche wird zu KRunner mit Windows-Optik.
-- Messpunkt: RAM (eigene Applets), fps mit Blur.
+## M2 Eigene Assets (L)
 
-## 4c. Dateimanager mit Laufwerksbuchstaben
+- Symbolthema `fenstra` vollständig eigen (Python-Generatoren → SVG): App-Symbole im
+  Fluent-Stil (bunt, Verlauf), Ordner, Laufwerke/Geräte, Dateitypen, Aktionen (Strichsymbole
+  16/20/24 px), Status/Infobereich (Netz, Ton, Akku, Bluetooth). Fluent-Paket und
+  Breeze-Rückfall entfallen; Prüfwerkzeug meldet fehlende Symbolnamen.
+- Mauszeiger-Thema `fenstra` (SVG + Xcursor, alle Formen, animiertes „Beschäftigt“).
+- Klangschema `fenstra` (synthetisiert): Anmelden, Benachrichtigung, Hinweis, Fehler,
+  Papierkorb, Gerät an/ab, Lautstärke.
+- Wallpaper hell/dunkel überarbeiten (Bloom-artige Form, eigenes Motiv), Benutzerbilder.
 
-- Dolphin als Basis: Adressleiste im Windows-Stil, Navigationsleiste „Schnellzugriff“, Detailansicht, Kontextmenü angepasst.
-- „Dieser PC“: Einhängepunkte als C: (System), D:, E: … (weitere Laufwerke, USB). Rein Darstellung (KIO-Worker oder Places-Erweiterung), Pfade darunter bleiben Linux.
-- Deutsche Benutzerordner, „Desktop“ statt „Schreibtisch“, Papierkorb, Standardprogramme wie unter Windows (Fotos, Videos, Musik).
-- Ehrlich: Kein NTFS-Systemlaufwerk, Pfade in Programmen bleiben `/home/…`. Wenn ein Programm einen Pfad anzeigt, sieht man Linux.
-- Messpunkt: Dolphin-Startzeit.
+## M3 Taskleiste (L)
 
-## 4d. Wiederherstellungspunkte
+- Eigenes Taskleisten-Applet (Fork des Plasma-Taskmanager-QML): Symbole 24 px in 40×40,
+  Hover-Fläche, Indikator (aktiv 16×3 px Akzent, sonst 6×3 px grau), Vorschau beim Hover,
+  Sprunglisten (zuletzt verwendet, Anheften, Schließen), Gruppierung, Ziehen.
+- Suchfeld „Suchen“ als Pille, Start-Knopf mit eigenem Symbol, Task-Ansicht-Knopf,
+  Widgets-Knopf links mit Wetter, Infobereich mit Überlauf-Flyout (^), Gruppe
+  Netz/Ton/Akku, Uhr mit Datum und Glocke, schmaler „Desktop anzeigen“-Streifen,
+  Kontextmenü „Taskleisteneinstellungen“, exakt mittige Ausrichtung.
 
-- Baut auf Build #1 auf (Snapper-Konfiguration, dnf5-Hook, wöchentlicher Punkt, Top-Level-Subvolume `snapshots`).
-- Eigenes Paket `fenstra-grub-btrfs` (grub-btrfs ist nicht in Fedora): Bootmenü-Eintrag „Fenstra von einem Wiederherstellungspunkt starten“ mit verständlichen Namen.
-- Zurücksetzen: Skript, das aus einem Snapshot heraus das Subvolume `root` ersetzt (`root` → `root.alt`, Snapshot → `root`), nur System, `/home` bleibt. Grafisch in der Einstellungen-App (4f).
-- Offene Frage: `/boot` separat (Fedora-Standard, Kernel liegen außerhalb des Snapshots) oder in `/`. Entscheidung nach Test in der VM.
-- rpmdb-WAL-Problem mit dem dnf5-Backend von PackageKit (Fedora 44) prüfen und lösen.
-- Ehrlich: Kein Windows-„Systemwiederherstellung“-Dienst, sondern Btrfs-Snapshots. Zurücksetzen erfordert einen Neustart. Wiederherstellungspunkte von Windows-Programmen unter Wine liegen in `/home` und werden nicht zurückgesetzt (Absicht).
-- Messpunkt: Update-Dauer mit/ohne Snapshot, Bootzeit.
+## M4 Startmenü, Suche, Flyouts (L)
 
-## 4e. Windows-Programme (Wine/Proton)
+- Startmenü: Seiten mit Punkten, Ordner, Kontomenü, „Alle“-Ansicht, Empfohlen mit „Mehr“,
+  Größe und Position wie Windows.
+- Suchpanel (Windows-11-Aufbau, Backend KRunner).
+- Schnelleinstellungen (WLAN, Bluetooth, Flugmodus, Energiesparen, Nachtmodus,
+  Barrierefreiheit, Helligkeit, Lautstärke, Akku, Bearbeiten).
+- Benachrichtigungscenter mit Kalender, Toast-Benachrichtigungen unten rechts.
+- Widgets-Board von links.
 
-- Wine (Fedora) + optional Proton-GE; `.exe`-Doppelklick über MIME-Handler; Installer-Wrapper legt Startmenü-Einträge an; Kompatibilitätsliste (JSON) mit Bewertung „läuft / eingeschränkt / läuft nicht“.
-- Steam aus RPM Fusion (nonfree) mit Proton, DXVK/VKD3D vorkonfiguriert, Shader-Cache aktiv, `vm.max_map_count` hoch.
-- Ehrlich: Anti-Cheat, Office-365-Desktop, Adobe, Programme mit Treibern laufen nicht. Vor dem Start wird das dem Nutzer angezeigt.
-- RPM Fusion ist nicht Fedora; für ein verteiltes ISO ist zu klären, ob nonfree-Pakete im Image liegen dürfen (für deinen privaten Test egal).
-- Messpunkt: RAM (Wine-Dienste dürfen im Leerlauf nicht laufen).
+## M5 Fenster und Multitasking (L)
 
-## 4f. Einstellungen-App
+- Alt+Tab (eigenes KWin-Fensterwechsler-Layout), Task-Ansicht Win+Tab mit Desktopleiste
+  (eigener KWin-Effekt), virtuelle Desktops (Strg+Win+D/←/→/F4, Animation).
+- Snap Layouts (Hover über Maximieren, Win+Z, Ziehen an den oberen Rand), Snap Assist,
+  Win+Pfeiltasten, Win+D/M, Fensteranimationen (Öffnen, Schließen, Minimieren,
+  Maximieren), Mica für Fensterhintergründe (eigener KWin-Effekt).
 
-- Qt/QML im Windows-11-Stil, Kategorien wie Windows: System (Anzeige, Ton, Benachrichtigungen, Energie, Speicher, Wiederherstellung), Bluetooth und Geräte, Netzwerk, Personalisierung, Apps, Konten, Zeit und Sprache, Barrierefreiheit, Datenschutz und Sicherheit, Updates.
-- Steuert im Hintergrund KDE (kwriteconfig6, D-Bus), systemd, NetworkManager, PackageKit/dnf5, Snapper.
-- Ehrlich: Für Sonderfälle bleibt „Erweiterte Einstellungen“ (KDE Systemeinstellungen) erreichbar. Linux-Begriffe werden umschrieben (z. B. „Laufwerk C:“ statt `/`, „Administratorrechte“ statt sudo).
-- Messpunkt: Startzeit der App, RAM.
+## M6 Desktop und Shell-Dialoge (M)
 
-## 4g. Fenstra Store
+- Desktop-Symbole (Papierkorb oben links, Raster wie Windows), Desktop-Kontextmenü im
+  Windows-11-Aufbau, Win+X-Menü, Ausführen (Win+R), Lautstärke-/Helligkeits-OSD,
+  Zwischenablage-Verlauf (Win+V), Herunterfahren-Dialog (Alt+F4 auf dem Desktop),
+  Tastenkürzel Win/Win+E/I/L/D/V/R/X/Tab, Druck → Snipping Tool, Doppel-/Rechtsklick.
 
-- Qt/QML-Oberfläche, Backend Python (schneller Start, Zugriff auf Flatpak-, dnf5- und Wine-Werkzeuge). Katalog als YAML im Repo: Name, Hersteller, Kategorie, Beschreibung, offizielle Webseite, Installationsart, Quelle, Prüfsumme/Signatur.
-- Installationsarten: Flatpak (Flathub, bevorzugt), AppImage, RPM (Fedora/RPM Fusion), .exe über Wine, Web-App (eigenständiges Fenster mit Startmenü-Eintrag, z. B. WhatsApp Web).
-- Fallback für Nicht-Katalogisiertes: Web-Suche, Prüfung, ob die Domain zum Hersteller passt (Allowlist bekannter Hersteller-Domains, HTTPS-Pflicht), deutliche Warnung und Bestätigung. Nie das erste Suchergebnis blind installieren.
-- Bot (`store/tools/check-catalog.py`): prüft Links, Versionen, Prüfsummen. Keine erfundenen Hashes; wo der Hersteller keine veröffentlicht, wird die Signatur des Paketsystems (Flatpak/RPM) genutzt oder der Eintrag als „ungeprüfter Direkt-Download“ markiert.
-- Ehrlich: Kein Microsoft-Store-Konto, keine Käufe. Programme kommen von Flathub, Fedora oder der Hersteller-Webseite.
-- Messpunkt: Store-Startzeit, RAM.
+## M7 Systemoberflächen (L)
 
-## Querschnitt: Leistung (nach jedem Baustein)
+- Bootscreen (Logo + kreisende Punkte), Anmeldebildschirm und Sperrbildschirm im
+  Windows-Aufbau, Abmelde-/Herunterfahren-Bildschirme, UAC-artige Rechteabfrage (eigener
+  Polkit-Agent, abgedunkelter Hintergrund), OOBE statt Plasma Setup (Region, Tastatur,
+  Netzwerk, Konto, Datenschutz). Prüfung per ISO-Build #6 (Installer, erstes Anmelden).
 
-- `systemd-analyze blame/critical-chain`: Dienste abschalten, die nichts bringen (z. B. `ModemManager` ohne Modem, Bluetooth-Warteschleifen, `abrt`, Drucker-Browsing falls kein Drucker).
-- Baloo (Dateiindex) auf Dokumente beschränken, Inhalte-Indexierung aus.
-- Compositor: Blur/Animationen mit Fallback bei llvmpipe; Mesa aktuell; VA-API im Browser; NVIDIA-Weg dokumentieren.
-- Live-Image: squashfs xz → zstd testen (`FENSTRA_SQUASHFS=zstd`), initramfs zstd, Bootmenü-Timeout kurz.
-- Btrfs: `noatime`, `compress=zstd:1`, `discard=async` (Kernel-Standard), wöchentlich `fstrim` und `scrub`, `nodatacow` für VM-Images und Datenbanken per Ordnerattribut.
+## M8 Datei-Explorer (XL)
 
-## 5. Abschluss: fertiges ISO auf den USB-Stick
+- Eigenbau (C++/Qt Widgets) auf KIO: Tabs in der Titelleiste, Befehlsleiste (Neu,
+  Ausschneiden/Kopieren/Einfügen/Umbenennen/Teilen/Löschen, Sortieren, Anzeigen),
+  Adressleiste mit Brotkrumen und Suche, Navigationsbereich (Start, Desktop, Downloads …,
+  Dieser PC, Netzwerk), „Dieser PC“ mit Laufwerksbuchstaben und Füllbalken, Ansichten,
+  Detailbereich, Statusleiste, Kontextmenü im Windows-11-Aufbau, Papierkorb, Kopierdialog.
 
-- Erst wenn alle Bausteine in der VM laufen und die Messwerte passen: finaler Build, Prüfsumme, Test des ISOs in Hyper-V mit Secure Boot, dann Stick schreiben (Anleitung in docs/02, Abschnitt USB-Stick).
-- Bis dahin kein Stick. Zwischenstände bleiben in der VM.
+## M9 Einstellungen und Updates (XL)
+
+- Eigenbau (C++/QML): System, Bluetooth und Geräte, Netzwerk und Internet,
+  Personalisierung, Apps, Konten, Zeit und Sprache, Spielen, Barrierefreiheit,
+  Datenschutz und Sicherheit, Updates – mit echter Funktion (KConfig, D-Bus,
+  NetworkManager, BlueZ, KScreen, PipeWire/Pulse, PowerDevil, AccountsService, timedated,
+  PackageKit). Updates mit Wiederherstellungspunkt (Snapper), grub-btrfs als eigenes Paket,
+  Zurücksetzen.
+
+## M10 Werkzeug-Apps (L)
+
+- Task-Manager (Eigenbau auf libksysguard), Terminal (eigener Rahmen mit Tabs in der
+  Titelleiste + Konsole-KPart), Editor (Notepad-Nachbau), Rechner, Snipping Tool.
+
+## M11 Medien, Store, Wine (L)
+
+- Fotos, Medienwiedergabe (Eigenbauten), Store-Ersatz (Flatpak/dnf, Katalog),
+  .exe per Doppelklick über Wine (MIME-Handler, Startmenü-Einträge).
+
+## M12 Leistung und Gesamtabnahme (M)
+
+- RAM im Leerlauf < 1,5 GB (heute ~1,9 GB: plasma-keyboard, xwaylandvideobridge,
+  kdeconnect, DiscoverNotifier, abrt, PackageKit …), Boot < 15 s (heute 6,6 s), Effekte
+  flüssig; ISO abspecken; finales ISO, Installation in frischer VM, alle Prüflisten erneut.
+
+## M13 USB-Stick (S)
+
+- Nur nach ausdrücklicher Rückfrage (riskante Aktion außerhalb der VM). Anleitung docs/02.

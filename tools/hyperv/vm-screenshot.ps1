@@ -1,11 +1,15 @@
 # Bildschirmfoto einer Hyper-V-VM als PNG (ohne vmconnect, ueber die Hyper-V-WMI-Schnittstelle).
-#   vm-screenshot.ps1 [-Out datei.png] [-VM Name] [-W 1024 -H 768]
-# Gibt den Dateinamen aus. Die Groesse sollte der Gastaufloesung entsprechen (Standard 1024x768).
+#   vm-screenshot.ps1 [-Out datei.png] [-VM Name] [-W 960 -H 540]
+# Gibt den Dateinamen aus. Nur zur Orientierung (RGB565, verkleinert; Hyper-V lehnt Groessen
+# ueber etwa 1600x1200 ab, z. B. 1920x1080 mit ReturnValue 32775). Das Seitenverhaeltnis sollte
+# dem Gast entsprechen (seit 2026-10-05 1920x1080 -> 960x540). Pixelgenaue Bilder aus der
+# laufenden Sitzung: vm-gastfoto.ps1. Vor der Anmeldung (Bootscreen, Anmeldebildschirm,
+# Installer) bleibt dieses Skript der einzige Weg.
 param(
     [string]$Out = (Join-Path $env:TEMP 'fenstra-vm.png'),
     [string]$VM,
-    [int]$W = 1024,
-    [int]$H = 768
+    [int]$W = 960,
+    [int]$H = 540
 )
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot\_vm.ps1"

@@ -95,8 +95,9 @@ for p in "${PKGS[@]}"; do
   # bauen (RPMS-Verzeichnis vorher leeren, damit nur neue Pakete kopiert werden)
   rm -rf "$TOP/RPMS"/*
   if rpmbuild -ba --define "_topdir $TOP" --define "dist .fc$RELEASEVER" "$TOP/SPECS/$(basename "$spec")" > "$WORK/build-$p.log" 2>&1; then
-    n=$(find "$TOP/RPMS" -name '*.rpm' -newer "$TOP/SPECS/$(basename "$spec")" | wc -l)
-    find "$TOP/RPMS" -name '*.rpm' -newer "$TOP/SPECS/$(basename "$spec")" -exec cp -p {} "$OUT/" \;
+    # Debug-Pakete (C++-Pakete) kommen nicht in die Paketquelle des Images
+    n=$(find "$TOP/RPMS" -name '*.rpm' ! -name '*-debuginfo-*' ! -name '*-debugsource-*' -newer "$TOP/SPECS/$(basename "$spec")" | wc -l)
+    find "$TOP/RPMS" -name '*.rpm' ! -name '*-debuginfo-*' ! -name '*-debugsource-*' -newer "$TOP/SPECS/$(basename "$spec")" -exec cp -p {} "$OUT/" \;
     echo "    gebaut: $n RPM(s)  (Protokoll: $WORK/build-$p.log)"
   else
     echo "    FEHLER beim Bauen, letzte Zeilen von $WORK/build-$p.log:"; tail -n 30 "$WORK/build-$p.log" | sed 's/^/      /'; rc=1

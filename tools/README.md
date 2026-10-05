@@ -11,15 +11,30 @@ werden, ohne dass jemand an der VM sitzt. Entstanden beim Test der Builds #2–#
 
 ## Auf den Windows-PC holen
 
-Das Repo liegt in WSL unter `/root/Fenstra`; Windows hat darauf keinen Lesezugriff. Die
-Windows-Werkzeuge deshalb in einen Arbeitsordner kopieren (nach jeder Änderung erneut):
+Das Repo liegt in WSL unter `/root/Fenstra`; Windows hat darauf keinen Lesezugriff. Seit
+2026-10-05 gibt es die Arbeitskopie `C:\Users\Daniel\Fenstra\ws` (Abgleich mit
+`tools/sync-ws.sh`, siehe CLAUDE.md). Aufruf der Windows-Werkzeuge deshalb aus
+`C:\Users\Daniel\Fenstra\ws\tools\hyperv\`. Die Skripte sind reines ASCII, damit Windows
+PowerShell 5 sie ohne BOM richtig liest.
+
+## Täglicher Ablauf in der Entwicklungs-VM (1920×1080)
 
 ```
-wsl -d FedoraLinux-44 -u root -- cp -r /root/Fenstra/tools/hyperv /mnt/c/Users/Daniel/Fenstra/tools/
+cd C:\Users\Daniel\Fenstra\ws\tools\hyperv
+.\vm-ssh.ps1 'kscreen-doctor -o'                       # Befehl in der Sitzung
+.\vm-gastfoto.ps1 -Out ..\..\docs\bilder\m1\x.png        # pixelgenaues Bildschirmfoto
+.\vm-gastfoto.ps1 -Out x.png -Region '1500,1030,420,50'  # Ausschnitt
+.\vm-input.ps1 click 830 1058                           # Klick (Gastpixel 1920x1080)
 ```
 
-Aufruf dann aus `C:\Users\Daniel\Fenstra\tools\hyperv\`. Die Skripte sind reines ASCII,
-damit Windows PowerShell 5 sie ohne BOM richtig liest.
+Einmalig nach dem Anlegen einer VM (oder wenn die Helfer fehlen): `tools/vm` per scp nach
+`/tmp/fenstra-tools` kopieren und `bash /tmp/fenstra-tools/testsitzung.sh` ausführen. Das
+schaltet Sperren/Dimmen ab, setzt 1920×1080 und installiert `fenstra-shot.sh`,
+`plasmoid-deploy.sh` (nach `~/.local/bin`) und `fenstra-ssh-env.sh` (nach `~/.bashrc.d`,
+damit SSH-Befehle DBUS/WAYLAND der Sitzung kennen).
+
+Host-Seite: Für 1920×1080 schon beim Booten (Anmeldebildschirm) bei ausgeschalteter VM
+`Set-VMVideo -VMName <Name> -ResolutionType Single -HorizontalResolution 1920 -VerticalResolution 1080`.
 
 ## Ablauf eines VM-Tests
 
@@ -51,6 +66,8 @@ Mit genau einer laufenden Fenstra-VM wird sie automatisch gewählt.
 | `vm-ip.ps1` | aktuelle IPv4 der VM |
 | `vm-von-platte-starten.ps1` | herunterfahren, ISO auswerfen, von Platte starten |
 | `vm-ssh-einrichten.ps1` | Schlüssel hinterlegen und sshd einschalten (über Tastatureingaben in der Konsole) |
+| `vm-ssh.ps1` | Befehl/Skript per SSH in der Sitzung ausführen (IP zwischengespeichert, CR wird entfernt) |
+| `vm-gastfoto.ps1` | pixelgenaues Bildschirmfoto (Spectacle im Gast) holen, optional Ausschnitt/aktives Fenster |
 
 Tastencodes: 8 Rücktaste, 9 Tab, 13 Enter, 27 Esc, 32 Leertaste, 37–40 Pfeile, 91 Windows-Taste;
 Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
@@ -60,14 +77,16 @@ Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
 | Skript | Zweck |
 |---|---|
 | `plasmoid-deploy.sh <dir> [--layout]` | Plasmoid für den Benutzer installieren, plasmashell neu laden, QML-Fehler zeigen; `--layout` baut die Taskleiste aus dem Design neu auf (frische Applets) |
-| `testsitzung.sh` | automatisches Sperren und Bildschirm-Aus für den Testbenutzer abschalten |
+| `testsitzung.sh` | Sperren/Dimmen/Bildschirm-Aus abschalten, 1920×1080, Helfer installieren |
+| `fenstra-shot.sh [datei] [--region X,Y,B,H] [--fenster]` | Bildschirmfoto der Sitzung (weckt vorher den Bildschirm) |
+| `fenstra-ssh-env.sh` | nach `~/.bashrc.d`: Sitzungsumgebung für SSH-Befehle |
 
 Hinbringen: `scp -r tools/vm <plasmoid-ordner> daniel@<IP>:/tmp/` (von Windows aus mit
 denselben `-i`/`-o`-Optionen wie bei ssh).
 
 ## Erfahrungen (Stolpersteine)
 
-- **Maus:** Koordinaten sind Gastpixel (1024×768). Ist ein vmconnect-Fenster offen und wird
+- **Maus:** Koordinaten sind Gastpixel (seit 2026-10-05 1920×1080, vorher 1024×768). Ist ein vmconnect-Fenster offen und wird
   dort die Maus bewegt, landen Klicks falsch → vmconnect-Fenster nicht anfassen.
 - **Tastatur:** Hyper-V sendet US-Scancodes, der Gast hat DE-Belegung. `vm-input.ps1 text`
   rechnet um (y/z, Sonderzeichen, AltGr = rechte Alt-Taste, `<>|` nur per Scancode 0x56).

@@ -1,0 +1,6 @@
+File=fenstra.kcfg
+ClassName=StyleConfigData
+NameSpace=Fenstra
+Singleton=true
+Mutators=true
+GlobalEnums=true
