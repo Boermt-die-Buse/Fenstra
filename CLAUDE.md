@@ -128,27 +128,30 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
-## Stand M0 (2026-10-05, unterbrochen durch Nutzungslimit)
+## Stand M0 (abgeschlossen 2026-10-05)
 
-- Erledigt: Rahmen neu, Roadmap M0–M13 (docs/roadmap.md), Arbeitskopie ws + sync-ws.sh,
-  VM-Helfer (vm-ssh.ps1, vm-gastfoto.ps1, fenstra-shot.sh, fenstra-ssh-env.sh,
-  testsitzung.sh für Plasma 6), VM läuft bei 1920×1080, C++-Toolchain in WSL
-  (prepare-wsl.sh ergänzt), build-packages.sh lässt Debug-RPMs weg, docs/llm-test-log.md.
+- Rahmen neu, Roadmap M0–M13 (docs/roadmap.md), Arbeitskopie ws + sync-ws.sh,
+  VM-Helfer (vm-ssh.ps1, vm-gastfoto.ps1, vm-rpm.ps1, fenstra-shot.sh, fenstra-ssh-env.sh,
+  testsitzung.sh für Plasma 6), C++-Toolchain in WSL (prepare-wsl.sh),
+  build-packages.sh lässt Debug-RPMs weg, docs/llm-test-log.md.
+- **docs/windows11-referenz.md**: Designwerte (WinUI-Werte exakt aus den öffentlichen
+  Themenressourcen, Rest aus Kenntnis mit (u) markiert). **docs/entscheidungen-komponenten.md**:
+  KDE anpassen oder Eigenbau je Bestandteil, mit Befunden.
+- VM „Fenstra-Test5“ per `dnf upgrade` auf Plasma 6.7.5 / Qt 6.11.2 / KF 6.30 / Kernel 7.2.8
+  (= Stand WSL), Hyper-V-Video fest 1920×1080 (Set-VMVideo Single). Messung M0:
+  Boot 6,10 s, RAM 1837 MB (messungen/2026-10-05-hyperv-m0-plasma675.txt).
+- Befund Update: fenstra-release 44.0-1 verlor die Kennung (Dateitrigger auf
+  /usr/lib/os-release feuert nie) → 44.0-2 mit Paket-Trigger, in der VM geprüft.
+  Befund Snapper: beim großen Update entstand nur der „Vor“-Punkt, der „Nach“-Punkt fehlte
+  (dbus/systemd wurden mitten in der Transaktion neu gestartet) → in M9 lösen.
+  Befund Plasma 6.7: Begrüßungsassistent zeigt nach Updates „Plasma wurde auf 6.7
+  aktualisiert“ → abschalten (M12).
 - Breeze 6.7.5 als `packages/fenstra-style/src` geforkt (kstyle, kdecoration,
-  libfenstracommon; Breeze→Fenstra umbenannt, eigene CMakeLists, baut in WSL). Noch offen:
-  Spec, Plugin-Id der Dekoration (heute org.kde.fenstra), Übersetzungen in themerc/json
-  aufräumen.
-- WSL hat Plasma 6.7.5/Qt 6.11.2/KF 6.30; die VM wurde per `systemd-run --unit
-  fenstra-upgrade dnf -y upgrade` auf denselben Stand gebracht (Log
-  /var/log/fenstra-upgrade.log in der VM; danach Neustart nötig, Sitzung prüfen).
-- Recherche-Workflow (Windows-11-Referenzwerte + KDE-Erweiterungspunkte) wurde abgebrochen;
-  fortsetzen mit Workflow({scriptPath: "C:\Users\Daniel\.claude\projects\C--Users-Daniel-Fenstra\6cfdadb6-317c-4df6-9455-7e29d8000c6c\workflows\scripts\fenstra-m0-recherche-wf_ca7dcb23-461.js",
-  resumeFromRunId: "wf_ca7dcb23-461"}) (fertige Agenten kommen aus dem Cache) oder neu
-  starten. Ergebnis soll docs/windows11-referenz.md werden; danach
-  docs/entscheidungen-komponenten.md schreiben und M0 abschließen (Messung, Bericht).
+  libfenstracommon; Breeze→Fenstra umbenannt, eigene CMakeLists, baut in WSL) – Basis für M1.
 - Ad-hoc-Skripte für WSL: in C:\Users\Daniel\Fenstra\tmp schreiben und mit
   `wsl -d FedoraLinux-44 -u root -- bash /mnt/c/Users/Daniel/Fenstra/tmp/<x>.sh` ausführen
-  (mehrzeilige Argumente über PowerShell verlieren Anführungszeichen).
+  (mehrzeilige Argumente und `|`/`"` über PowerShell an wsl gehen kaputt).
+  WinUI-Ressourcen zum Nachschlagen: /var/tmp/winui in WSL (tmp/winui-grep.sh).
 
 ## Stand (zuletzt 2026-10-04)
 

@@ -68,6 +68,7 @@ Mit genau einer laufenden Fenstra-VM wird sie automatisch gewählt.
 | `vm-ssh-einrichten.ps1` | Schlüssel hinterlegen und sshd einschalten (über Tastatureingaben in der Konsole) |
 | `vm-ssh.ps1` | Befehl/Skript per SSH in der Sitzung ausführen (IP zwischengespeichert, CR wird entfernt) |
 | `vm-gastfoto.ps1` | pixelgenaues Bildschirmfoto (Spectacle im Gast) holen, optional Ausschnitt/aktives Fenster |
+| `vm-rpm.ps1 <paket>… [-Reinstall]` | neueste RPMs aus der WSL-Paketquelle in die VM kopieren und mit dnf installieren (Passwort aus `$env:FENSTRA_VM_PW` oder Abfrage) |
 
 Tastencodes: 8 Rücktaste, 9 Tab, 13 Enter, 27 Esc, 32 Leertaste, 37–40 Pfeile, 91 Windows-Taste;
 Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.

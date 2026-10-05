@@ -10,7 +10,8 @@ if [ -n "${SSH_CONNECTION:-}" ]; then
     export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
     export WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-0}
     export QT_QPA_PLATFORM=${QT_QPA_PLATFORM:-wayland}
-    export XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-wayland}
+    # sshd setzt XDG_SESSION_TYPE=tty; Programme sollen die Wayland-Sitzung sehen
+    export XDG_SESSION_TYPE=wayland
     export XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-KDE}
     export KDE_FULL_SESSION=true
     export KDE_SESSION_VERSION=6

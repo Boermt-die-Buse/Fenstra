@@ -8,7 +8,7 @@
 # Trigger-Weg übersteht Updates ohne Neubau.
 Name:           fenstra-release
 Version:        44.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Systemkennung für Fenstra (basiert auf Fedora Linux)
 License:        MIT
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -44,7 +44,13 @@ install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_prefix}/lib/fenstra/issue
 # Wir ersetzen nur den Symlink durch unseren, keine Datei eines anderen Pakets.
 if [ -L /etc/issue ]; then ln -sf ../usr/lib/fenstra/issue /etc/issue; fi
 
-%transfiletriggerin -- /usr/lib/os-release
+# Nach jedem Installieren/Aktualisieren der Fedora-Kennung erneut anwenden. Ein
+# Dateitrigger auf /usr/lib/os-release feuert nicht: RPM vergleicht Trigger-Präfixe
+# als Verzeichnisse ("/usr/lib/os-release/"), festgestellt beim Update am 2026-10-05.
+%triggerin -- fedora-release-identity-kde-desktop
+%{_libexecdir}/fenstra/apply-os-release
+
+%triggerin -- fedora-release-identity-basic
 %{_libexecdir}/fenstra/apply-os-release
 
 %files
@@ -55,5 +61,9 @@ if [ -L /etc/issue ]; then ln -sf ../usr/lib/fenstra/issue /etc/issue; fi
 %{_libexecdir}/fenstra/apply-os-release
 
 %changelog
+* Mon Oct 05 2026 Fenstra-Projekt - 44.0-2
+- Paket-Trigger auf fedora-release-identity-* statt Dateitrigger auf
+  /usr/lib/os-release (feuerte nicht, Kennung ging beim Update verloren)
+
 * Tue Sep 29 2026 Fenstra-Projekt - 44.0-1
 - Erste Fassung: os-release per Dateitrigger, deutsches /etc/issue
