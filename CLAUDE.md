@@ -60,19 +60,16 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
 - Hyper-V/VirtualBox installiert der Nutzer selbst (Admin). Hyper-V: Gen 2, 8192 MB fest,
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
 - Test-VMs „Fenstra-Test“ (Build #2), „Fenstra-Test3“ (#3), „Fenstra-Test4“ (#4),
-  „Fenstra-Test5“ (#5) existieren (Dateien
-  C:\Users\Daniel\Fenstra\vm\, Skript C:\Users\Daniel\Fenstra\neue-vm.ps1 -Name -Iso).
-  In beiden Benutzer daniel (Passwort
-  kennt der Nutzer; nicht ins Repo schreiben). SSH vom Windows-PC:
-  `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_fenstra daniel@<IP>`
-  (IP per Default Switch, wechselt; im Gast `ip -4 -br a`). sudo per `echo <pw> | sudo -S`.
-- Claude Code kann die VM auch direkt bedienen (Windows-Sitzung mit Admin): Screenshots über
-  Msvm_VirtualSystemManagementService.GetVirtualSystemThumbnailImage, Eingaben über
-  Msvm_Keyboard/Msvm_SyntheticMouse. Lehren: Maus-Koordinaten = Gastpixel, aber das
-  vmconnect-Fenster muss in Ruhe sein (Nutzer-Maus stört); TypeText kommt im Gast nicht an,
-  einzelne TypeKey-Aufrufe schon; Gast hat DE-Belegung (y/z, Sonderzeichen umrechnen,
-  AltGr = rechte Alt-Taste VK 0xA5, <>|-Taste nur per Scancode 0x56); Qt-Knöpfe per
-  Leertaste, Tab-Fokus kann auf „Neu starten“ landen.
+  „Fenstra-Test5“ (#5) existieren (Dateien C:\Users\Daniel\Fenstra\vm\). Überall Benutzer
+  daniel (Passwort kennt der Nutzer; nicht ins Repo schreiben). sudo per `echo <pw> | sudo -S`.
+- VM-Werkzeuge im Repo: **tools/README.md** (Ablauf eines VM-Tests, Stolpersteine).
+  tools/hyperv/*.ps1 (Windows, Admin): neue-vm, vm-screenshot, vm-input (Maus/Tastatur mit
+  DE-Belegung), vm-bootshots, vm-ip, vm-von-platte-starten, vm-ssh-einrichten.
+  tools/vm/*.sh (in der VM): plasmoid-deploy, testsitzung. Windows kann /root in WSL nicht
+  lesen → Arbeitskopie: `wsl -d FedoraLinux-44 -u root -- cp -r /root/Fenstra/tools/hyperv
+  /mnt/c/Users/Daniel/Fenstra/tools/`, Aufruf aus C:\Users\Daniel\Fenstra\tools\hyperv\.
+  SSH: `ssh -i ~\.ssh\fenstra-vm -o UserKnownHostsFile=~\.ssh\known_hosts_<vm> daniel@<IP>`,
+  IP mit vm-ip.ps1 (wechselt nach jedem Neustart).
 - Aus der Claude-Umgebung sind GitHub, invent.kde.org, download.kde.org und jsdelivr
   gesperrt; src.fedoraproject.org, dl.fedoraproject.org, npmjs.org, pypi erreichbar.
   Fedora-44-Paketdaten lassen sich von dl.fedoraproject.org laden und auswerten.
