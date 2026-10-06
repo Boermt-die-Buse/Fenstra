@@ -12,6 +12,7 @@ und wird von `build/build-iso.sh` in den Kickstart eingebunden.
 | `fenstra-logos` | Logo (SVG + PNG in allen Größen), Startmenü-Symbol `start-here`, Systeminfo-Logo, Anaconda-Grafiken, Plymouth-Wasserzeichen, Favicon | ersetzt `fedora-logos` (Provides `system-logos`) |
 | `fenstra-backgrounds` | Wallpaper „Fenstra“ (Blüte) hell/dunkel aus `hintergrund.py`, 18 Auflösungen, `/usr/share/wallpapers/Default`, sechs Benutzerbilder | ersetzt `desktop-backgrounds-kde` (Provides `system-backgrounds-kde`) |
 | `fenstra-theme` | Globale Designs `org.fenstra.desktop` (hell) und `.dark`, Farbschemata, `/etc/xdg`-Vorgaben (Schriften, Symbole, Fensterknöpfe, Sperrbildschirm), fontconfig | ergänzt Breeze |
+| `fenstra-taskleiste` (aus `fenstra-theme`) | Taskleiste `org.fenstra.taskbar` (Start mit Startmenü, Suche, Task-Ansicht, Apps, Widgets-Knopf) und Infobereich `org.fenstra.infobereich` (Netz/Ton/Akku, Uhr, Glocke, Desktop anzeigen) | ersetzt Kickoff, Taskmanager, Digitaluhr; früher `fenstra-startmenu` |
 | `plymouth-theme-fenstra` (aus `fenstra-theme`) | Bootscreen: Firmware-Logo oder Fenstra-Logo, Ladering, deutsche Update-Texte | wie `bgrt`/`spinner` |
 | `fenstra-icon-theme` | Symbolthema `fenstra`, komplett eigene Motive aus Code (`glyphs.py`, `farbig.py`, `generate.py`, `mapping.json`), erbt nur von hicolor | ersetzt Breeze-Symbole |
 | `fenstra-cursor-theme` | Mauszeiger `fenstra-cursors` aus `zeiger.py` (SVG → Xcursor, 24–96 px) | ersetzt Breeze-Zeiger |

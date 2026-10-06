@@ -1,0 +1,5 @@
+# Fenstra: Plasma-Design als Systemvorgabe. Nötig, weil Plasma beim Anwenden des globalen
+# Designs org.fenstra.desktop den Benutzerwert löscht, wenn er der Vorgabe des Standard-
+# Designs entspricht; ohne diese Datei fiel Plasma dann auf Breeze zurück (Befund M3).
+[Theme]
+name=fenstra

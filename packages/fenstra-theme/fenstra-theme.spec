@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -23,11 +23,11 @@ Requires:       fenstra-sound-theme
 Requires:       fenstra-logos
 Requires:       selawik-fonts
 Requires:       cascadia-code-fonts
-# Taskleiste: Suche = KRunner, Aktive Anwendungen = KWin-Übersicht per qdbus
+# Taskleiste: Suche = KRunner (D-Bus), Schnelllink-Menü nutzt qdbus
 Requires:       /usr/bin/krunner
 Requires:       /usr/bin/qdbus-qt6
-# Startmenü der Taskleiste
-Requires:       fenstra-startmenu = %{version}-%{release}
+# Taskleiste und Infobereich (M3, enthalten das Startmenü)
+Requires:       fenstra-taskleiste = %{version}-%{release}
 
 %description
 Globales Design "Fenstra" (hell und dunkel) für KDE Plasma im Stil von
@@ -45,21 +45,34 @@ Requires(post): plymouth-scripts
 Bootscreen im Stil von Windows: Firmware-Logo (falls vorhanden) oder das
 Fenstra-Logo mit einem Ladering auf schwarzem Grund.
 
-%package -n fenstra-startmenu
-Summary:        Startmenü im Stil von Windows 11 für Fenstra
+%package -n fenstra-taskleiste
+Summary:        Taskleiste, Startmenü und Infobereich im Stil von Windows 11 für Fenstra
 License:        GPL-2.0-or-later
-# QML-Module: Kicker-Modelle (plasma-workspace), Plasma-Komponenten (libplasma),
-# Kirigami, Avatar (kirigami-addons), Benutzerdaten (kcoreaddons)
+# QML-Module: Taskmanager/Kicker/Benachrichtigungen/Kalender/D-Bus (plasma-workspace),
+# Plasma-Komponenten (libplasma), Datenquellen (plasma5support), Vorschaubilder (kpipewire),
+# Netz (plasma-nm), Lautstärke (plasma-pa), Kirigami, Avatar, Einstellungsseite (kcmutils)
 Requires:       plasma-workspace
 Requires:       libplasma
+Requires:       plasma5support
+Requires:       kpipewire
+Requires:       plasma-nm
+Requires:       plasma-pa
 Requires:       kf6-kirigami
 Requires:       kf6-kirigami-addons
 Requires:       kf6-kcoreaddons
+Requires:       kf6-kcmutils
+# Wetter im Widgets-Knopf (Wetterquellen)
+Recommends:     kdeplasma-addons
+# ersetzt das Startmenü-Applet aus 4b-2 (jetzt Teil der Taskleiste)
+Obsoletes:      fenstra-startmenu < 44.0-9
+Provides:       fenstra-startmenu = %{version}-%{release}
 
-%description -n fenstra-startmenu
-Plasma-Startmenü im Aufbau von Windows 11: Suche oben, angeheftete Apps als
-Raster, Empfohlen (zuletzt benutzt), alle Apps alphabetisch, unten Benutzer
-und Ein/Aus. Öffnet auch mit der Windows-Taste.
+%description -n fenstra-taskleiste
+Taskleiste im Aufbau von Windows 11 (Plasma-Applets org.fenstra.taskbar und
+org.fenstra.infobereich): Widgets-Knopf links; Start, Suchfeld, Task-Ansicht und
+App-Knöpfe mittig zur Bildschirmbreite mit Indikatoren, Vorschaubildern und
+Sprunglisten; Startmenü; rechts Schnelleinstellungen-Gruppe, Uhr mit Datum,
+Glocke und Streifen „Desktop anzeigen“.
 
 %prep
 %setup -q -n src
@@ -85,12 +98,9 @@ cp -a look-and-feel/org.fenstra.desktop.dark %{buildroot}%{_datadir}/plasma/look
 cp -a look-and-feel/org.fenstra.desktop/contents/splash %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
 # ebenso das Taskleisten-Layout (Windows-11-Aufbau, beim ersten Anmelden)
 cp -a look-and-feel/org.fenstra.desktop/contents/layouts %{buildroot}%{_datadir}/plasma/look-and-feel/org.fenstra.desktop.dark/contents/
-# Startmenü (Plasmoid)
+# Taskleiste und Infobereich (Plasmoids)
 install -d %{buildroot}%{_datadir}/plasma/plasmoids
-cp -a plasmoids/org.fenstra.startmenu %{buildroot}%{_datadir}/plasma/plasmoids/
-# Knöpfe der Taskleiste: Suche und Aktive Anwendungen (nicht im Startmenü sichtbar)
-install -d %{buildroot}%{_datadir}/applications
-install -p -m 0644 applications/fenstra-search.desktop applications/fenstra-taskview.desktop %{buildroot}%{_datadir}/applications/
+cp -a plasmoids/org.fenstra.taskbar plasmoids/org.fenstra.infobereich %{buildroot}%{_datadir}/plasma/plasmoids/
 # Begrüßungsassistent (plasma-welcome): Fenstra-Logo und -Text statt KDE-Maskottchen
 install -D -p -m 0644 plasma-welcome/intro-customization.desktop %{buildroot}%{_datadir}/plasma/plasma-welcome/intro-customization.desktop
 # Farbschemata
@@ -98,7 +108,7 @@ install -d %{buildroot}%{_datadir}/color-schemes
 install -p -m 0644 color-schemes/*.colors %{buildroot}%{_datadir}/color-schemes/
 # systemweite Vorgaben (KConfig liest /etc/xdg vor den Fedora-Profilen)
 install -d %{buildroot}%{_sysconfdir}/xdg
-install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/krunnerrc %{buildroot}%{_sysconfdir}/xdg/
+install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/krunnerrc xdg/plasmarc %{buildroot}%{_sysconfdir}/xdg/
 # Plasma-Designs
 install -d %{buildroot}%{_datadir}/plasma/desktoptheme
 cp -a desktoptheme-build/fenstra desktoptheme-build/fenstra-dark %{buildroot}%{_datadir}/plasma/desktoptheme/
@@ -134,19 +144,28 @@ fi
 %config(noreplace) %{_sysconfdir}/xdg/kscreenlockerrc
 %config(noreplace) %{_sysconfdir}/xdg/ksplashrc
 %config(noreplace) %{_sysconfdir}/xdg/krunnerrc
+%config(noreplace) %{_sysconfdir}/xdg/plasmarc
 %{_datadir}/plasma/desktoptheme/fenstra/
 %{_datadir}/plasma/desktoptheme/fenstra-dark/
-%{_datadir}/applications/fenstra-search.desktop
-%{_datadir}/applications/fenstra-taskview.desktop
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 
-%files -n fenstra-startmenu
-%{_datadir}/plasma/plasmoids/org.fenstra.startmenu/
+%files -n fenstra-taskleiste
+%{_datadir}/plasma/plasmoids/org.fenstra.taskbar/
+%{_datadir}/plasma/plasmoids/org.fenstra.infobereich/
 
 %files -n plymouth-theme-fenstra
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-9
+- M3: eigene Taskleiste (org.fenstra.taskbar, mit Startmenü) und eigener Infobereich
+  (org.fenstra.infobereich) im Unterpaket fenstra-taskleiste; ersetzt fenstra-startmenu
+- Layout: Taskleiste, Plasma-Systemabschnitt (nur „^“), Infobereich; Starter für Suche
+  und Task-Ansicht entfallen (direkt per D-Bus)
+- eigenes Start-Symbol (blaues Fenstra-Fenster ohne Kachel, hell/dunkel)
+- /etc/xdg/plasmarc: Plasma-Design fenstra als Systemvorgabe (nach Wechsel dunkel→hell
+  fiel Plasma sonst auf Breeze zurück)
+
 * Tue Oct 06 2026 Fenstra-Projekt - 44.0-8
 - M2: eigene Mauszeiger (fenstra-cursors) und eigenes Klangschema (fenstra) als Vorgabe,
   Breeze-Zeiger entfallen

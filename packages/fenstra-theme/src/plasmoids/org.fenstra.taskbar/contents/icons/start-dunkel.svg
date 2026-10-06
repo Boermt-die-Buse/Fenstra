@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <!-- Fenstra: Start-Symbol (dunkles Design), hellere Blautöne wie das Windows-Logo im
+       dunklen Modus. Eigenes Motiv, CC-BY-SA-4.0. -->
+  <defs>
+    <linearGradient id="rahmen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7FD2FF"/>
+      <stop offset="1" stop-color="#3AA0F5"/>
+    </linearGradient>
+    <linearGradient id="fluegel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A6E0FF"/>
+      <stop offset="1" stop-color="#47A8F8"/>
+    </linearGradient>
+    <linearGradient id="glas" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4C9EE6"/>
+      <stop offset="1" stop-color="#2F7FD0"/>
+    </linearGradient>
+  </defs>
+  <!-- Rahmen -->
+  <rect x="3.75" y="5.25" width="17.5" height="13.5" rx="2" fill="none" stroke="url(#rahmen)" stroke-width="1.5"/>
+  <!-- rechter Flügel: Glas -->
+  <rect x="12.25" y="6" width="8.25" height="12" rx="1" fill="url(#glas)"/>
+  <!-- linker Flügel, nach außen geöffnet (perspektivisch höher) -->
+  <path d="M3 5 11.5 1.5V22.5L3 19Z" fill="url(#fluegel)"/>
+  <path d="M4.5 6.5 10 4.3V19.7L4.5 17.5Z" fill="#FFFFFF" fill-opacity="0.3"/>
+</svg>

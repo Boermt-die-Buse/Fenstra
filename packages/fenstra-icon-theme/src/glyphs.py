@@ -614,3 +614,6 @@ g('weather_snow_rain', _wolke(), L(5, 12, 4.3, 14), D(8, 13.2, .7), L(11, 12, 10
 g('weather_none', _wolke(), L(2, 2, 14, 14))
 g('brightness_low', sun(8, 8, 2.6, 4.3, 5.4))
 g('brightness_off', C(8, 8, 2.6), L(2, 2, 14, 14))
+# Kabelnetz (Windows-11-Infobereich: Bildschirm mit Netzwerkstecker unten links)
+g('network_wired', R(4.5, 2.5, 10, 7.5, 1.2), L(9.5, 10, 9.5, 12), L(7.5, 12.5, 11.5, 12.5),
+  RF(1.5, 11, 3.6, 3, .6), L(3.3, 11, 3.3, 8.5), L(3.3, 8.5, 4.5, 8.5))

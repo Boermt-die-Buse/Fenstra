@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <!-- An die Taskleiste angeheftete Apps (Reihenfolge = Anzeige) -->
+    <entry name="launchers" type="StringList">
+      <default>applications:org.kde.dolphin.desktop,preferred://browser,applications:org.kde.discover.desktop</default>
+    </entry>
+    <!-- Taskleistenelemente wie in den Windows-Einstellungen -->
+    <entry name="searchMode" type="Int">
+      <!-- 0 ausgeblendet, 1 nur Suchsymbol, 2 Suchfeld -->
+      <default>2</default>
+    </entry>
+    <entry name="showTaskView" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showWidgets" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="centered" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- Wetter für den Widgets-Knopf: Quelle der Plasma-Wetter-Engine,
+         z. B. "dwd|weather|Berlin-Tempelhof|10384"; leer = Widgets-Symbol -->
+    <entry name="weatherSource" type="String">
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Start">
+    <entry name="icon" type="String">
+      <default>start-here</default>
+    </entry>
+    <!-- Vorgabe für "Angeheftet" im Startmenü: beim ersten Start werden fehlende Einträge
+         ergänzt (danach verwaltet KActivities die Liste). -->
+    <entry name="favorites" type="StringList">
+      <default>preferred://browser,org.kde.dolphin.desktop,org.kde.discover.desktop,systemsettings.desktop,org.kde.konsole.desktop,org.kde.kate.desktop,org.kde.gwenview.desktop,org.kde.okular.desktop,org.kde.kcalc.desktop,org.kde.spectacle.desktop,org.kde.kwrite.desktop,org.kde.ark.desktop</default>
+    </entry>
+    <entry name="favoritesPortedToKAstats" type="Bool">
+      <default>false</default>
+    </entry>
+  </group>
+</kcfg>

@@ -1,0 +1,26 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Taskbar in the style of Windows 11: start, search, task view, apps and widgets button, centred on the screen",
+        "Description[de]": "Taskleiste im Stil von Windows 11: Start, Suche, Task-Ansicht, Apps und Widgets-Knopf, mittig zum Bildschirm",
+        "EnabledByDefault": true,
+        "Icon": "start-here",
+        "Id": "org.fenstra.taskbar",
+        "License": "GPL-2.0-or-later",
+        "Name": "Fenstra Taskbar",
+        "Name[de]": "Fenstra-Taskleiste",
+        "Version": "44.0",
+        "Website": "https://github.com/Boermt-die-Buse/Fenstra"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.launchermenu",
+        "org.kde.plasma.multitasking"
+    ]
+}

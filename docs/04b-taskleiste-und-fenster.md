@@ -1,5 +1,10 @@
 # Baustein 4b: Taskleiste, Startmenü, Schnelleinstellungen, Fenster
 
+> **Hinweis (M3, 2026-10-06):** Die Taskleiste ist inzwischen ein eigenes Applet
+> (`org.fenstra.taskbar`, mit Startmenü) plus eigener Infobereich (`org.fenstra.infobereich`),
+> Paket fenstra-taskleiste. Prüfliste: docs/checkliste-taskleiste.md. Die Abschnitte unten
+> beschreiben den Stand von 4b.
+
 Ziel: Bedienung und Aufbau wie Windows 11. 4b wird in drei Schritten gebaut, jeder mit
 Build und VM-Test.
 

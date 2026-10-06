@@ -95,8 +95,8 @@ und was als Nächstes kommt. Bei Änderungen am Stand bitte hier nachziehen.
   4 CPUs, 60 GB, Secure Boot mit Vorlage „Microsoft UEFI-Zertifizierungsstelle“.
 - Test-VM „Fenstra-Test5“ (Build #5, Entwicklungs-VM; Dateien C:\Users\Daniel\Fenstra\vm\).
   Ältere VMs und ISOs (Builds #2–#4) am 2026-10-05 gelöscht; ISO #5 liegt in
-  C:\Users\Daniel\Fenstra\ und /var/lib/fenstra-build/out/20261004-1608/. In Test5 ist das
-  Startmenü 44.0-5 zusätzlich als Benutzerkopie (~/.local/share/plasma/plasmoids) installiert. Überall Benutzer
+  C:\Users\Daniel\Fenstra\ und /var/lib/fenstra-build/out/20261004-1608/. Test5 hat alle
+  Fenstra-Pakete per RPM (keine Benutzerkopien von Plasmoids mehr). Überall Benutzer
   daniel (Passwort kennt der Nutzer; nicht ins Repo schreiben). sudo per `echo <pw> | sudo -S`.
 - VM-Werkzeuge im Repo: **tools/README.md** (Ablauf eines VM-Tests, Stolpersteine).
   tools/hyperv/*.ps1 (Windows, Admin): neue-vm, vm-screenshot, vm-input (Maus/Tastatur mit
@@ -128,7 +128,27 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
-## Stand M2 (abgeschlossen 2026-10-06) – nächster Schritt: M3 Taskleiste
+## Stand M3 (abgeschlossen 2026-10-06) – nächster Schritt: M4 Startmenü, Suche, Flyouts
+
+- **Taskleiste eigen** (Prüfliste docs/checkliste-taskleiste.md bestanden, Abweichungen dort):
+  Unterpaket **fenstra-taskleiste** von fenstra-theme (ersetzt fenstra-startmenu) mit
+  - `org.fenstra.taskbar` (src/plasmoids/org.fenstra.taskbar): main.qml (Modelle, Farben,
+    D-Bus), Bar.qml (Zentrierung zur Bildschirmbreite, Startmenü-Dialog), TaskButton,
+    PreviewDialog (PipeWire), JumpList (Kicker-SimpleFavoritesModel), QuickLinkMenu (Win+X),
+    WidgetsButton (Wetter: Konfig `weatherSource`, z. B. `dwd|weather|Berlin-Tempelhof|10384`),
+    StartMenu & Co. aus 4b-2, icons/start*.svg (eigenes Start-Symbol).
+  - `org.fenstra.infobereich`: Gruppe (Netz/Ton/Akku + Vorstufe Schnelleinstellungen), Uhr
+    (+ Kalender), Glocke, Desktop-Streifen.
+  - Layout-Skript im globalen Design: Taskleiste, Plasma-Systemabschnitt (alle Statussymbole in
+    `hiddenItems`), Infobereich. `/etc/xdg/plasmarc` (Plasma-Design fenstra) ist Pflicht.
+- Entwicklungsschleife: Plasmoid-Ordner nach `~/.local/share/plasma/plasmoids/` in der VM kopieren
+  (Benutzerkopie hat Vorrang), `systemctl --user restart plasma-plasmashell`, Fehler mit
+  `journalctl --user -o cat | grep org.fenstra`. Danach die Benutzerkopie wieder löschen.
+- Messung M3: Boot 6,91 s, RAM 1792 MB.
+- Offen für M4: Flyouts mit 12 px Abstand, Schnelleinstellungen/Benachrichtigungszentrale/
+  Widgets/Suche in Windows-Fassung, farbige Wettersymbole; Kirigami-Auswahlfarbe (aus M2).
+
+## Stand M2 (abgeschlossen 2026-10-06)
 
 - **Alle Assets eigen, aus Code erzeugt** (Prüfliste docs/checkliste-assets.md bestanden,
   31/31 Muss, 11/11 Soll, Abweichungen dort):
@@ -297,6 +317,13 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
   jeden benutzten Namen selbst liefern, „still“ als 50 ms Stille.
 - (M2) In SVG-Generatoren Verlaufs-IDs nie mit der Definition verwechseln (`url(#{id})`);
   jedes erzeugte SVG mit rsvg-convert rendern lassen (Fehler zeigen sich sonst erst in Qt).
+- (M3) `PlasmaCore.Dialog` nimmt nur ein `mainItem`: Timer/Connections in ein umgebendes Item.
+- (M3) Plasma löscht beim Anwenden des Standard-Designs Benutzerwerte, die der Vorgabe
+  entsprechen: jede LnF-Vorgabe braucht eine Systemvorgabe in /etc/xdg (sonst Breeze-Rückfall).
+- (M3) Plasma-6-Systemabschnitt: `hiddenItems` direkt am Applet schreiben (es ist selbst die
+  Containment). Datum deutsch nur mit `toLocaleDateString(Qt.locale(), …)`.
+- (M3) In der Test-VM kann sich nach einer Pause des Rechners die IP ändern; vm-ssh.ps1
+  ermittelt sie neu, vm-rpm.ps1 bricht dann einmal ab (erneut aufrufen).
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 

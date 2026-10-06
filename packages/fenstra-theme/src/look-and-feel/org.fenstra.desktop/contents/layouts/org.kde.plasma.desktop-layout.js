@@ -1,11 +1,11 @@
-// Fenstra: Taskleiste im Aufbau von Windows 11 (Baustein 4b).
+// Fenstra: Taskleiste im Aufbau von Windows 11 (M3).
 // Wird von Plasma beim ersten Anmelden eines Benutzers ausgeführt (globales Design
 // org.fenstra.desktop) und beim Anwenden des Designs mit "Layout übernehmen".
 //
 // Aufbau von links nach rechts:
-//   [flexibler Abstand] Start  Suche  Aktive Anwendungen  angeheftete/offene Programme
-//   [flexibler Abstand] Infobereich  Uhr mit Datum  Desktop anzeigen
-// Die Programmgruppe sitzt dadurch mittig zwischen linkem Rand und Infobereich.
+//   Fenstra-Taskleiste (Widgets-Knopf; Start, Suche, Task-Ansicht, Apps mittig zum Bildschirm)
+//   Plasma-Systemabschnitt (nur der Überlauf „^“ und App-Symbole; Netz, Ton usw. ausgeblendet)
+//   Fenstra-Infobereich (Schnelleinstellungen-Gruppe, Uhr, Glocke, Desktop anzeigen)
 
 var panel = new Panel;
 panel.location = "bottom";
@@ -17,46 +17,30 @@ panel.lengthMode = "fill";
 if ("floating" in panel) {
     panel.floating = false;
 }
-// durchscheinend mit Unschärfe dahinter (Acrylic-Annäherung, Plasma-Design "default")
+// durchscheinend mit Unschärfe dahinter (Acrylic-Annäherung)
 if ("opacity" in panel) {
     panel.opacity = "adaptive";
 }
 
-panel.addWidget("org.kde.plasma.panelspacer");
+// Taskleiste mit Startmenü (Paket fenstra-taskleiste)
+panel.addWidget("org.fenstra.taskbar");
 
-// Fenstra-Startmenü (Paket fenstra-startmenu, Baustein 4b-2)
-panel.addWidget("org.fenstra.startmenu");
-
-var search = panel.addWidget("org.kde.plasma.icon");
-search.currentConfigGroup = ["General"];
-search.writeConfig("url", "file:///usr/share/applications/fenstra-search.desktop");
-
-var taskview = panel.addWidget("org.kde.plasma.icon");
-taskview.currentConfigGroup = ["General"];
-taskview.writeConfig("url", "file:///usr/share/applications/fenstra-taskview.desktop");
-
-var tasks = panel.addWidget("org.kde.plasma.icontasks");
-tasks.currentConfigGroup = ["General"];
-tasks.writeConfig("launchers", [
-    "applications:org.kde.dolphin.desktop",
-    "applications:org.mozilla.firefox.desktop",
-    "applications:org.kde.discover.desktop"
+// Plasma-Systemabschnitt: Statussymbole kommen in den Überlauf; Netz, Ton und Akku zeigt der
+// Fenstra-Infobereich, Benachrichtigungen bleiben hier (sie liefern die Popups).
+var tray = panel.addWidget("org.kde.plasma.systemtray");
+tray.currentConfigGroup = ["General"];
+tray.writeConfig("hiddenItems", [
+    "org.kde.plasma.networkmanagement", "org.kde.plasma.volume", "org.kde.plasma.battery",
+    "org.kde.plasma.notifications", "org.kde.plasma.brightness", "org.kde.plasma.clipboard",
+    "org.kde.plasma.devicenotifier", "org.kde.kdeconnect", "org.kde.plasma.vault",
+    "org.kde.plasma.printmanager", "org.kde.plasma.keyboardlayout", "org.kde.plasma.keyboardindicator",
+    "org.kde.plasma.manage-inputmethod", "org.kde.plasma.mediacontroller", "org.kde.plasma.cameraindicator",
+    "org.kde.plasma.weather", "org.kde.plasma.bluetooth", "org.kde.kscreen"
 ]);
-tasks.writeConfig("showOnlyCurrentDesktop", false);
-tasks.writeConfig("iconSpacing", 2);
-tasks.writeConfig("fill", false);              // Programmgruppe nicht strecken (mittig)
+tray.writeConfig("shownItems", []);
 
-panel.addWidget("org.kde.plasma.panelspacer");
-
-panel.addWidget("org.kde.plasma.systemtray");
-
-var clock = panel.addWidget("org.kde.plasma.digitalclock");
-clock.currentConfigGroup = ["Appearance"];
-clock.writeConfig("showDate", true);
-clock.writeConfig("dateDisplayFormat", "BelowTime");
-clock.writeConfig("dateFormat", "shortDate");
-
-panel.addWidget("org.kde.plasma.showdesktop");
+// Infobereich: Gruppe, Uhr, Glocke, Streifen „Desktop anzeigen“
+panel.addWidget("org.fenstra.infobereich");
 
 // Hintergrundbild für alle Desktops
 var desktopsArray = desktopsForActivity(currentActivity());

@@ -392,6 +392,7 @@ Werte Kenntnis, Maße (u) bis Referenzbild.
 | Knopf-Grundfläche | 44 breit × 48 hoch (u), Hover-Fläche 40×40, Radius 4, mittig |
 | Symbol | 24×24 |
 | Hover | hell `SubtleFillColorSecondary`-ähnlich, ca. `#0F000000` + 1 px Rahmen `#0A000000` (u); dunkel `#0FFFFFFF` |
+| Fenstra (M3) | hell halbweiß `#8CFFFFFF` (Hover) bzw. `#C7FFFFFF` (aktiv) + 1 px Rand `#0D000000`; dunkel `#0FFFFFFF` / `#17FFFFFF` + Rand `#0DFFFFFF` – Annahme, bis ein Referenzbild vorliegt |
 | gedrückt | Symbol schrumpft kurz auf ca. 85 % und federt zurück (ca. 200) |
 | aktives Fenster | Hintergrund wie Hover (dauerhaft) + **Indikator 16×3 px**, Radius 1,5, Akzent (hell Dark1, dunkel Light2) (u), 2 px über Unterkante (u) |
 | läuft, nicht aktiv | Indikator **6×3 px** grau (hell `#8A8A8A`/`#72000000`, dunkel `#9D9D9D`) (u) |

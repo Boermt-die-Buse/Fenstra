@@ -40,7 +40,7 @@ Item {
     Layout.minimumHeight: Kirigami.Units.gridUnit * 30
 
     function close() {
-        kicker.expanded = false;
+        kicker.startOpen = false;
     }
     function reset() {
         searchField.text = "";
@@ -58,8 +58,8 @@ Item {
 
     Connections {
         target: kicker
-        function onExpandedChanged() {
-            if (kicker.expanded) {
+        function onStartOpenChanged() {
+            if (kicker.startOpen) {
                 menu.reset();
                 kicker.recentModel.refresh();
             }

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Right end of the taskbar in the style of Windows 11: quick settings group (network, volume, battery), clock with date, notification bell and show-desktop strip",
+        "Description[de]": "Rechtes Ende der Taskleiste im Stil von Windows 11: Schnelleinstellungen-Gruppe (Netz, Ton, Akku), Uhr mit Datum, Glocke und Streifen „Desktop anzeigen“",
+        "EnabledByDefault": true,
+        "Icon": "preferences-system-time",
+        "Id": "org.fenstra.infobereich",
+        "License": "GPL-2.0-or-later",
+        "Name": "Fenstra Notification Area",
+        "Name[de]": "Fenstra-Infobereich",
+        "Version": "44.0",
+        "Website": "https://github.com/Boermt-die-Buse/Fenstra"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -154,3 +154,52 @@ Hyper-V-Fernsteuerung. Bewertung des übernommenen Stands (2026-10-05, Bild bei 
 | Mauszeiger | 5 | 8 | Formen und Größen wie Windows; Beschäftigt-Ring vereinfacht |
 | Klänge | 2 | 6 | Charakter getroffen, aber nur rechnerisch geprüft (VM ohne Ton) |
 | Hintergrund | 4 | 7 | eigene Blüte, Bloom-artig; weniger plastisch als das Original |
+
+## M3 Taskleiste (2026-10-06)
+
+- **Ziel:** Taskleiste im Aufbau und Verhalten von Windows 11 (Prüfliste
+  docs/checkliste-taskleiste.md).
+- **Beginn/Ende:** ca. 01:00–01:30 und 12:30–12:50 (Wanduhr; dazwischen lag die VM wegen einer
+  Pause des Rechners still).
+- **Umsetzung:**
+  - **org.fenstra.taskbar** (reines QML): Widgets-Knopf links (Wetter aus der Plasma-Wetter-
+    Engine), mittig Start · Suchfeld · Task-Ansicht · App-Knöpfe, zur Bildschirmbreite zentriert
+    (eigene Rechnung, Plasma-Abstandhalter zentrieren nur im freien Platz). App-Knöpfe auf
+    `TasksModel`: Hover 40×40, Indikator 16/6×3 mit Breitenanimation, Aufmerksamkeit orange,
+    Drück-Animation, Vorschau mit PipeWire-Livebildern, Sprungliste über Kickers
+    `SimpleFavoritesModel` (Aufgaben, zuletzt verwendete Dateien), Ziehen, Win+1…9
+    (`org.kde.plasma.multitasking`). Das Startmenü aus 4b-2 ist eingezogen und öffnet als eigener
+    Dialog mittig auf dem Bildschirm; Windows-Taste über `org.kde.plasma.launchermenu`.
+    Kontextmenüs: freie Fläche (Task-Manager, Taskleisteneinstellungen), Start (Win+X-Inhalt).
+  - **org.fenstra.infobereich**: Gruppe Netz/Ton/Akku mit gemeinsamer Hover-Fläche und Vorstufe
+    der Schnelleinstellungen, Uhr zweizeilig 12 px mit Kalender, Glocke mit Zähler, 10-px-Streifen
+    „Desktop anzeigen“. Plasmas Systemabschnitt bleibt für „^“, App-Symbole und
+    Benachrichtigungs-Popups (alle Statussymbole ausgeblendet).
+  - Paket fenstra-taskleiste (ersetzt fenstra-startmenu), Layout-Skript des globalen Designs,
+    eigenes Start-Symbol, /etc/xdg/plasmarc, Kabelnetz-Glyphe im Symbolthema (44.0-4).
+- **Probleme / Erkenntnisse:**
+  - `PlasmaCore.Dialog` nimmt keine Timer/Connections als Kinder (Standard-Eigenschaft ist
+    `mainItem`) → Steuer-Item drumherum. `visible` lässt sich nicht per Alias überschreiben.
+  - Eine Row kennt ihre Breite erst nach dem Layout-Durchlauf; „Dialog nur bei Breite > 0
+    zeigen“ verhinderte die Vorschau beim Klick → Größe aus der Fensterzahl berechnen.
+  - `PlasmaExtras.Menu` hat kein `addSeparator()`; Abschnittstitel zeichnet der Fenstra-Stil nicht.
+  - Plasma 6: Der Systemabschnitt ist selbst die verschachtelte Containment; `hiddenItems` direkt
+    in seine Konfiguration schreiben (kein `SystrayContainmentId` mehr).
+  - `Qt.formatDate` lieferte englische Namen; `Date.toLocaleDateString(Qt.locale(), …)` ist
+    deutsch.
+  - Plasma löscht beim Anwenden des Standard-Designs den Benutzerwert des Plasma-Designs; ohne
+    `/etc/xdg/plasmarc` fiel es nach dunkel → hell auf Breeze zurück (seit M1 unbemerkt).
+  - Plasmas Gruppierung nimmt Fenster mit Aufmerksamkeit aus der Gruppe.
+- **Fehlversuche:** erster Layout-Versuch für den Systemabschnitt über `desktopById` (Plasma 5);
+  Vorschau-Dialog mit Timern als Kindern; Start-Symbol zuerst als App-Kachel (Hinweis des
+  Nutzers: nicht als Fenstra-Symbol erkennbar) → neu als blaues Fenster ohne Kachel.
+- **Messung:** Boot 6,91 s, RAM 1792 MB (M2: 5,56 s / 1767 MB; Boot schwankt in Hyper-V um ±1 s),
+  messungen/2026-10-06-hyperv-m3-taskleiste.txt.
+- **Bewertung (0–10):**
+
+| Bereich | vorher | nachher | Begründung |
+|---|---|---|---|
+| Taskleiste (Aufbau, Knöpfe) | 5 | 8 | Maße, Zentrierung, Indikatoren, Suchfeld gemessen wie Windows; Hover-Farbe angenommen |
+| Vorschau/Sprunglisten | 3 | 7 | Livebilder, Aufgaben, zuletzt verwendet; keine „Peek“-Vorschau des Fensters |
+| Infobereich/Uhr | 4 | 7 | Gruppe, Uhr, Glocke, Streifen wie Windows; Überlauf und Flyouts noch Plasma/Vorstufe |
+| Start-Knopf/-Menü | 5 | 6 | eigenes Symbol, mittig; Menüinhalt erst in M4 auf Windows-Stand |
