@@ -1,7 +1,6 @@
 /*
     Fenstra-Infobereich: Schnelleinstellungen-Gruppe (Netz, Lautstärke, Akku) mit gemeinsamer
-    Hover-Fläche. Klick öffnet eine erste Fassung der Schnelleinstellungen (Lautstärke-Regler,
-    Netzstatus, Akku, Links zu den Einstellungen); die Windows-Fassung mit Kacheln folgt in M4.
+    Hover-Fläche. Klick und Win+A öffnen die Schnelleinstellungen (SchnellEinstellungen.qml).
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 import QtQuick
@@ -13,6 +12,7 @@ import org.kde.plasma.components as PC3
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.networkmanagement as PlasmaNM
 import org.kde.plasma.plasma5support as P5Support
+import org.fenstra.shell
 
 Item {
     id: gruppe
@@ -98,8 +98,8 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             property bool warOffen: false
-            onPressed: warOffen = dialog.visible
-            onClicked: dialog.visible = !warOffen
+            onPressed: warOffen = info.qsOffen
+            onClicked: info.qsOffen = !warOffen
             onWheel: wheel => {
                 if (gruppe.lautstaerke) {
                     gruppe.lautstaerke.setzen(gruppe.lautstaerke.prozent + (wheel.angleDelta.y > 0 ? 2 : -2));
@@ -108,111 +108,57 @@ Item {
         }
     }
 
-    // ---------- Schnelleinstellungen (erste Fassung) ----------
-    P5Support.DataSource {
-        id: befehle
-        engine: "executable"
-        onNewData: (quelle, daten) => disconnectSource(quelle)
+    // ---------- Schnelleinstellungen (M4) ----------
+    // Anker 12 px über der Taskleiste; „floating“ hält 12 px Abstand zum rechten Bildschirmrand
+    FlyoutAnker {
+        id: anker
+        x: gruppe.width / 2
     }
-
-    PlasmaCore.Dialog {
+    WinFlyout {
         id: dialog
-        visible: false
-        visualParent: gruppe
-        location: PlasmaCore.Types.BottomEdge
-        type: PlasmaCore.Dialog.PopupMenu
-        hideOnWindowDeactivate: true
-        flags: Qt.WindowStaysOnTopHint
-        onVisibleChanged: if (visible) requestActivate()
-
-        mainItem: ColumnLayout {
-            width: 360
-            spacing: 12
-
-            // Lautstärke
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.margins: 8
-                spacing: 8
-                PC3.ToolButton {
-                    icon.name: gruppe.tonSymbol
-                    enabled: gruppe.lautstaerke && gruppe.lautstaerke.vorhanden
-                    onClicked: gruppe.lautstaerke.umschalten()
-                    PC3.ToolTip.text: "Stummschalten"
-                    PC3.ToolTip.visible: hovered
-                }
-                PC3.Slider {
-                    Layout.fillWidth: true
-                    from: 0
-                    to: 100
-                    stepSize: 1
-                    enabled: gruppe.lautstaerke && gruppe.lautstaerke.vorhanden
-                    value: gruppe.lautstaerke ? gruppe.lautstaerke.prozent : 0
-                    onMoved: gruppe.lautstaerke.setzen(value)
-                }
-                PC3.Label {
-                    Layout.preferredWidth: 32
-                    horizontalAlignment: Text.AlignRight
-                    text: gruppe.lautstaerke && gruppe.lautstaerke.vorhanden ? gruppe.lautstaerke.prozent : "–"
-                }
+        visualParent: anker
+        visible: info.qsOffen
+        onVisibleChanged: {
+            if (!visible) {
+                info.qsOffen = false;
             }
-
-            // Netz
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: 8
-                Layout.rightMargin: 8
-                spacing: 12
-                Kirigami.Icon {
-                    Layout.preferredWidth: 16
-                    Layout.preferredHeight: 16
-                    source: netzSymbol.connectionIcon || "network-disconnect"
-                }
-                PC3.Label {
-                    Layout.fillWidth: true
-                    text: netzStatus.activeConnections || "Nicht verbunden"
-                    wrapMode: Text.Wrap
-                }
+        }
+        onHeightChanged: Qt.callLater(gruppe.medienNeuSetzen)
+        mainItem: SchnellEinstellungen {
+            id: inhalt
+            onSchliessen: info.qsOffen = false
+            // Anker für das Medien-Flyout: 12 px über der Oberkante der Schnelleinstellungen
+            Item {
+                id: medienAnker
+                x: inhalt.width / 2
+                y: -dialog.rand - 12
+                width: 1
+                height: 1
             }
-
-            // Akku
-            RowLayout {
-                visible: gruppe.hatAkku
-                Layout.fillWidth: true
-                Layout.leftMargin: 8
-                Layout.rightMargin: 8
-                spacing: 12
-                Kirigami.Icon {
-                    Layout.preferredWidth: 16
-                    Layout.preferredHeight: 16
-                    source: gruppe.akkuSymbol
-                }
-                PC3.Label {
-                    Layout.fillWidth: true
-                    text: gruppe.akkuProzent + " %" + (gruppe.laedt ? " (wird geladen)" : "")
-                }
-            }
-
-            // Fußzeile mit Links zu den Einstellungen
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 1
-                color: info.randHover
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Layout.margins: 4
-                PC3.ToolButton {
-                    text: "Netzwerk und Internet"
-                    icon.name: "network-wired"
-                    onClicked: { dialog.visible = false; befehle.connectSource("systemsettings kcm_networkmanagement"); }
-                }
-                Item { Layout.fillWidth: true }
-                PC3.ToolButton {
-                    text: "Sound"
-                    icon.name: "audio-volume-high"
-                    onClicked: { dialog.visible = false; befehle.connectSource("systemsettings kcm_pulseaudio"); }
-                }
+        }
+    }
+    // Medien-Flyout über den Schnelleinstellungen (nur bei laufender/pausierter Wiedergabe);
+    // Kindfenster der Schnelleinstellungen, damit Plasma beim Fokuswechsel keines schließt
+    WinFlyout {
+        id: medienFlyout
+        visualParent: medienAnker
+        visible: info.qsOffen && dialog.visible && medienInhalt.aktiv
+        mainItem: QsMedien {
+            id: medienInhalt
+        }
+    }
+    function medienNeuSetzen() {
+        if (medienFlyout.visible) {
+            medienFlyout.visualParent = null;
+            medienFlyout.visualParent = medienAnker;
+        }
+    }
+    Connections {
+        target: info
+        function onQsOffenChanged() {
+            if (info.qsOffen) {
+                anker.aktualisieren();
+                inhalt.zuruecksetzen();
             }
         }
     }

@@ -1,0 +1,20 @@
+# Fenstra: Vorgaben für globale Tastenkürzel (M4, docs/windows11-referenz.md 7.1).
+# Format je Eintrag: aktuell,Vorgabe der Anwendung,Beschreibung (mehrere Tasten mit \t).
+# Windows belegt Win+S/Q (Suche), Win+A (Schnelleinstellungen), Win+N (Benachrichtigungen),
+# Win+W (Widgets); diese Kürzel meldet das KWin-Skript fenstra-kuerzel an. Plasma-Vorgaben,
+# die damit kollidieren, werden hier abgeschaltet bzw. verlegt:
+#   KWin-Übersicht Meta+W → Meta+Tab (Windows: Task-Ansicht, eigene Fassung in M5)
+#   Plasma-Aktivitäten Meta+Q / Meta+A → keine Taste (Windows kennt keine Aktivitäten)
+
+[kwin]
+Overview=Meta+Tab,Meta+W,Übersicht umschalten
+Walk Through Windows=Alt+Tab,Alt+Tab\tMeta+Tab,Zwischen Fenstern wechseln
+Fenstra Suche=Meta+S,Meta+S,Fenstra: Suche öffnen
+Fenstra Suche Q=Meta+Q,Meta+Q,Fenstra: Suche öffnen (Win+Q)
+Fenstra Schnelleinstellungen=Meta+A,Meta+A,Fenstra: Schnelleinstellungen öffnen
+Fenstra Benachrichtigungen=Meta+N,Meta+N,Fenstra: Benachrichtigungen und Kalender öffnen
+Fenstra Widgets=Meta+W,Meta+W,Fenstra: Widgets öffnen
+
+[plasmashell]
+manage activities=none,Meta+Q,Aktivitätenwechsler anzeigen
+next activity=none,none,Zwischen Aktivitäten wechseln

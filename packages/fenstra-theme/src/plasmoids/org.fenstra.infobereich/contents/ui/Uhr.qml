@@ -1,7 +1,7 @@
 /*
     Fenstra-Infobereich: Uhr wie Windows 11 – zwei Zeilen, 12 px, rechtsbündig
     („01:12“ / „06.10.2026“), Hover-Fläche Radius 4, Tooltip mit dem langen Datum.
-    Klick: Kalender. Rechtsklick: „Datum und Uhrzeit anpassen“, „Benachrichtigungseinstellungen“.
+    Klick und Win+N: Benachrichtigungen und Kalender (Zentrale.qml). Rechtsklick: „Datum und Uhrzeit anpassen“, „Benachrichtigungseinstellungen“.
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 import QtQuick
@@ -12,7 +12,6 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasma5support as P5Support
-import org.kde.plasma.workspace.calendar as PlasmaCalendar
 
 Item {
     id: uhr
@@ -42,7 +41,7 @@ Item {
         width: parent.width - 4
         hover: maus.containsMouse
         gedrueckt: maus.pressed
-        aktiv: kalender.visible
+        aktiv: info.zentraleOffen
     }
 
     Column {
@@ -72,7 +71,7 @@ Item {
 
     PlasmaCore.ToolTipArea {
         anchors.fill: parent
-        active: !kalender.visible
+        active: !info.zentraleOffen
         mainText: uhr.jetzt.toLocaleDateString(Qt.locale(), "dddd, d. MMMM yyyy")
         location: PlasmaCore.Types.BottomEdge
 
@@ -82,13 +81,13 @@ Item {
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             property bool warOffen: false
-            onPressed: mouse => warOffen = kalender.visible
+            onPressed: mouse => warOffen = info.zentraleOffen
             onClicked: mouse => {
                 if (mouse.button === Qt.RightButton) {
                     menue.visualParent = uhr;
                     menue.openRelative();
                 } else {
-                    kalender.visible = !warOffen;
+                    info.zentraleOffen = !warOffen;
                 }
             }
         }
@@ -111,40 +110,6 @@ Item {
             text: "Benachrichtigungseinstellungen"
             icon: "preferences-desktop-notification"
             onClicked: befehle.connectSource("systemsettings kcm_notifications")
-        }
-    }
-
-    // Kalender (Benachrichtigungen kommen in M4 darüber)
-    PlasmaCore.Dialog {
-        id: kalender
-        visible: false
-        visualParent: uhr
-        location: PlasmaCore.Types.BottomEdge
-        type: PlasmaCore.Dialog.PopupMenu
-        hideOnWindowDeactivate: true
-        flags: Qt.WindowStaysOnTopHint
-        onVisibleChanged: if (visible) requestActivate()
-
-        mainItem: ColumnLayout {
-            width: 336
-            height: 380
-            spacing: 8
-            Text {
-                Layout.leftMargin: 8
-                Layout.topMargin: 4
-                text: uhr.jetzt.toLocaleDateString(Qt.locale(), "dddd, d. MMMM")
-                color: info.textFarbe
-                font.family: Kirigami.Theme.defaultFont.family
-                font.pixelSize: 14
-                font.weight: Font.DemiBold
-            }
-            PlasmaCalendar.MonthView {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                today: uhr.jetzt
-                showWeekNumbers: false
-                borderOpacity: 0
-            }
         }
     }
 }

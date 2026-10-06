@@ -9,5 +9,13 @@
     <entry name="showSeconds" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Schnelleinstellungen (M4): Kacheln in Anzeigereihenfolge -->
+    <entry name="schnellKacheln" type="StringList">
+      <default>wlan,bluetooth,flugmodus,energiesparen,nachtmodus,barrierefreiheit</default>
+    </entry>
+    <!-- Prüfmodus: Kacheln ohne passende Hardware trotzdem (ausgegraut) zeigen -->
+    <entry name="alleKachelnZeigen" type="Bool">
+      <default>false</default>
+    </entry>
   </group>
 </kcfg>

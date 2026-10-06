@@ -544,3 +544,110 @@ def tint(glyph):
 
 
 ORTE.update({'laptop': laptop, 'server': server})
+
+
+# ---------------------------------------------------------------------------
+# Wetter (M4): farbige Wettersymbole wie im Widgets-Knopf und Widgets-Board von Windows 11
+# (Sonne gelb-orange, Wolken weiß mit blaugrauer Schattierung, Regen blau, Blitz gelb).
+
+WOLKE = 'M10 26A9 9 0 0 1 8.6 8.1 13 13 0 0 1 33 8.6 8.7 8.7 0 0 1 32 26z'   # Feld 0…41 × 0…26
+
+
+def _sonne(cx, cy, r, strahlen=True):
+    g, d = rad([(0, '#FFE88A'), (0.7, '#FFC72C'), (1, '#FFAA00')], 0.4, 0.35, 0.7)
+    s = f'<defs>{d}</defs>'
+    if strahlen:
+        for k in range(8):
+            import math
+            a = k * math.pi / 4
+            x1, y1 = cx + math.cos(a) * (r + 3.5), cy + math.sin(a) * (r + 3.5)
+            x2, y2 = cx + math.cos(a) * (r + 7.5), cy + math.sin(a) * (r + 7.5)
+            s += (f'<path d="M{x1:.2f} {y1:.2f}L{x2:.2f} {y2:.2f}" stroke="#FFB400" stroke-width="{max(2, r / 4):.1f}" '
+                  'stroke-linecap="round"/>')
+    s += f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="url(#{g})"/>'
+    return s
+
+
+def _mond(cx, cy, r):
+    g, d = lin([(0, '#FFE58A'), (1, '#F2B630')], 0, 0, 1, 1)
+    # Sichel: Kreis minus versetzter Kreis
+    return (f'<defs>{d}</defs><path d="M{cx + r * 0.25:.2f} {cy - r:.2f}A{r} {r} 0 1 0 {cx + r:.2f} {cy + r * 0.3:.2f}'
+            f'A{r * 0.82:.2f} {r * 0.82:.2f} 0 0 1 {cx + r * 0.25:.2f} {cy - r:.2f}z" fill="url(#{g})"/>')
+
+
+def _wolke(x, y, s, dunkel=False):
+    if dunkel:
+        g, d = lin([(0, '#B9C4D2'), (1, '#8794A6')])
+        rand = '#7A8799'
+    else:
+        g, d = lin([(0, '#FFFFFF'), (0.55, '#F3F7FB'), (1, '#D3DEEB')])
+        rand = '#B4C3D6'
+    return (f'<defs>{d}</defs><g transform="translate({x} {y}) scale({s})">'
+            f'<path d="{WOLKE}" fill="url(#{g})" stroke="{rand}" stroke-opacity=".55" stroke-width="{0.9 / s:.2f}"/></g>')
+
+
+def _tropfen(punkte):
+    g, d = lin([(0, '#55B4F5'), (1, '#1C7BD3')])
+    s = f'<defs>{d}</defs>'
+    for (x, y) in punkte:
+        s += f'<path d="M{x} {y}l-2.6 7" stroke="url(#{g})" stroke-width="3.2" stroke-linecap="round"/>'
+    return s
+
+
+def _flocken(punkte):
+    s = ''
+    for (x, y) in punkte:
+        s += f'<circle cx="{x}" cy="{y}" r="2.6" fill="#FFFFFF" stroke="#8CC8EE" stroke-width="1.3"/>'
+    return s
+
+
+def _blitz(x, y):
+    g, d = lin([(0, '#FFE066'), (1, '#FFA200')])
+    return f'<defs>{d}</defs><path d="M{x + 6} {y}h8l-5 9h6l-13 16 3-11h-6z" fill="url(#{g})" stroke="#E08A00" stroke-width=".8" stroke-linejoin="round"/>'
+
+
+def _nebel(y0):
+    s = ''
+    for i, (x, w) in enumerate([(12, 40), (16, 34), (12, 36)]):
+        s += f'<path d="M{x} {y0 + i * 6}h{w}" stroke="#9AA8BA" stroke-width="3.2" stroke-linecap="round"/>'
+    return s
+
+
+def wetter(art):
+    """Wettersymbol (Feld 64). Arten: sonne, mond, sonne_wolke, mond_wolke, wolke, wolken,
+    regen, sonne_regen, schnee, schneeregen, gewitter, hagel, nebel, wind, unbekannt."""
+    if art == 'sonne':
+        return _sonne(32, 32, 12)
+    if art == 'mond':
+        return _mond(30, 32, 18)
+    if art == 'sonne_wolke':
+        return _sonne(24, 24, 10) + _wolke(16, 27, 1.05)
+    if art == 'mond_wolke':
+        return _mond(24, 22, 12) + _wolke(16, 27, 1.05)
+    if art == 'wolke':
+        return _wolke(9, 19, 1.12)
+    if art == 'wolken':
+        return _wolke(18, 12, 0.9, dunkel=True) + _wolke(7, 24, 1.1)
+    if art == 'regen':
+        return _wolke(9, 10, 1.12) + _tropfen([(22, 44), (32, 44), (42, 44)])
+    if art == 'sonne_regen':
+        return _sonne(40, 18, 8) + _wolke(8, 16, 1.05) + _tropfen([(20, 48), (30, 48), (40, 48)])
+    if art == 'schnee':
+        return _wolke(9, 10, 1.12) + _flocken([(21, 46), (32, 50), (43, 46)])
+    if art == 'schneeregen':
+        return _wolke(9, 10, 1.12) + _tropfen([(22, 44), (42, 44)]) + _flocken([(32, 50)])
+    if art == 'gewitter':
+        return _wolke(9, 8, 1.12, dunkel=True) + _blitz(24, 32) + _tropfen([(18, 42), (46, 42)])
+    if art == 'hagel':
+        return (_wolke(9, 10, 1.12) +
+                ''.join(f'<circle cx="{x}" cy="{y}" r="3" fill="#EEF4FA" stroke="#8D9CB0" stroke-width="1.2"/>'
+                        for x, y in [(21, 45), (32, 50), (43, 45)]))
+    if art == 'nebel':
+        return _wolke(9, 8, 1.0) + _nebel(40)
+    if art == 'wind':
+        return ('<path d="M8 26h32a6 6 0 1 0-6-6" fill="none" stroke="#6E9FD0" stroke-width="3.6" stroke-linecap="round"/>'
+                '<path d="M8 36h40a6 6 0 1 1-6 6" fill="none" stroke="#4F87C4" stroke-width="3.6" stroke-linecap="round"/>'
+                '<path d="M8 46h18" fill="none" stroke="#8DB6DD" stroke-width="3.6" stroke-linecap="round"/>')
+    if art == 'unbekannt':
+        return _wolke(9, 19, 1.12, dunkel=True)
+    raise ValueError(f'unbekanntes Wettermotiv {art!r}')

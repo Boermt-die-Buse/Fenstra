@@ -521,6 +521,24 @@ void Style::unpolish(QApplication *application)
 }
 
 //______________________________________________________________
+void Style::polish(QPalette &palette)
+{
+    // Fenstra: Das helle Farbschema führt dunkle Auswahlschrift (Selection ForegroundNormal),
+    // weil Kirigami/QtQuick-Listen die graue WinUI-Auswahl dieses Stils mit
+    // Kirigami.Theme.highlightedTextColor beschriften (sonst weiß auf hellgrau, Befund M2).
+    // Markierter Text in Qt-Widgets steht dagegen wie in Windows weiß auf dem Akzent: hier
+    // HighlightedText wieder weiß setzen, wenn die Auswahlfläche dunkel genug ist.
+    // Listen in Widgets zeichnen ausgewählte Einträge ohnehin mit Text (siehe CE_ItemViewItem).
+    for (const auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
+        const QColor hl = palette.color(group, QPalette::Highlight);
+        if (qGray(hl.rgb()) < 150) {
+            palette.setColor(group, QPalette::HighlightedText, QColor(255, 255, 255));
+        }
+    }
+    ParentStyleClass::polish(palette);
+}
+
+//______________________________________________________________
 void Style::polishScrollArea(QAbstractScrollArea *scrollArea)
 {
     // check argument

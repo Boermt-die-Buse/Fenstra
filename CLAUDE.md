@@ -131,11 +131,42 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
 ## Neue Sitzung starten
 
 Claude Code im Ordner `C:\Users\Daniel\Fenstra\ws` starten (dann wird diese Datei geladen;
-das Gedächtnis mit dem VM-Zugang hängt am Git-Stamm C:\Users\Daniel). Übergabe-Prompt für
-M4: `C:\Users\Daniel\Fenstra\prompt-m4.md`; ursprünglicher Auftrag:
+das Gedächtnis mit dem VM-Zugang hängt am Git-Stamm C:\Users\Daniel). Übergabe-Prompt der
+letzten Sitzung: `C:\Users\Daniel\Fenstra\prompt-m4.md` (für M5 anpassen); ursprünglicher Auftrag:
 `C:\Users\Daniel\Fenstra\prompt-windows11-klon.md`.
 
-## Stand M3 (abgeschlossen 2026-10-06) – nächster Schritt: M4 Startmenü, Suche, Flyouts
+## Stand M4 (abgeschlossen 2026-10-06) – nächster Schritt: M5 Fenster und Multitasking
+
+- **Flyouts wie Windows 11** (Prüfliste docs/checkliste-startmenue-flyouts.md bestanden, alle
+  Muss, 11/12 Soll, Abweichungen dort):
+  - Neues Paket **fenstra-shell** (x86_64, reines QML): Modul `org.fenstra.shell` unter
+    /usr/lib64/qt6/qml mit `Farben` (WinUI-Werte), WinKnopf/-Schalter/-Regler/-Suchfeld/
+    -ListenEintrag/-Bildlauf/-Kontextmenue und **WinFlyout + FlyoutAnker**: 12 px Abstand zur
+    Taskleiste über einen Anker 12 px über der Taskleiste (Plasma setzt Popups bündig an ihr
+    visualParent), `floating: 12` für Seitenränder und vier runde Ecken. Feste Flyout-Größen
+    immer über `Layout.minimum*/maximum*` (der Dialog überschreibt height-Bindungen).
+  - org.fenstra.taskbar: StartMenu/StartSeite/StartRaster/StartKachel/StartOrdnerAnsicht,
+    AlleAnsicht, EmpfohlenAnsicht/Empfehlungen, KontoKarte, StartFuss, SuchAnsicht,
+    WidgetsBoard + Widget*.qml. Ordner: Konfiguration `ordner` (JSON); Favoriten-IDs über
+    FavoriteIdRole (favoritesModel.favorites ist in Plasma 6 leer).
+  - org.fenstra.infobereich: SchnellEinstellungen/QsDaten/QsKachel/Qs*-Unterseiten/QsMedien,
+    Zentrale (Kalender unten, ZentraleListe oben als Kindfenster), Toasts/Toast. Plasmas
+    Benachrichtigungs-Applet ist nicht mehr im Systemabschnitt (Layout-Skript: knownItems mit,
+    extraItems ohne). Prüfmodus für Kacheln ohne Hardware: Konfiguration `alleKachelnZeigen`.
+  - Tastenkürzel: KWin-Skript **fenstra-kuerzel** (/usr/share/kwin-wayland/scripts) meldet
+    Win+S/Q/A/N/W an; die Applets hören per `DBus.SignalWatcher` auf `globalShortcutPressed`
+    (Service org.kde.kglobalaccel, Pfad /component/kwin; Argumente mit `String()` vergleichen).
+    /etc/xdg/kglobalshortcutsrc legt die Übersicht auf Meta+Tab und nimmt den Aktivitäten die Tasten.
+  - fenstra-icon-theme 44.0-6: farbige Wettersymbole (farbig.wetter), weather-*-symbolic einfarbig.
+  - fenstra-style 44.0-3 + helles Farbschema: Kirigami-Listen mit dunkler Auswahlschrift,
+    Qt-Widgets-Textauswahl weiß (polish(QPalette)).
+- Entwicklungsschleife jetzt: `tools/hyperv/vm-shell-dev.ps1 [-Nur modul,taskbar,infobereich,kwin]`
+  (Benutzerkopien + QML-Modul per sudo), am Ende `-Aufraeumen` und `vm-rpm.ps1 … -Reinstall`.
+  QML-Syntax vorab in WSL: `/usr/lib64/qt6/bin/qmllint <datei> | grep '\[syntax\]'`.
+- Bestehende Konten (Test-VM) auf M4-Vorgaben: `tools/vm/m4-vorgaben.sh --kwin`.
+- Messung M4: Boot 5,83 s, RAM 1828 MB.
+
+## Stand M3 (abgeschlossen 2026-10-06)
 
 - **Taskleiste eigen** (Prüfliste docs/checkliste-taskleiste.md bestanden, Abweichungen dort):
   Unterpaket **fenstra-taskleiste** von fenstra-theme (ersetzt fenstra-startmenu) mit
@@ -152,8 +183,7 @@ M4: `C:\Users\Daniel\Fenstra\prompt-m4.md`; ursprünglicher Auftrag:
   (Benutzerkopie hat Vorrang), `systemctl --user restart plasma-plasmashell`, Fehler mit
   `journalctl --user -o cat | grep org.fenstra`. Danach die Benutzerkopie wieder löschen.
 - Messung M3: Boot 6,91 s, RAM 1792 MB.
-- Offen für M4: Flyouts mit 12 px Abstand, Schnelleinstellungen/Benachrichtigungszentrale/
-  Widgets/Suche in Windows-Fassung, farbige Wettersymbole; Kirigami-Auswahlfarbe (aus M2).
+- Offene Punkte aus M3 in M4 erledigt (12 px Abstand, Flyouts, Wettersymbole, Kirigami-Auswahl).
 
 ## Stand M2 (abgeschlossen 2026-10-06)
 
@@ -339,9 +369,19 @@ M4: `C:\Users\Daniel\Fenstra\prompt-m4.md`; ursprünglicher Auftrag:
   KWin verwerfen das. vm-input.ps1 hält die Taste jetzt 90 ms. Bei jedem Fenster-Meilenstein
   auch Firefox/GTK-Fenster mitprüfen (Knöpfe sichtbar und funktionsfähig).
 
+- (M4) Plasma-Dialoge: Abstand zur Taskleiste nur über einen versetzten visualParent; feste
+  Größen über Layout-Grenzen; gestapelte Flyouts als Kindfenster (visualParent im anderen
+  Dialog), sonst schließt hideOnWindowDeactivate das jeweils andere.
+- (M4) Plasma-Benachrichtigungen: Der Dienst startet mit jedem Notifications-Modell; Plasmas Applet
+  muss aus dem Systemabschnitt gelöscht werden (Instanz löschen, knownItems behalten), sonst
+  doppelte Popups. /etc/xdg/plasmanotifyrc hält „@other“ aus dem Verlauf.
+- (M4) KWin-Einstellungen live: `kwriteconfig6 --notify` (KConfigWatcher), nicht `reconfigure`.
+- (M4) Nach `kill -9 kwin_wayland` fehlen PowerDevil-Werte (Helligkeit, Energieprofil) bis zum
+  nächsten Neustart; Tests mit Hardware-Zuständen nach einem echten Neustart wiederholen.
+
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 
-Bis 2026-10-04 erledigt: Build-Pipeline, 4a Branding, 4b-1 Taskleiste (Grundaufbau),
+M0–M4 erledigt (Stand 2026-10-06). Bis 2026-10-04 erledigt: Build-Pipeline, 4a Branding, 4b-1 Taskleiste (Grundaufbau),
 4b-2 Startmenü (Grundfassung). Seit 2026-10-05 gilt der Meilensteinplan M0–M13 in
 docs/roadmap.md (Stil zuerst, dann Assets, Shell, Systemoberflächen, Explorer/Einstellungen,
 übrige Apps, Leistung, finales ISO, USB-Stick).

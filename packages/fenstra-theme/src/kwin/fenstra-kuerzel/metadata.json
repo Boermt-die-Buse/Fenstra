@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Fenstra-Projekt"
+            }
+        ],
+        "Category": "Windows Management",
+        "Description": "Windows 11 shortcuts for the Fenstra shell: Win+S/Q search, Win+A quick settings, Win+N notifications, Win+W widgets",
+        "Description[de]": "Tastenkürzel von Windows 11 für die Fenstra-Shell: Win+S/Q Suche, Win+A Schnelleinstellungen, Win+N Benachrichtigungen, Win+W Widgets",
+        "EnabledByDefault": true,
+        "Icon": "preferences-desktop-keyboard-shortcut",
+        "Id": "fenstra-kuerzel",
+        "License": "GPL-2.0-or-later",
+        "Name": "Fenstra Shortcuts",
+        "Name[de]": "Fenstra-Tastenkürzel",
+        "Version": "44.0",
+        "Website": "https://github.com/Boermt-die-Buse/Fenstra"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}

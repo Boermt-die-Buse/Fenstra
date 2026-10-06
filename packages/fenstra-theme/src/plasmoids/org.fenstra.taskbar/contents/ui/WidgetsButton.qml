@@ -2,7 +2,7 @@
     Fenstra-Taskleiste: Widgets-Knopf ganz links (Windows 11 4.2). Mit Wetterdaten:
     Wettersymbol 24 + Temperatur und Kurztext (zwei Zeilen, 12 px); ohne: Widgets-Symbol.
     Wetter kommt aus der Plasma-Wetter-Engine (Quelle in den Taskleisteneinstellungen).
-    Die Widgets-Übersicht selbst folgt in M4.
+    Klick, Hover (500 ms) und Win+W öffnen das Widgets-Board (WidgetsBoard.qml).
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 import QtQuick
@@ -63,6 +63,7 @@ Item {
         anchors.centerIn: parent
         spacing: 8
 
+        // farbiges Wettersymbol aus dem Symbolthema (M4), ohne Wetter das Widgets-Symbol
         Kirigami.Icon {
             anchors.verticalCenter: parent.verticalCenter
             width: 24
@@ -105,8 +106,16 @@ Item {
             id: maus
             anchors.fill: parent
             hoverEnabled: true
-            // Die Widgets-Übersicht (Win+W) folgt in M4; bis dahin ohne Aktion.
-            onClicked: {}
+            // Klick öffnet/schließt das Widgets-Board; Hover (500 ms) öffnet es wie Windows 11
+            property bool warOffen: false
+            onPressed: warOffen = kicker.widgetsOffen
+            onClicked: kicker.widgetsOffen = !warOffen
+            onContainsMouseChanged: containsMouse ? hoverOeffnen.restart() : hoverOeffnen.stop()
+            Timer {
+                id: hoverOeffnen
+                interval: 500
+                onTriggered: kicker.widgetsOffen = true
+            }
         }
     }
 }

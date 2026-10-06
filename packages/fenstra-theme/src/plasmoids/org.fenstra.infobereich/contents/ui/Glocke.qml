@@ -1,7 +1,7 @@
 /*
     Fenstra-Infobereich: Glocke rechts neben der Uhr (Windows 11 24H2). Sichtbar bei
     ungelesenen Benachrichtigungen (mit Zähler) oder bei „Nicht stören“.
-    Die Benachrichtigungszentrale selbst folgt in M4.
+    Klick öffnet Benachrichtigungen und Kalender (wie die Uhr).
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 import QtQuick
@@ -22,6 +22,8 @@ Item {
         showJobs: false
         showExpired: true
         showDismissed: true
+        blacklistedDesktopEntries: (einstellungen.historyBlacklistedApplications || []).filter(x => x !== "@other")
+        blacklistedNotifyRcNames: einstellungen.historyBlacklistedServices
     }
 
     readonly property date bis: einstellungen.notificationsInhibitedUntil
@@ -72,6 +74,9 @@ Item {
             id: maus
             anchors.fill: parent
             hoverEnabled: true
+            property bool warOffen: false
+            onPressed: warOffen = info.zentraleOffen
+            onClicked: info.zentraleOffen = !warOffen
         }
     }
 }

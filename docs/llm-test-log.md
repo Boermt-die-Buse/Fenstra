@@ -226,3 +226,58 @@ Hyper-V-Fernsteuerung. Bewertung des übernommenen Stands (2026-10-05, Bild bei 
   angeheftete App, aber nie seine Fensterknöpfe getestet. Für M4 kommt ein Punkt „Fenster
   fremder Toolkits (GTK/Firefox): Knöpfe sichtbar und funktionsfähig“ in jede Prüfliste mit
   Fenstern.
+
+## M4 Startmenü, Suche, Flyouts (2026-10-06)
+
+- **Ziel:** Startmenü auf Windows-Stand, Suchpanel, Schnelleinstellungen, Benachrichtigungscenter
+  mit Kalender, Toasts, Widgets-Board; offene Punkte aus M3 (12 px Abstand der Flyouts) und M2
+  (Auswahlfarbe in Kirigami-Listen). Prüfliste docs/checkliste-startmenue-flyouts.md.
+- **Beginn/Ende:** ca. 13:40–14:15, 17:15–18:25 und 22:10–22:45 (Wanduhr; dazwischen zweimal das
+  Nutzungslimit), zusammen rund 2,5 Stunden.
+- **Umsetzung:**
+  - **fenstra-shell** (neu): QML-Modul `org.fenstra.shell` mit WinUI-Farbwerten (`Farben`) und
+    Bedienelementen (Knopf, Schalter, Regler, Suchfeld, Listeneintrag, überlagernde
+    Bildlaufleiste, Kontextmenü) sowie `WinFlyout`/`FlyoutAnker`: Plasma-Dialoge mit 12 px
+    Abstand (Anker 12 px über der Taskleiste, `floating: 12` für die Ränder und vier runde Ecken).
+  - **Startmenü** neu: 642 × 726, Pille, „Angeheftet“ mit Seiten (Punkte, Mausrad), Ordnern
+    (Ziehen auf eine Kachel, Ordneransicht mit Umbenennen) und Umsortieren, „Empfohlen“ mit
+    „Kürzlich hinzugefügt“ und Zeitangaben, „Mehr“, „Alle“ mit Buchstabenraster, Kontokarte,
+    Ein/Aus-Menü, Tastatursteuerung.
+  - **Suchpanel** an derselben Stelle: Filter, Leerzustand, „Höchste Übereinstimmung“, Gruppen,
+    Detailbereich mit Aktionen; Backend Kicker-RunnerModel (KRunner).
+  - **Schnelleinstellungen:** Kacheln mit echter Funktion (NetworkManager, BlueZ, Energieprofil,
+    KWin-Nachtfarben, Barrierefreiheit), Regler, Unterseiten, „Bearbeiten“, Medien-Flyout (MPRIS).
+  - **Zentrale:** Benachrichtigungen (gruppiert, Nicht stören, Alle löschen) über dem Kalender
+    (Monat, Fokus-Sitzung); **Toasts** unten rechts mit Stapel, Klang und Aktionen. Plasmas
+    Benachrichtigungs-Applet ist aus dem Systemabschnitt entfernt.
+  - **Widgets-Board** von links mit Wetter (Vorhersage), Kalender, Uhr, Fotos, Systemleistung,
+    Notizen; **farbige Wettersymbole** im Symbolthema (farbig.wetter).
+  - **Tastenkürzel:** KWin-Skript fenstra-kuerzel meldet Win+S/Q/A/N/W an, die Applets hören per
+    D-Bus-`SignalWatcher` auf kglobalaccel; Konflikte (Übersicht, Aktivitäten) über
+    /etc/xdg/kglobalshortcutsrc gelöst.
+  - **Kirigami-Auswahl:** helles Farbschema mit dunkler Auswahlschrift, der Qt-Stil setzt für
+    Widgets per `polish(QPalette)` weiße Schrift auf markiertem Text.
+  - Werkzeuge: vm-shell-dev.ps1 + fenstra-dev.sh (Entwicklungsstand ohne RPM),
+    applet-config.sh, m4-vorgaben.sh (bestehendes Konto auf M4-Vorgaben), vm-input.ps1 mit
+    `wheel` und `drag`, QML-Syntaxprüfung mit qmllint in WSL.
+- **Probleme / Erkenntnisse:** siehe Nebenbefunde der Prüfliste (leere Favoritenliste in Plasma 6,
+  SignalWatcher mit Variant-Argumenten, „@other“ aus dem Verlauf, Systemabschnitt behält
+  gelöschte Applets über `knownItems`, `kwriteconfig6 --notify`, Dialog überschreibt
+  height-Bindungen).
+- **Fehlversuche:** `busctl emit` für die Kürzel (SignalWatcher braucht einen festen Absender);
+  `PlasmaCore.Dialog.floating` allein für den Abstand zur Taskleiste (wirkt nur seitlich);
+  Benachrichtigungs-Applet per Plasma-Skript aus dem Systemabschnitt nehmen (Instanz blieb);
+  `qdbus reconfigure` für den Nachtmodus; mehrere eigene Klickfolgen mit falschen Koordinaten
+  (vor dem Klicken immer erst ein frisches Bild ansehen).
+- **Messung:** Boot 5,83 s, RAM 1828 MB (M3: 6,91 s / 1792 MB; plasmashell 434 MB statt 442 MB),
+  messungen/2026-10-06-hyperv-m4-flyouts.txt.
+- **Bewertung (0–10):**
+
+| Bereich | vorher | nachher | Begründung |
+|---|---|---|---|
+| Startmenü | 6 | 8 | Aufbau, Maße, Seiten, Ordner, Empfohlen, Konto/Ein-Aus wie Windows; Maße geschätzt, Animation nicht prüfbar |
+| Suche | 2 | 7 | Windows-Aufbau mit Filtern und Detailbereich; Trefferauswahl/-reihenfolge von KRunner, keine Web-Inhalte |
+| Schnelleinstellungen | 3 | 8 | Kacheln, Regler, Unterseiten, Bearbeiten, Medien wie Windows; Funkkacheln ohne Hardware nur im Prüfmodus gesehen |
+| Benachrichtigungen/Kalender/Toasts | 3 | 8 | gestapelte Flyouts, Gruppen, Fokus, Toasts mit Klang; „z“-Glocke und App-Kopf bei Einzelmeldung weichen ab |
+| Widgets | 0 | 6 | Board, Karten und farbige Wettersymbole stimmen; ohne Feed und Online-Widgets |
+| Kirigami-Auswahl | 4 | 8 | Listen wie WinUI; Textauswahl in Kirigami-Feldern dunkel statt weiß |

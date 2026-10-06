@@ -8,7 +8,7 @@
 
 Name:           fenstra-style
 Version:        44.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Widget-Stil und Fensterdekoration im Stil von Windows 11 für Fenstra
 License:        GPL-2.0-or-later AND (GPL-2.0-only OR GPL-3.0-only)
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -68,6 +68,11 @@ rm -f %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/fenstra-settings.svgz
 %{_datadir}/kstyle/themes/fenstra.themerc
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-3
+- M4: polish(QPalette) setzt die Schrift auf markiertem Text (HighlightedText) weiß, wenn die
+  Auswahlfläche dunkel ist; das helle Farbschema führt dunkle Auswahlschrift für
+  Kirigami-Listen auf der grauen WinUI-Auswahl
+
 * Mon Oct 05 2026 Fenstra-Projekt - 44.0-2
 - Kombinationsfeld-Liste wie WinUI (graue Auswahl, Akzentbalken), Baumzeilen 32 px
 

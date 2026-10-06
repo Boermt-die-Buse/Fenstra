@@ -88,6 +88,8 @@ def farb_svg(spec):
         return farbig.svg64(farbig.hinweis(rest))
     if kind == 'abzeichen':
         return farbig.svg64(farbig.abzeichen(rest))
+    if kind == 'wetter':
+        return farbig.svg64(farbig.wetter(rest))
     if kind == 'tint':
         return mono_svg(glyphs.GLYPHS[rest], 16, 'ColorScheme-Highlight')
     raise ValueError(f'unbekannte Art {spec!r}')

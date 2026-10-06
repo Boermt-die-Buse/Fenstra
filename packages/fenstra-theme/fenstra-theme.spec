@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -23,9 +23,9 @@ Requires:       fenstra-sound-theme
 Requires:       fenstra-logos
 Requires:       selawik-fonts
 Requires:       cascadia-code-fonts
-# Taskleiste: Suche = KRunner (D-Bus), Schnelllink-Menü nutzt qdbus
-Requires:       /usr/bin/krunner
+# Taskleiste: Schnelllink-Menü und Schnelleinstellungen nutzen qdbus/kwriteconfig6
 Requires:       /usr/bin/qdbus-qt6
+Requires:       /usr/bin/kwriteconfig6
 # Taskleiste und Infobereich (M3, enthalten das Startmenü)
 Requires:       fenstra-taskleiste = %{version}-%{release}
 
@@ -61,8 +61,18 @@ Requires:       kf6-kirigami
 Requires:       kf6-kirigami-addons
 Requires:       kf6-kcoreaddons
 Requires:       kf6-kcmutils
-# Wetter im Widgets-Knopf (Wetterquellen)
+# M4: gemeinsame Bedienelemente (org.fenstra.shell), Bluetooth (bluez-qt), Energieprofil und
+# Helligkeit (powerdevil-Plugins), Sitzungen, Sensoren der Systemleistung, Qt.labs-Ordnermodell
+Requires:       fenstra-shell
+Requires:       kf6-bluez-qt
+Requires:       powerdevil
+Requires:       libksysguard
+Requires:       qt6-qtdeclarative
+Requires:       kwin
+# Wetter im Widgets-Knopf und Widgets-Board (Wetterquellen)
 Recommends:     kdeplasma-addons
+# Benachrichtigungsklang der Toasts
+Recommends:     libcanberra-gtk3
 # ersetzt das Startmenü-Applet aus 4b-2 (jetzt Teil der Taskleiste)
 Obsoletes:      fenstra-startmenu < 44.0-9
 Provides:       fenstra-startmenu = %{version}-%{release}
@@ -71,8 +81,10 @@ Provides:       fenstra-startmenu = %{version}-%{release}
 Taskleiste im Aufbau von Windows 11 (Plasma-Applets org.fenstra.taskbar und
 org.fenstra.infobereich): Widgets-Knopf links; Start, Suchfeld, Task-Ansicht und
 App-Knöpfe mittig zur Bildschirmbreite mit Indikatoren, Vorschaubildern und
-Sprunglisten; Startmenü; rechts Schnelleinstellungen-Gruppe, Uhr mit Datum,
-Glocke und Streifen „Desktop anzeigen“.
+Sprunglisten; rechts Schnelleinstellungen-Gruppe, Uhr mit Datum, Glocke und
+Streifen „Desktop anzeigen“. Flyouts wie Windows 11: Startmenü mit Seiten und
+Ordnern, Suchpanel, Schnelleinstellungen, Benachrichtigungscenter mit Kalender,
+Toasts und Widgets-Board; Tastenkürzel Win+S/Q/A/N/W (KWin-Skript).
 
 %prep
 %setup -q -n src
@@ -103,6 +115,9 @@ cp -a look-and-feel/org.fenstra.desktop/contents/layouts %{buildroot}%{_datadir}
 # Taskleiste und Infobereich (Plasmoids)
 install -d %{buildroot}%{_datadir}/plasma/plasmoids
 cp -a plasmoids/org.fenstra.taskbar plasmoids/org.fenstra.infobereich %{buildroot}%{_datadir}/plasma/plasmoids/
+# KWin-Skript: Tastenkürzel Win+S/Q/A/N/W für die Flyouts (M4)
+install -d %{buildroot}%{_datadir}/kwin-wayland/scripts
+cp -a kwin/fenstra-kuerzel %{buildroot}%{_datadir}/kwin-wayland/scripts/
 # Begrüßungsassistent (plasma-welcome): Fenstra-Logo und -Text statt KDE-Maskottchen
 install -D -p -m 0644 plasma-welcome/intro-customization.desktop %{buildroot}%{_datadir}/plasma/plasma-welcome/intro-customization.desktop
 # Farbschemata
@@ -110,7 +125,7 @@ install -d %{buildroot}%{_datadir}/color-schemes
 install -p -m 0644 color-schemes/*.colors %{buildroot}%{_datadir}/color-schemes/
 # systemweite Vorgaben (KConfig liest /etc/xdg vor den Fedora-Profilen)
 install -d %{buildroot}%{_sysconfdir}/xdg
-install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/krunnerrc xdg/plasmarc %{buildroot}%{_sysconfdir}/xdg/
+install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc xdg/ksplashrc xdg/krunnerrc xdg/plasmarc xdg/kglobalshortcutsrc %{buildroot}%{_sysconfdir}/xdg/
 # Plasma-Designs
 install -d %{buildroot}%{_datadir}/plasma/desktoptheme
 cp -a desktoptheme-build/fenstra desktoptheme-build/fenstra-dark %{buildroot}%{_datadir}/plasma/desktoptheme/
@@ -154,6 +169,7 @@ fi
 %config(noreplace) %{_sysconfdir}/xdg/ksplashrc
 %config(noreplace) %{_sysconfdir}/xdg/krunnerrc
 %config(noreplace) %{_sysconfdir}/xdg/plasmarc
+%config(noreplace) %{_sysconfdir}/xdg/kglobalshortcutsrc
 %{_datadir}/plasma/desktoptheme/fenstra/
 %{_datadir}/plasma/desktoptheme/fenstra-dark/
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
@@ -165,11 +181,24 @@ fi
 %files -n fenstra-taskleiste
 %{_datadir}/plasma/plasmoids/org.fenstra.taskbar/
 %{_datadir}/plasma/plasmoids/org.fenstra.infobereich/
+%{_datadir}/kwin-wayland/scripts/fenstra-kuerzel/
 
 %files -n plymouth-theme-fenstra
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-11
+- M4: Startmenü im Windows-11-Stand (642×726, 12 px über der Taskleiste, Seiten mit
+  Punkten, Ordner, „Alle“, „Empfohlen“ mit „Mehr“, Kontokarte, Ein/Aus-Menü)
+- Suchpanel (KRunner) mit Filtern, höchster Übereinstimmung und Detailbereich
+- Schnelleinstellungen mit Kacheln, Reglern, Unterseiten und „Bearbeiten“
+- Benachrichtigungscenter mit Kalender und Fokus, eigene Toasts unten rechts; Plasmas
+  Benachrichtigungs-Applet entfällt im Systemabschnitt
+- Widgets-Board von links (Wetter, Kalender, Uhr, Fotos, Systemleistung, Notizen)
+- KWin-Skript fenstra-kuerzel und /etc/xdg/kglobalshortcutsrc (Win+S/Q/A/N/W; Übersicht
+  auf Meta+Tab, Aktivitäten ohne Taste)
+- helles Farbschema: dunkle Auswahlschrift (Kirigami-Listen auf grauer Auswahl)
+
 * Tue Oct 06 2026 Fenstra-Projekt - 44.0-10
 - Firefox: normale Titelleiste (Fenstra-Dekoration), weil die eigenen Firefox-Knöpfe winzig
   waren und das Schließen-X unsichtbar (Nutzerbefund)

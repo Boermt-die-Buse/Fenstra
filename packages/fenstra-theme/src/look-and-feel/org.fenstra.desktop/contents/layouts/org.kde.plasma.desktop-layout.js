@@ -1,4 +1,4 @@
-// Fenstra: Taskleiste im Aufbau von Windows 11 (M3).
+// Fenstra: Taskleiste im Aufbau von Windows 11 (M3, Systemabschnitt angepasst in M4).
 // Wird von Plasma beim ersten Anmelden eines Benutzers ausgeführt (globales Design
 // org.fenstra.desktop) und beim Anwenden des Designs mit "Layout übernehmen".
 //
@@ -26,17 +26,23 @@ if ("opacity" in panel) {
 panel.addWidget("org.fenstra.taskbar");
 
 // Plasma-Systemabschnitt: Statussymbole kommen in den Überlauf; Netz, Ton und Akku zeigt der
-// Fenstra-Infobereich, Benachrichtigungen bleiben hier (sie liefern die Popups).
-var tray = panel.addWidget("org.kde.plasma.systemtray");
-tray.currentConfigGroup = ["General"];
-tray.writeConfig("hiddenItems", [
+// Fenstra-Infobereich. Plasmas Benachrichtigungs-Applet wird nicht geladen (M4): Toasts und
+// Benachrichtigungscenter liefert org.fenstra.infobereich. Es bleibt in knownItems, sonst
+// nähme der Systemabschnitt es beim nächsten Start als „neu“ wieder auf.
+var trayItems = [
     "org.kde.plasma.networkmanagement", "org.kde.plasma.volume", "org.kde.plasma.battery",
     "org.kde.plasma.notifications", "org.kde.plasma.brightness", "org.kde.plasma.clipboard",
     "org.kde.plasma.devicenotifier", "org.kde.kdeconnect", "org.kde.plasma.vault",
     "org.kde.plasma.printmanager", "org.kde.plasma.keyboardlayout", "org.kde.plasma.keyboardindicator",
     "org.kde.plasma.manage-inputmethod", "org.kde.plasma.mediacontroller", "org.kde.plasma.cameraindicator",
     "org.kde.plasma.weather", "org.kde.plasma.bluetooth", "org.kde.kscreen"
-]);
+];
+var trayOhneBenachrichtigungen = trayItems.filter(function (x) { return x !== "org.kde.plasma.notifications"; });
+var tray = panel.addWidget("org.kde.plasma.systemtray");
+tray.currentConfigGroup = ["General"];
+tray.writeConfig("knownItems", trayItems);
+tray.writeConfig("extraItems", trayOhneBenachrichtigungen);
+tray.writeConfig("hiddenItems", trayOhneBenachrichtigungen);
 tray.writeConfig("shownItems", []);
 
 // Infobereich: Gruppe, Uhr, Glocke, Streifen „Desktop anzeigen“

@@ -61,7 +61,7 @@ Mit genau einer laufenden Fenstra-VM wird sie automatisch gewählt.
 |---|---|
 | `neue-vm.ps1` | VM mit Fenstra-Standardausstattung anlegen (Gen 2, 8 GB, 4 CPUs, 60 GB, Secure Boot MS-UEFI-CA) |
 | `vm-screenshot.ps1` | Bildschirmfoto als PNG (Standard `%TEMP%\fenstra-vm.png`) |
-| `vm-input.ps1` | `click X Y [right]`, `dclick`, `move`, `text "…"`, `key <code>`, `combo <codes>` |
+| `vm-input.ps1` | `click X Y [right]`, `dclick`, `move`, `text "…"`, `key <code>`, `combo <codes>`, `wheel X Y ±120`, `drag X1 Y1 X2 Y2` |
 | `vm-bootshots.ps1` | Bildserie alle 0,4 s (Bootscreen erwischen) |
 | `vm-ip.ps1` | aktuelle IPv4 der VM |
 | `vm-von-platte-starten.ps1` | herunterfahren, ISO auswerfen, von Platte starten |
@@ -70,6 +70,7 @@ Mit genau einer laufenden Fenstra-VM wird sie automatisch gewählt.
 | `vm-gastfoto.ps1` | pixelgenaues Bildschirmfoto (Spectacle im Gast) holen, optional Ausschnitt/aktives Fenster |
 | `vm-dev.ps1 -Build <cmake-build> [-KWin] [-Nach '<befehl>']` | CMake-Build aus WSL bauen und direkt in die VM installieren (ohne RPM); `-KWin` startet KWin neu (nötig für Dekoration/Effekte) |
 | `vm-rpm.ps1 <paket>… [-Reinstall]` | neueste RPMs aus der WSL-Paketquelle in die VM kopieren und mit dnf installieren (Passwort aus `$env:FENSTRA_VM_PW` oder Abfrage) |
+| `vm-shell-dev.ps1 [-Nur modul,taskbar,infobereich,kwin] [-Aufraeumen]` | Entwicklungsstand der Shell ohne RPM einspielen: QML-Modul org.fenstra.shell (sudo), Plasmoids und KWin-Skripte als Benutzerkopie, plasmashell neu starten, QML-Fehler zeigen; `-Aufraeumen` entfernt die Benutzerkopien (danach RPM erneut installieren) |
 
 Tastencodes: 8 Rücktaste, 9 Tab, 13 Enter, 27 Esc, 32 Leertaste, 37–40 Pfeile, 91 Windows-Taste;
 Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
@@ -83,6 +84,9 @@ Kombination Strg+Alt+T = `combo 17 18 84`, Alt+F4 = `combo 18 115`.
 | `fenstra-shot.sh [datei] [--region X,Y,B,H] [--fenster]` | Bildschirmfoto der Sitzung (weckt vorher den Bildschirm) |
 | `fenstra-ssh-env.sh` | nach `~/.bashrc.d`: Sitzungsumgebung für SSH-Befehle |
 | `fenster-setzen.sh "Titel" X Y [B H]` | Fenster per KWin-Skript an feste Stelle setzen (reproduzierbare Bilder) |
+| `fenstra-dev.sh <ordner>` / `--aufraeumen` | Gegenstück zu vm-shell-dev.ps1 in der VM (sudo-Passwort auf stdin) |
+| `applet-config.sh <plugin> <gruppe> <schlüssel> <wert>` | Konfigurationswert eines Taskleisten-Applets setzen (z. B. Prüfmodus `alleKachelnZeigen`) |
+| `m4-vorgaben.sh [--kwin]` | bestehendes Konto auf die M4-Vorgaben bringen: Tastenkürzel ohne Konflikte, Plasmas Benachrichtigungs-Applet aus dem Systemabschnitt entfernen; `--kwin` startet KWin neu (kglobalaccel liest die Kürzel nur beim Start) |
 | `symbolbedarf.sh [--kern]` | Symbolnamen, die Plasma und die Programme vermutlich anfragen (Schnitt mit Breeze-Namen) → `/tmp/symbolbedarf[-kern].txt`; Eingabe für `generate.py --bedarf` |
 
 ## pruefen/
@@ -99,6 +103,10 @@ denselben `-i`/`-o`-Optionen wie bei ssh).
 
 ## Erfahrungen (Stolpersteine)
 
+- **Maus (M4):** Ein einzelner absoluter Sprung erzeugt in KWin-Dekorationen kein Hover; `click`
+  bewegt deshalb erst 3 px daneben und dann aufs Ziel. Vor Klickfolgen in Flyouts ein frisches
+  Bild machen: deren Lage hängt vom Inhalt ab (z. B. fehlender Helligkeitsregler).
+- **PowerShell:** Variablennamen sind ohne Groß-/Kleinschreibung (`$T` = `$t`).
 - **Maus:** Koordinaten sind Gastpixel (seit 2026-10-05 1920×1080, vorher 1024×768). Ist ein vmconnect-Fenster offen und wird
   dort die Maus bewegt, landen Klicks falsch → vmconnect-Fenster nicht anfassen.
 - **Tastatur:** Hyper-V sendet US-Scancodes, der Gast hat DE-Belegung. `vm-input.ps1 text`

@@ -14,6 +14,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 import org.kde.taskmanager as TaskManager
+import org.fenstra.shell
 
 Item {
     id: bar
@@ -143,34 +144,60 @@ Item {
         }
     }
 
-    // Ankerpunkt für das Startmenü: Bildschirmmitte über der Taskleiste
-    Item {
+    // Ankerpunkt für Startmenü und Suche: Bildschirmmitte, 12 px über der Taskleiste
+    FlyoutAnker {
         id: startAnker
-        width: 1
-        height: 1
         x: bar.bildschirmBreite / 2 - bar.fensterX
-        y: 0
     }
 
-    PlasmaCore.Dialog {
+    WinFlyout {
         id: startDialog
         visible: kicker.startOpen
         visualParent: startAnker
-        location: PlasmaCore.Types.BottomEdge
-        type: PlasmaCore.Dialog.PopupMenu
-        hideOnWindowDeactivate: true
-        flags: Qt.WindowStaysOnTopHint
-        backgroundHints: PlasmaCore.Types.StandardBackground
         onVisibleChanged: {
-            if (visible) {
-                requestActivate();
-            } else {
+            if (!visible) {
                 kicker.startOpen = false;
             }
         }
         mainItem: StartMenu {
-            width: Kirigami.Units.gridUnit * 36
-            height: Kirigami.Units.gridUnit * 38
+            width: 642 - 2 * startDialog.rand
+            height: 726 - 2 * startDialog.rand
+        }
+    }
+    Connections {
+        target: kicker
+        function onStartOpenChanged() {
+            if (kicker.startOpen) {
+                startAnker.aktualisieren();
+            }
+        }
+    }
+
+
+    // ---------------- Widgets-Board (von links) ----------------
+    FlyoutAnker {
+        id: widgetsAnker
+        x: widgetsKnopf.x + widgetsKnopf.width / 2
+    }
+    WinFlyout {
+        id: widgetsDialog
+        visualParent: widgetsAnker
+        visible: kicker.widgetsOffen
+        onVisibleChanged: {
+            if (!visible) {
+                kicker.widgetsOffen = false;
+            }
+        }
+        mainItem: WidgetsBoard {
+            hoehe: Screen.height - 48 - 24 - 2 * widgetsDialog.rand
+        }
+    }
+    Connections {
+        target: kicker
+        function onWidgetsOffenChanged() {
+            if (kicker.widgetsOffen) {
+                widgetsAnker.aktualisieren();
+            }
         }
     }
 

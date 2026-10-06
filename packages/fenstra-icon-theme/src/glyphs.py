@@ -617,3 +617,8 @@ g('brightness_off', C(8, 8, 2.6), L(2, 2, 14, 14))
 # Kabelnetz (Windows-11-Infobereich: Bildschirm mit Netzwerkstecker unten links)
 g('network_wired', R(4.5, 2.5, 10, 7.5, 1.2), L(9.5, 10, 9.5, 12), L(7.5, 12.5, 11.5, 12.5),
   RF(1.5, 11, 3.6, 3, .6), L(3.3, 11, 3.3, 8.5), L(3.3, 8.5, 4.5, 8.5))
+
+# M4: Energiesparmodus (Blatt) und Rechner (Schnellsuchen)
+g('leaf', S('M2.5 13.5c0-6.2 4.3-11 11-11 0 6.7-4.8 11-11 11z'), L(2.5, 13.5, 8.5, 7.5))
+g('calculator', R(3.5, 1.5, 9, 13, 1.5), R(5.5, 3.5, 5, 3, 0.5), D(6, 9, .7), D(8, 9, .7), D(10, 9, .7),
+  D(6, 11.5, .7), D(8, 11.5, .7), D(10, 11.5, .7))

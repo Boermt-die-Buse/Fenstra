@@ -1,0 +1,14 @@
+module org.fenstra.shell
+singleton Farben 1.0 Farben.qml
+WinText 1.0 WinText.qml
+WinKnopf 1.0 WinKnopf.qml
+WinSchalter 1.0 WinSchalter.qml
+WinRegler 1.0 WinRegler.qml
+WinSuchfeld 1.0 WinSuchfeld.qml
+WinListenEintrag 1.0 WinListenEintrag.qml
+WinTrenner 1.0 WinTrenner.qml
+WinFlyout 1.0 WinFlyout.qml
+FlyoutAnker 1.0 FlyoutAnker.qml
+FlyoutFuss 1.0 FlyoutFuss.qml
+WinBildlauf 1.0 WinBildlauf.qml
+WinKontextmenue 1.0 WinKontextmenue.qml

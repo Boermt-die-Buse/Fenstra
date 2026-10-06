@@ -8,6 +8,8 @@
 #   vm-input.ps1 text "ls -la | less" Text tippen, fuer DEUTSCHE Tastaturbelegung im Gast
 #   vm-input.ps1 key 13               eine Taste (virtueller Tastencode, s. u.)
 #   vm-input.ps1 combo 17 18 84       Tasten gleichzeitig (hier Strg+Alt+T = Konsole)
+#   vm-input.ps1 wheel X Y -120       Mausrad an X/Y (negativ = nach unten, 120 = eine Rastung)
+#   vm-input.ps1 drag X1 Y1 X2 Y2     Ziehen mit gedrueckter linker Taste (in Zwischenschritten)
 #   ... -VM Fenstra-Test5             VM waehlen (sonst $env:FENSTRA_VM oder die einzige laufende Fenstra-VM)
 #
 # Haeufige Tastencodes: 8 Ruecktaste, 9 Tab, 13 Enter, 16 Shift, 17 Strg, 18 Alt, 27 Esc,
@@ -22,7 +24,7 @@
 #  - Die WMI-Methode TypeText kommt im Gast nicht an; deshalb Taste fuer Taste.
 #  - Qt-Knoepfe reagieren auf die Leertaste, nicht immer auf Enter.
 param(
-    [Parameter(Mandatory, Position = 0)][ValidateSet('click', 'dclick', 'move', 'down', 'up', 'text', 'key', 'combo')][string]$Action,
+    [Parameter(Mandatory, Position = 0)][ValidateSet('click', 'dclick', 'move', 'down', 'up', 'text', 'key', 'combo', 'wheel', 'drag')][string]$Action,
     [Parameter(Position = 1)][string]$A,
     [Parameter(Position = 2)][string]$B,
     [Parameter(Position = 3)][string]$C,
@@ -61,11 +63,29 @@ $deMap = @{
 
 switch ($Action) {
     'move'   { MoveTo $A $B }
-    'click'  { MoveTo $A $B; Start-Sleep -Milliseconds 150; Click ($(if ($C -eq 'right') { 2 } else { 1 })) }
-    'dclick' { MoveTo $A $B; Start-Sleep -Milliseconds 150; Click 1; Start-Sleep -Milliseconds 80; Click 1 }
+    # Vor dem Klick kurz daneben und dann aufs Ziel: ein einzelner absoluter Sprung erzeugt
+    # in KWin-Dekorationen kein Hover, der erste Klick auf einen Fensterknopf ging sonst
+    # verloren (Befund M4 beim Firefox-Test).
+    'click'  { MoveTo ([int]$A - 3) ([int]$B - 3); Start-Sleep -Milliseconds 60; MoveTo $A $B; Start-Sleep -Milliseconds 150; Click ($(if ($C -eq 'right') { 2 } else { 1 })) }
+    'dclick' { MoveTo ([int]$A - 3) ([int]$B - 3); Start-Sleep -Milliseconds 60; MoveTo $A $B; Start-Sleep -Milliseconds 150; Click 1; Start-Sleep -Milliseconds 80; Click 1 }
     'down'   { MoveTo $A $B; Start-Sleep -Milliseconds 150; Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $true }) 'SetButtonState' }
     'up'     { Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $false }) 'SetButtonState' }
     'key'    { KeyType $A }
+    'wheel'  {
+        MoveTo $A $B; Start-Sleep -Milliseconds 150
+        Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetScrollPosition -Arguments @{ ScrollPositionDelta = [int32]$C }) 'SetScrollPosition'
+    }
+    'drag'   {
+        $x1 = [int]$A; $y1 = [int]$B; $x2 = [int]$C; $y2 = [int]$D
+        MoveTo $x1 $y1; Start-Sleep -Milliseconds 150
+        Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $true }) 'SetButtonState'
+        for ($i = 1; $i -le 12; $i++) {
+            MoveTo ([int]($x1 + ($x2 - $x1) * $i / 12)) ([int]($y1 + ($y2 - $y1) * $i / 12)); Start-Sleep -Milliseconds 40
+        }
+        Start-Sleep -Milliseconds 300
+        MoveTo $x2 $y2; Start-Sleep -Milliseconds 100
+        Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]1; IsDown = $false }) 'SetButtonState'
+    }
     'combo'  {
         $keys = @($A, $B, $C, $D) | Where-Object { $_ }
         foreach ($k in $keys) { KeyDown $k }

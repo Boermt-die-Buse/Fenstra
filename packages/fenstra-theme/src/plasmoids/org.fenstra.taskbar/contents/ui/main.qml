@@ -21,7 +21,9 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import org.kde.taskmanager as TaskManager
 import org.kde.plasma.private.kicker as Kicker
+import org.kde.plasma.private.sessions as Sessions
 import org.kde.plasma.workspace.dbus as DBus
+import org.kde.plasma.plasma5support as P5Support
 
 PlasmoidItem {
     // Der Name "kicker" bleibt: die Startmenü-Dateien (aus 4b-2 übernommen) greifen darauf zu.
@@ -29,6 +31,9 @@ PlasmoidItem {
 
     readonly property bool isDash: false       // für die Kicker-Modelle
     property bool startOpen: false
+    // Inhalt des Start-Flyouts: "start" (Startmenü) oder "suche" (Suchpanel, Win+S, Suchfeld)
+    property string startModus: "start"
+    property bool widgetsOffen: false
 
     preferredRepresentation: fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
@@ -133,6 +138,8 @@ PlasmoidItem {
         showRecentDocs: false
         showPowerSession: false
         showFavoritesPlaceholder: false
+        // „Kürzlich hinzugefügt“ in Empfohlen (Kicker merkt sich, wann eine App zuerst auftauchte)
+        highlightNewlyInstalledApps: true
 
         Component.onCompleted: {
             // dieselbe Favoritenliste wie das frühere Startmenü-Applet (KActivities, global)
@@ -151,11 +158,17 @@ PlasmoidItem {
         onRefreshed: kicker.allAppsModel = rootModel.modelForRow(0)
     }
     property var allAppsModel: null
-    readonly property Kicker.RecentUsageModel recentModel: Kicker.RecentUsageModel {
-        shownItems: Kicker.RecentUsageModel.AppsAndDocs
+    // Empfohlen und Suche: zuletzt geöffnete Dateien, meistgenutzte Apps
+    readonly property Kicker.RecentUsageModel recentDocsModel: Kicker.RecentUsageModel {
+        shownItems: Kicker.RecentUsageModel.OnlyDocs
         ordering: Kicker.RecentUsageModel.Recent
     }
-    readonly property Kicker.SystemModel systemModel: Kicker.SystemModel {}
+    readonly property Kicker.RecentUsageModel topAppsModel: Kicker.RecentUsageModel {
+        shownItems: Kicker.RecentUsageModel.OnlyApps
+        ordering: Kicker.RecentUsageModel.Popular
+    }
+    // Sperren, Abmelden, Energie sparen, Herunterfahren, Neu starten
+    readonly property Sessions.SessionManagement sitzung: Sessions.SessionManagement {}
 
     // Programme per Desktop-Datei starten (mit Startrückmeldung, wie aus dem Startmenü)
     Kicker.SimpleFavoritesModel {
@@ -179,21 +192,75 @@ PlasmoidItem {
             arguments: [name]
         });
     }
+    // Suchpanel (Suchfeld der Taskleiste, Win+S/Win+Q): an der Stelle des Startmenüs
     function sucheOeffnen() {
-        DBus.SessionBus.asyncCall({
-            service: "org.kde.krunner",
-            path: "/App",
-            iface: "org.kde.krunner.App",
-            member: "toggleDisplay",
-            arguments: []
-        });
+        if (kicker.startOpen && kicker.startModus === "suche") {
+            kicker.startOpen = false;
+            return;
+        }
+        kicker.startModus = "suche";
+        kicker.startOpen = true;
+    }
+    function startUmschalten() {
+        if (!kicker.startOpen) {
+            kicker.startModus = "start";
+            kicker.startOpen = true;
+        } else if (kicker.startModus !== "start") {
+            kicker.startModus = "start";
+        } else {
+            kicker.startOpen = false;
+        }
+    }
+    // Befehle ohne Rückgabe ausführen (Einstellungen, Discover, Dateimanager)
+    P5Support.DataSource {
+        id: befehle
+        engine: "executable"
+        connectedSources: []
+        onNewData: (quelle, daten) => disconnectSource(quelle)
+    }
+    function befehl(b) {
+        befehle.connectSource(b);
+    }
+    // Favoriten-IDs sind reine Desktop-IDs („org.kde.kcalc.desktop“) oder URLs
+    // („preferred://browser“, „applications:…“); Taskleisten-Starter brauchen eine URL.
+    function launcherUrl(id) {
+        id = String(id || "");
+        return id.length === 0 ? "" : (id.indexOf(":") > 0 ? id : "applications:" + id);
+    }
+    function speicherId(id) {
+        id = String(id || "");
+        if (id.startsWith("applications:")) {
+            return id.substring(13);
+        }
+        return id.endsWith(".desktop") && id.indexOf(":") < 0 ? id : "";
+    }
+    // Text sicher für die Shell einfassen
+    function shellWort(s) {
+        return "'" + String(s).replace(/'/g, "'\\''") + "'";
     }
 
     Connections {
         target: Plasmoid
         // Windows-Taste (plasmashell: "Anwendungsstarter aktivieren")
         function onActivated() {
-            kicker.startOpen = !kicker.startOpen;
+            kicker.startUmschalten();
+        }
+    }
+
+    // Win+S/Win+Q/Win+W: kglobalaccel meldet die Kürzel des KWin-Skripts fenstra-kuerzel
+    DBus.SignalWatcher {
+        busType: DBus.BusType.Session
+        service: "org.kde.kglobalaccel"
+        path: "/component/kwin"
+        iface: "org.kde.kglobalaccel.Component"
+        function dbusglobalShortcutPressed(komponente, name, zeit) {
+            // Argumente kommen als Variant-Objekte: über String() vergleichen
+            const n = String(name);
+            if (n === "Fenstra Suche" || n === "Fenstra Suche Q") {
+                kicker.sucheOeffnen();
+            } else if (n === "Fenstra Widgets") {
+                kicker.widgetsOffen = !kicker.widgetsOffen;
+            }
         }
     }
 

@@ -22,7 +22,7 @@ Umfang (grobe Schätzung, menschliche Arbeitstage als Maß): **S** ≈ ½ Tag, *
 | M1 ✅ | Stil-Fundament | L | Qt-Stil, Fensterdekoration, Plasma-Design, Farben/Akzent, Menüs |
 | M2 ✅ | Eigene Assets | L | Symbolthema komplett eigen, Mauszeiger, Klänge, Wallpaper |
 | M3 ✅ | Taskleiste | L | eigenes Taskleisten-Applet, Infobereich, Uhr, Widgets-Knopf, Kontextmenüs |
-| M4 | Startmenü, Suche, Flyouts | L | Startmenü fertig, Suchpanel, Schnelleinstellungen, Benachrichtigungen/Kalender, Widgets |
+| M4 ✅ | Startmenü, Suche, Flyouts | L | Startmenü fertig, Suchpanel, Schnelleinstellungen, Benachrichtigungen/Kalender, Widgets |
 | M5 | Fenster und Multitasking | L | Alt+Tab, Task-Ansicht, virtuelle Desktops, Snap Layouts/Assist, Animationen, Mica |
 | M6 | Desktop und Shell-Dialoge | M | Desktop-Symbole, Kontextmenü, Win+X, Ausführen, OSD, Win+V, Tastenkürzel |
 | M7 | Systemoberflächen | L | Bootscreen, Anmeldung, Sperrbildschirm, Abmelden, UAC-Abfrage, OOBE (ISO-Build) |

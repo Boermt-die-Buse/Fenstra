@@ -33,8 +33,8 @@ Meilenstein ändern; dann hier mit Datum nachtragen.
 | Taskleiste (App-Knöpfe) | **Eigenes Applet `org.fenstra.taskbar`** (reines QML, kein Fork) | Umgesetzt in M3: TasksModel liefert Fenster/Starter, KPipeWire die Vorschaubilder, Kicker-`SimpleFavoritesModel` die Sprunglisten (Aufgaben, zuletzt verwendet) – der private C++-Teil des Plasma-Taskmanagers wird nicht gebraucht. Das Applet enthält auch Start (mit Startmenü als eigenem Dialog), Suche, Task-Ansicht und Widgets-Knopf und zentriert die Gruppe selbst zur Bildschirmbreite |
 | Start-, Such-, Widgets-Knopf, Uhr, Schnelleinstellungen, Infobereich-Überlauf | **Eigene Applets** (QML) auf den öffentlichen Plasma-Modulen | Umgesetzt in M3: `org.fenstra.infobereich` (Gruppe Netz/Ton/Akku, Uhr, Glocke, Desktop-Streifen). Der Überlauf „^“ bleibt Plasmas Systemabschnitt (StatusNotifier-Symbole und Benachrichtigungs-Popups hängen daran; ein eigener bräuchte C++) |
 | Startmenü | **Eigenbau** (besteht, QML auf Kicker-Modellen) | |
-| Suche | **Eigenbau** (Panel, Backend KRunner/RunnerModel) | KRunner-Oberfläche hat einen anderen Aufbau |
-| Benachrichtigungen (Center + Toasts) | **Eigenes Applet + Fork der Popup-QML** des Benachrichtigungs-Applets | Daten über `org.kde.notificationmanager` |
+| Suche | **Eigenbau** (Panel, Backend KRunner/RunnerModel) | KRunner-Oberfläche hat einen anderen Aufbau. Umgesetzt in M4 als zweite Ansicht des Start-Flyouts (SuchAnsicht.qml); Treffer zusammengeführt, Gruppen aus Art und Kategorie |
+| Benachrichtigungen (Center + Toasts) | **Eigene QML im Infobereich** (2026-10-06 geändert: kein Fork nötig) | Das öffentliche Modul `org.kde.notificationmanager` liefert Modelle, Dienst und Aktionen; Popups sind eigene Plasma-Dialoge (Toast.qml), Plasmas Applet entfällt im Systemabschnitt |
 | Alt+Tab | **Eigenes Fensterwechsler-Layout** (QML-Paket) | offizieller Erweiterungspunkt |
 | Task-Ansicht, virtuelle Desktops | **Eigener KWin-Effekt** (C++ QuickSceneEffect + QML), Vorbild Overview | Aufbau (Desktopleiste unten) weicht vom Overview ab |
 | Snap Layouts / Snap Assist | **Eigenes KWin-Skript bzw. -Effekt** + Auslöser in der Dekoration (Hover Maximieren) und Win+Z | KWin-Kachel-API vorhanden |
@@ -69,7 +69,7 @@ Meilenstein ändern; dann hier mit Datum nachtragen.
 ## Folgen für die Pakete
 
 - `fenstra-style` (neu, x86_64): Qt-Stil + Fensterdekoration (+ später gemeinsame Titelleisten-Bibliothek).
-- Shell-Applets als Unterpakete von `fenstra-theme` (QML) bzw. eigenes Paket `fenstra-shell` (mit C++-Teilen).
+- Shell-Applets als Unterpakete von `fenstra-theme` (QML); gemeinsame Bedienelemente im Paket `fenstra-shell` (QML-Modul org.fenstra.shell, seit M4; C++-Teile können dort später dazukommen).
 - KWin-Erweiterungen in `fenstra-kwin` (JS-Effekte, Skripte, Fensterwechsler, C++-Effekte).
 - Apps je eigenes Paket (`fenstra-explorer`, `fenstra-settings`, …).
 - C++-Pakete hängen exakt an der gebauten KWin/Plasma/Qt-Version (`Requires: kwin = %{version}`

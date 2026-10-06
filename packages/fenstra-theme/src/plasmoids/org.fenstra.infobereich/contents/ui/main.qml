@@ -4,9 +4,9 @@
       … [Plasma-Systemabschnitt: ^ und App-Symbole] [ 📶 🔊 🔋 ] [ 01:12 / 06.10.2026 ] [🔔] ▏
                                                      └ Gruppe ┘   └──── Uhr ────┘        └ Desktop anzeigen
 
-    Die Gruppe hat eine gemeinsame Hover-Fläche und öffnet eine erste Fassung der
-    Schnelleinstellungen (Lautstärke, Netz, Akku); die vollständige Fassung folgt in M4.
-    Die Uhr öffnet den Kalender. Der schmale Streifen ganz rechts zeigt den Desktop.
+    Die Gruppe hat eine gemeinsame Hover-Fläche und öffnet die Schnelleinstellungen (Win+A).
+    Uhr und Glocke öffnen Benachrichtigungen und Kalender (Win+N); Toasts erscheinen unten
+    rechts (Toasts.qml). Der schmale Streifen ganz rechts zeigt den Desktop.
 
     SPDX-License-Identifier: GPL-2.0-or-later
 */
@@ -20,6 +20,10 @@ import org.kde.plasma.workspace.dbus as DBus
 
 PlasmoidItem {
     id: info
+
+    // geöffnete Flyouts (immer nur eines; Plasma schließt das andere beim Fokuswechsel)
+    property bool qsOffen: false
+    property bool zentraleOffen: false
 
     preferredRepresentation: fullRepresentation
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
@@ -43,6 +47,23 @@ PlasmoidItem {
         });
     }
 
+    // Win+A / Win+N: kglobalaccel meldet die Kürzel des KWin-Skripts fenstra-kuerzel
+    DBus.SignalWatcher {
+        busType: DBus.BusType.Session
+        service: "org.kde.kglobalaccel"
+        path: "/component/kwin"
+        iface: "org.kde.kglobalaccel.Component"
+        function dbusglobalShortcutPressed(komponente, name, zeit) {
+            // Argumente kommen als Variant-Objekte: über String() vergleichen
+            const n = String(name);
+            if (n === "Fenstra Schnelleinstellungen") {
+                info.qsOffen = !info.qsOffen;
+            } else if (n === "Fenstra Benachrichtigungen") {
+                info.zentraleOffen = !info.zentraleOffen;
+            }
+        }
+    }
+
     fullRepresentation: RowLayout {
         Layout.minimumWidth: implicitWidth
         Layout.maximumWidth: implicitWidth
@@ -57,6 +78,15 @@ PlasmoidItem {
         }
         Glocke {
             Layout.fillHeight: true
+        }
+        // Flyouts der Zentrale und Toasts (unsichtbare Anker, keine Breite)
+        Zentrale {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 0
+        }
+        Toasts {
+            Layout.fillHeight: true
+            Layout.preferredWidth: 0
         }
         // Desktop anzeigen: schmaler Streifen ganz rechts
         Item {

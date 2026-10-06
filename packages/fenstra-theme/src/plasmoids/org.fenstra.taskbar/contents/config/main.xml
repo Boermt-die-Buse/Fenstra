@@ -43,5 +43,21 @@
     <entry name="favoritesPortedToKAstats" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Ordner im Bereich „Angeheftet“ (M4) als JSON: [{"name": "Ordner", "ids": [favoriteId, …]}].
+         Die Reihenfolge der Kacheln bleibt die der Favoritenliste; ein Ordner steht an der Stelle
+         seines ersten Mitglieds. -->
+    <entry name="ordner" type="String">
+      <default>[]</default>
+    </entry>
+  </group>
+
+  <group name="Widgets">
+    <!-- Widgets im Board (M4), Reihenfolge = Anzeige; Name:Größe (klein, mittel, gross) -->
+    <entry name="widgets" type="StringList">
+      <default>wetter:mittel,kalender:klein,uhr:klein,fotos:mittel,system:klein,notizen:klein</default>
+    </entry>
+    <entry name="notizen" type="String">
+      <default></default>
+    </entry>
   </group>
 </kcfg>

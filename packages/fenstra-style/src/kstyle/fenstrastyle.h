@@ -90,6 +90,9 @@ public:
     //* application unpolishing
     void unpolish(QApplication *) override;
 
+    //* Fenstra: Palette polieren (markierter Text in Widgets weiß auf Akzent)
+    void polish(QPalette &) override;
+
     //* polish scrollarea
     void polishScrollArea(QAbstractScrollArea *);
 

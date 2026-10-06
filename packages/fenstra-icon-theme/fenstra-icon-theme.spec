@@ -4,7 +4,7 @@
 # kein Rückfall auf Breeze (erbt nur von hicolor).
 Name:           fenstra-icon-theme
 Version:        44.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Symbolthema für Fenstra (eigene Symbole im Stil von Windows 11)
 # Motive: CC-BY-SA-4.0; Generator: MIT
 License:        CC-BY-SA-4.0 AND MIT
@@ -49,6 +49,12 @@ gtk-update-icon-cache --force %{_datadir}/icons/fenstra &>/dev/null || :
 %{_datadir}/fenstra/icon-theme/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-6
+- M4: farbige Wettersymbole (farbig.wetter: Sonne, Mond, Wolken, Regen, Schnee, Gewitter,
+  Nebel, Hagel, Wind) für weather-*; die einfarbigen Fassungen heißen weather-*-symbolic
+- neue Glyphen Blatt (Energiesparmodus) und Rechner; Namen battery-profile-powersave,
+  accessories-calculator-symbolic, edit-clear-history, folder-remove
+
 * Tue Oct 06 2026 Fenstra-Projekt - 44.0-5
 - farbige Symbole mit weniger Rand (Ausschnitt 58/64): füllen ihr Feld wie Windows-Symbole,
   in der Taskleiste deutlich größer (Nutzerbefund „Skalierung falsch“); Store-Tasche größer

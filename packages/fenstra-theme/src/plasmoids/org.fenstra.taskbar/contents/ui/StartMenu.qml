@@ -1,58 +1,58 @@
 /*
-    Fenstra-Startmenü: Inhalt des Popups
+    Fenstra-Startmenü (M4, docs/windows11-referenz.md 5.1/5.2): Inhalt des Start-Flyouts.
 
-      ┌──────────────────────────────────────┐
-      │ [ Suche                            ] │
-      │ Angeheftet                Alle Apps >│
-      │  ▢ ▢ ▢ ▢ ▢ ▢                         │
-      │  ▢ ▢ ▢ ▢ ▢ ▢                         │
-      │ Empfohlen                            │
-      │  ▭ Datei        ▭ Datei              │
-      ├──────────────────────────────────────┤
-      │ (D) Daniel                       ⏻   │
-      └──────────────────────────────────────┘
+      ┌─────────────────────────────────────────────┐  642 × 726 außen, 12 px über der Taskleiste
+      │  ( 🔍 Nach Apps, Einstellungen und … )      │  Pille 36 hoch, 32 px seitlich
+      │   Angeheftet                     [Alle  >]  │
+      │   ▢ ▢ ▢ ▢ ▢ ▢                           •   │  6 × 3 je Seite, Punkte rechts
+      │   ▢ ▢ ▢ ▢ ▢ ▢                           ·   │
+      │   ▢ ▢ ▢ ▢ ▢ ▢                               │
+      │   Empfohlen                      [Mehr  >]  │
+      │   ▭ Datei           ▭ Datei                 │  2 × 3
+      ├─────────────────────────────────────────────┤
+      │   (D) Daniel                            ⏻   │  Fußleiste 64
+      └─────────────────────────────────────────────┘
 
-    Seiten: "start" (oben), "apps" (Alle Apps), "search" (sobald getippt wird).
-
+    Ansichten: "start", "alle" (Alle Apps), "empfohlen" (Mehr), "suche" (Suchpanel; Tippen im
+    Startmenü, Suchfeld der Taskleiste, Win+S). Maße im mainItem = außen minus 4 px Rand.
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as QQC2
 
 import org.kde.plasma.plasmoid
-import org.kde.plasma.components as PC3
-import org.kde.kirigami as Kirigami
 import org.kde.coreaddons as KCoreAddons
-import org.kde.kirigamiaddons.components as KirigamiComponents
-import org.kde.plasma.private.kicker as Kicker
+import org.fenstra.shell
 
-Item {
+FocusScope {
     id: menu
 
-    readonly property int pad: Kirigami.Units.gridUnit * 2
-    property string page: searchField.text.length > 0 ? "search" : (showAllApps ? "apps" : "start")
-    property bool showAllApps: false
+    // gewünschter Inhalt beim Öffnen ("start" oder "suche"), kommt von main.qml
+    readonly property string modus: kicker.startModus
+    property string ansicht: "start"
 
-    Layout.preferredWidth: Kirigami.Units.gridUnit * 36
-    Layout.preferredHeight: Kirigami.Units.gridUnit * 38
-    Layout.minimumWidth: Kirigami.Units.gridUnit * 28
-    Layout.minimumHeight: Kirigami.Units.gridUnit * 30
+    Layout.preferredWidth: 634
+    Layout.preferredHeight: 718
+    Layout.minimumWidth: 634
+    Layout.minimumHeight: 718
+    Layout.maximumWidth: 634
+    Layout.maximumHeight: 718
 
-    function close() {
+    function schliessen() {
         kicker.startOpen = false;
     }
-    function reset() {
-        searchField.text = "";
-        showAllApps = false;
-        powerPopup.visible = false;
-        searchField.forceActiveFocus();
+    function zuruecksetzen() {
+        suchfeld.leeren();
+        ansicht = modus === "suche" ? "suche" : "start";
+        startSeite.zuruecksetzen();
+        konto.visible = false;
+        suchfeld.eingabe.forceActiveFocus();
     }
     // Eintrag eines Kicker-Modells starten und Menü schließen
-    function launch(model, row) {
-        if (model && row >= 0) {
-            model.trigger(row, "", null);
-            close();
+    function starten(modell, zeile) {
+        if (modell && zeile >= 0) {
+            modell.trigger(zeile, "", null);
+            schliessen();
         }
     }
 
@@ -60,326 +60,148 @@ Item {
         target: kicker
         function onStartOpenChanged() {
             if (kicker.startOpen) {
-                menu.reset();
-                kicker.recentModel.refresh();
+                menu.zuruecksetzen();
+                kicker.recentDocsModel.refresh();
+                empfehlungen.aktualisieren();
+            }
+        }
+        function onStartModusChanged() {
+            if (kicker.startOpen) {
+                menu.ansicht = kicker.startModus === "suche" ? "suche" : "start";
+                if (menu.ansicht === "start") {
+                    suchfeld.leeren();
+                }
+                suchfeld.eingabe.forceActiveFocus();
             }
         }
     }
 
     KCoreAddons.KUser {
-        id: kuser
+        id: benutzer
+    }
+    Empfehlungen {
+        id: empfehlungen
+    }
+    WinKontextmenue {
+        id: startKontext
     }
 
-    Kicker.RunnerModel {
-        id: runnerModel
-        appletInterface: kicker
-        favoritesModel: kicker.rootModel.favoritesModel
-        mergeResults: true
-        query: searchField.text
-    }
-
-    // Hintergrund: fast deckend, damit das Menü auch ohne Unschärfe (z. B. VM ohne
-    // Grafikkarte) lesbar bleibt; mit Blur wirkt es wie Acrylic.
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -Kirigami.Units.smallSpacing
-        radius: Kirigami.Units.cornerRadius
-        color: Kirigami.Theme.backgroundColor
-        opacity: 0.92
-    }
-
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
-
-        // ---------- Suche ----------
-        PC3.TextField {
-            id: searchField
-            Layout.fillWidth: true
-            Layout.topMargin: menu.pad * 0.75
-            Layout.leftMargin: menu.pad
-            Layout.rightMargin: menu.pad
-            placeholderText: "Zum Suchen hier eingeben"
-            focus: true
-            Keys.onReturnPressed: menu.launchFirstResult()
-            Keys.onEnterPressed: menu.launchFirstResult()
-            Keys.onEscapePressed: {
-                if (text.length > 0) {
-                    text = "";
-                } else {
-                    menu.close();
-                }
-            }
-            Keys.onDownPressed: {
-                if (menu.page === "search") {
-                    searchList.forceActiveFocus();
-                    searchList.currentIndex = 0;
-                }
+    // ---------------- Suchfeld (Startmenü: Pille; Suche: dasselbe Feld mit Filterleiste) ----------------
+    WinSuchfeld {
+        id: suchfeld
+        x: 28
+        y: 28
+        width: 578
+        height: 36
+        pille: true
+        fokusStil: menu.ansicht === "suche"
+        focus: true
+        platzhalter: menu.ansicht === "suche" ? "Hier eingeben, um zu suchen" : "Nach Apps, Einstellungen und Dokumenten suchen"
+        onTextChanged: {
+            if (text.length > 0 && menu.ansicht !== "suche") {
+                menu.ansicht = "suche";
             }
         }
-
-        // ---------- Seiten ----------
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.topMargin: Kirigami.Units.gridUnit
-
-            // Startseite: Angeheftet + Empfohlen
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.leftMargin: menu.pad
-                anchors.rightMargin: menu.pad
-                visible: menu.page === "start"
-                spacing: Kirigami.Units.largeSpacing
-
-                SectionHeader {
-                    title: "Angeheftet"
-                    buttonText: "Alle Apps"
-                    buttonIcon: "go-next"
-                    onButtonClicked: menu.showAllApps = true
-                }
-
-                GridView {
-                    id: pinnedGrid
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: cellHeight * 3
-                    clip: true
-                    interactive: contentHeight > height
-                    cellWidth: Math.floor(width / 6)
-                    cellHeight: Kirigami.Units.gridUnit * 5
-                    model: kicker.rootModel.favoritesModel
-                    delegate: AppTile {
-                        width: pinnedGrid.cellWidth
-                        height: pinnedGrid.cellHeight
-                        onActivated: menu.launch(pinnedGrid.model, index)
-                    }
-                }
-
-                SectionHeader {
-                    title: "Empfohlen"
-                }
-
-                GridView {
-                    id: recentGrid
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    clip: true
-                    interactive: false
-                    cellWidth: Math.floor(width / 2)
-                    cellHeight: Kirigami.Units.gridUnit * 3
-                    model: kicker.recentModel
-                    delegate: ListEntry {
-                        width: recentGrid.cellWidth
-                        height: recentGrid.cellHeight
-                        // nur so viele, wie Platz haben (Windows: 6)
-                        visible: index < 6
-                        onActivated: menu.launch(recentGrid.model, index)
-                    }
-                    PC3.Label {
-                        anchors.centerIn: parent
-                        visible: recentGrid.count === 0
-                        text: "Zuletzt verwendete Dateien und Apps erscheinen hier."
-                        opacity: 0.7
-                    }
-                }
-            }
-
-            // Alle Apps
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.leftMargin: menu.pad
-                anchors.rightMargin: menu.pad
-                visible: menu.page === "apps"
-                spacing: Kirigami.Units.largeSpacing
-
-                SectionHeader {
-                    title: "Alle Apps"
-                    buttonText: "Zurück"
-                    buttonIcon: "go-previous"
-                    buttonIconFirst: true
-                    onButtonClicked: menu.showAllApps = false
-                }
-
-                PC3.ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    ListView {
-                        id: appsList
-                        model: kicker.allAppsModel
-                        clip: true
-                        section.property: "display"
-                        section.criteria: ViewSection.FirstCharacter
-                        section.delegate: PC3.Label {
-                            required property string section
-                            text: section.toUpperCase()
-                            font.weight: Font.DemiBold
-                            leftPadding: Kirigami.Units.smallSpacing
-                            topPadding: Kirigami.Units.smallSpacing
-                            bottomPadding: Kirigami.Units.smallSpacing
-                        }
-                        delegate: ListEntry {
-                            width: appsList.width
-                            height: Kirigami.Units.gridUnit * 2.2
-                            showSubtitle: false
-                            pinnable: true
-                            onActivated: menu.launch(appsList.model, index)
-                        }
-                    }
-                }
-            }
-
-            // Suchergebnisse
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.leftMargin: menu.pad
-                anchors.rightMargin: menu.pad
-                visible: menu.page === "search"
-                spacing: Kirigami.Units.largeSpacing
-
-                SectionHeader {
-                    title: "Beste Übereinstimmungen"
-                }
-
-                PC3.ScrollView {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    ListView {
-                        id: searchList
-                        clip: true
-                        model: runnerModel.count > 0 ? runnerModel.modelForRow(0) : null
-                        keyNavigationEnabled: true
-                        highlightMoveDuration: 0
-                        delegate: ListEntry {
-                            width: searchList.width
-                            height: Kirigami.Units.gridUnit * 2.6
-                            highlighted: ListView.isCurrentItem && searchList.activeFocus
-                            pinnable: true
-                            onActivated: menu.launch(searchList.model, index)
-                        }
-                        // Weitertippen, Rücktaste und Escape gehen zurück ins Suchfeld.
-                        // onPressed läuft vor den Einzel-Handlern; Return/Enter und Pfeile
-                        // bleiben unbehandelt und landen dort.
-                        Keys.onPressed: event => {
-                            const c = event.text.length > 0 ? event.text.charCodeAt(0) : 0;
-                            const plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier));
-                            if (event.key === Qt.Key_Escape) {
-                                searchField.forceActiveFocus();
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Backspace) {
-                                searchField.text = searchField.text.slice(0, -1);
-                                searchField.cursorPosition = searchField.text.length;
-                                searchField.forceActiveFocus();
-                                event.accepted = true;
-                            } else if (plain && c >= 32 && c !== 127) {
-                                searchField.text += event.text;
-                                searchField.cursorPosition = searchField.text.length;
-                                searchField.forceActiveFocus();
-                                event.accepted = true;
-                            } else {
-                                event.accepted = false;
-                            }
-                        }
-                        Keys.onReturnPressed: menu.launch(searchList.model, currentIndex)
-                        Keys.onEnterPressed: menu.launch(searchList.model, currentIndex)
-                        Keys.onUpPressed: {
-                            if (currentIndex <= 0) {
-                                searchField.forceActiveFocus();
-                            } else {
-                                decrementCurrentIndex();
-                            }
-                        }
-                    }
-                }
-
-                PC3.Label {
-                    visible: !runnerModel.querying && runnerModel.count === 0
-                    text: "Keine Ergebnisse"
-                    opacity: 0.7
-                }
+        onAngenommen: {
+            if (menu.ansicht === "suche") {
+                suchAnsicht.auswahlOeffnen();
+            } else if (menu.ansicht === "start") {
+                startSeite.auswahlStarten();
             }
         }
-
-        // ---------- Leiste unten: Benutzer, Ein/Aus ----------
-        Rectangle {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Kirigami.Units.gridUnit * 3.5
-            Layout.topMargin: Kirigami.Units.largeSpacing
-            color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.04)
-
-            Rectangle {
-                anchors.top: parent.top
-                width: parent.width
-                height: 1
-                color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.1)
+        onAbgebrochen: {
+            if (text.length > 0) {
+                leeren();
+            } else if (startSeite.ordnerOffen) {
+                startSeite.ordnerSchliessen();
+            } else if (konto.visible) {
+                konto.visible = false;
+            } else if (menu.ansicht === "alle" || menu.ansicht === "empfohlen") {
+                menu.ansicht = "start";
+            } else {
+                menu.schliessen();
             }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: menu.pad * 1.5
-                anchors.rightMargin: menu.pad * 1.5
-
-                KirigamiComponents.Avatar {
-                    Layout.preferredWidth: Kirigami.Units.iconSizes.medium
-                    Layout.preferredHeight: Kirigami.Units.iconSizes.medium
-                    source: kuser.faceIconUrl
-                    name: kuser.fullName || kuser.loginName
-                }
-                PC3.Label {
-                    Layout.fillWidth: true
-                    text: kuser.fullName || kuser.loginName
-                    elide: Text.ElideRight
-                }
-                PC3.ToolButton {
-                    id: powerButton
-                    icon.name: "system-shutdown"
-                    display: QQC2.AbstractButton.IconOnly
-                    text: "Ein/Aus"
-                    PC3.ToolTip.text: text
-                    PC3.ToolTip.visible: hovered
-                    onClicked: powerPopup.visible = !powerPopup.visible
-                }
-            }
+        }
+        onPfeil: (dx, dy, event) => menu.pfeil(dx, dy, event)
+    }
+    // Pfeiltasten bleiben im Suchfeld (Tippen geht immer weiter) und steuern die Auswahl
+    function pfeil(dx, dy, event) {
+        if (ansicht === "suche") {
+            suchAnsicht.auswahlBewegen(dy !== 0 ? dy : dx);
+            event.accepted = true;
+        } else if (ansicht === "start") {
+            startSeite.auswahlBewegen(dx, dy);
+            event.accepted = true;
+        } else {
+            event.accepted = false;
         }
     }
 
-    // Ein/Aus-Menü (Sperren, Abmelden, Energiesparmodus, Neu starten, Herunterfahren)
-    Rectangle {
-        id: powerPopup
-        visible: false
-        z: 10
+    // ---------------- Ansichten ----------------
+    StartSeite {
+        id: startSeite
+        y: 64
+        width: parent.width
+        height: 590
+        visible: menu.ansicht === "start"
+        onAlleZeigen: menu.ansicht = "alle"
+        onMehrZeigen: menu.ansicht = "empfohlen"
+    }
+
+    AlleAnsicht {
+        id: alleAnsicht
+        y: 64
+        width: parent.width
+        height: 590
+        visible: menu.ansicht === "alle"
+        onZurueck: menu.ansicht = "start"
+    }
+
+    EmpfohlenAnsicht {
+        y: 64
+        width: parent.width
+        height: 590
+        visible: menu.ansicht === "empfohlen"
+        onZurueck: menu.ansicht = "start"
+    }
+
+    SuchAnsicht {
+        id: suchAnsicht
+        y: 64
+        width: parent.width
+        height: menu.height - 64
+        visible: menu.ansicht === "suche"
+        aktiv: visible
+        anfrage: suchfeld.text
+    }
+
+    // ---------------- Fußleiste: Benutzer, Ein/Aus ----------------
+    StartFuss {
+        visible: menu.ansicht !== "suche"
+        anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.rightMargin: menu.pad
-        anchors.bottomMargin: Kirigami.Units.gridUnit * 3.5
-        width: Kirigami.Units.gridUnit * 13
-        height: powerColumn.implicitHeight + Kirigami.Units.smallSpacing * 2
-        radius: Kirigami.Units.cornerRadius
-        color: Kirigami.Theme.backgroundColor
-        border.color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.15)
-
-        ColumnLayout {
-            id: powerColumn
-            anchors.fill: parent
-            anchors.margins: Kirigami.Units.smallSpacing
-            spacing: 0
-            Repeater {
-                model: kicker.systemModel
-                delegate: ListEntry {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: Kirigami.Units.gridUnit * 2.2
-                    showSubtitle: false
-                    onActivated: {
-                        powerPopup.visible = false;
-                        menu.launch(kicker.systemModel, index);
-                    }
-                }
-            }
-        }
+        height: 64
+        benutzerName: benutzer.fullName || benutzer.loginName
+        benutzerBild: benutzer.faceIconUrl
+        onKontoKlick: konto.visible = !konto.visible
     }
 
-    function launchFirstResult() {
-        if (page === "search" && searchList.count > 0) {
-            launch(searchList.model, 0);
+    KontoKarte {
+        id: konto
+        visible: false
+        x: 28
+        y: menu.height - 64 - height + 4
+        benutzerName: benutzer.fullName || benutzer.loginName
+        benutzerBild: benutzer.faceIconUrl
+    }
+
+    // Tippen irgendwo im Startmenü landet im Suchfeld (Windows beginnt sofort die Suche)
+    Keys.onPressed: event => {
+        if (event.text.length > 0 && event.text.charCodeAt(0) >= 32 && !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))) {
+            suchfeld.eingabe.forceActiveFocus();
+            suchfeld.text += event.text;
+            event.accepted = true;
         }
     }
 }
