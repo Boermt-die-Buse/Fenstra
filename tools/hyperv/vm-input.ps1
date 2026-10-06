@@ -39,7 +39,11 @@ function MoveTo([int]$x, [int]$y) {
     Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetAbsolutePosition -Arguments @{ horizontalPosition = $x; verticalPosition = $y }) 'SetAbsolutePosition'
 }
 function Click([int]$btn) {
-    Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName ClickButton -Arguments @{ buttonIndex = $btn }) 'ClickButton'
+    # Drücken, kurz halten, loslassen. Die WMI-Methode ClickButton liefert Drücken und Loslassen
+    # mit identischem Zeitstempel; Firefox und KWin-Fenster verwerfen solche Klicks (Befund M3).
+    Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]$btn; IsDown = $true }) 'SetButtonState'
+    Start-Sleep -Milliseconds 90
+    Assert-WmiOk (Invoke-CimMethod -InputObject $mouse -MethodName SetButtonState -Arguments @{ ButtonIndex = [uint32]$btn; IsDown = $false }) 'SetButtonState'
 }
 function KeyDown([int]$k) { Assert-WmiOk (Invoke-CimMethod -InputObject $kbd -MethodName PressKey -Arguments @{ keyCode = [uint32]$k }) 'PressKey' }
 function KeyUp([int]$k) { Assert-WmiOk (Invoke-CimMethod -InputObject $kbd -MethodName ReleaseKey -Arguments @{ keyCode = [uint32]$k }) 'ReleaseKey' }

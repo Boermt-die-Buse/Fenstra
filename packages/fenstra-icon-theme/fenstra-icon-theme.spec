@@ -4,7 +4,7 @@
 # kein Rückfall auf Breeze (erbt nur von hicolor).
 Name:           fenstra-icon-theme
 Version:        44.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Symbolthema für Fenstra (eigene Symbole im Stil von Windows 11)
 # Motive: CC-BY-SA-4.0; Generator: MIT
 License:        CC-BY-SA-4.0 AND MIT
@@ -49,6 +49,10 @@ gtk-update-icon-cache --force %{_datadir}/icons/fenstra &>/dev/null || :
 %{_datadir}/fenstra/icon-theme/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-5
+- farbige Symbole mit weniger Rand (Ausschnitt 58/64): füllen ihr Feld wie Windows-Symbole,
+  in der Taskleiste deutlich größer (Nutzerbefund „Skalierung falsch“); Store-Tasche größer
+
 * Tue Oct 06 2026 Fenstra-Projekt - 44.0-4
 - Kabelnetz als Bildschirm mit Stecker (wie der Windows-Infobereich), kein Netz als Globus
   mit Verbotszeichen; Helligkeit, Eingabemethoden, weitere Programm- und Dateinamen

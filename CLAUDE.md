@@ -324,6 +324,13 @@ livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit 
   Containment). Datum deutsch nur mit `toLocaleDateString(Qt.locale(), …)`.
 - (M3) In der Test-VM kann sich nach einer Pause des Rechners die IP ändern; vm-ssh.ps1
   ermittelt sie neu, vm-rpm.ps1 bricht dann einmal ab (erneut aufrufen).
+- (M3, Nutzerbefund) Firefox mit Tabs in der Titelleiste zeichnet eigene, winzige Knöpfe (X
+  unsichtbar) → Systemvorgabe `/etc/firefox/pref/fenstra-prefs.js` (normale Titelleiste).
+  GTK-Design „Fenstra“ (/usr/share/themes/Fenstra, Vorgabe über /etc/skel) – beim GTK-Design
+  „Breeze“ rendert KDE die Knöpfe aus der KWin-Dekoration, das klappt mit Fenstra nicht.
+- (M3) Hyper-V-WMI `ClickButton` sendet Drücken/Loslassen mit gleichem Zeitstempel; Firefox und
+  KWin verwerfen das. vm-input.ps1 hält die Taste jetzt 90 ms. Bei jedem Fenster-Meilenstein
+  auch Firefox/GTK-Fenster mitprüfen (Knöpfe sichtbar und funktionsfähig).
 
 ## Roadmap (Kurzform, Details docs/roadmap.md)
 

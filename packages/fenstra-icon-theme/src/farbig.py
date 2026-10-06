@@ -34,7 +34,9 @@ def rad(stops, cx=0.5, cy=0.5, r=0.5):
 
 
 def svg64(body, size=64):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 64 64">'
+    # Ausschnitt 3…61 statt 0…64: die Motive füllen ihr Feld wie Windows-Symbole (in der
+    # Taskleiste z. B. 23 von 24 px statt 21); alle Motive liegen innerhalb von 3…61.
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="3 3 58 58">'
             f'<!-- Fenstra: erzeugt von packages/fenstra-icon-theme/src/farbig.py -->{body}</svg>')
 
 
@@ -389,10 +391,12 @@ def app(name):
                       '<path d="M25 39L43 13M39 39L21 13" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>')
     if name == 'store':
         g, d = lin([(0, '#F4F6F9'), (1, '#D5DAE2')])
-        return (f'<defs>{d}</defs><path d="M10 20h44l-3 34a4 4 0 0 1-4 3.6H17a4 4 0 0 1-4-3.6z" fill="url(#{g})"/>'
-                '<path d="M24 20v-4a8 8 0 0 1 16 0v4" fill="none" stroke="#7B8594" stroke-width="3.2"/>'
-                '<rect x="21" y="28" width="10" height="10" rx="1.5" fill="#F25022"/><rect x="33" y="28" width="10" height="10" rx="1.5" fill="#7FBA00"/>'
-                '<rect x="21" y="40" width="10" height="10" rx="1.5" fill="#00A4EF"/><rect x="33" y="40" width="10" height="10" rx="1.5" fill="#FFB900"/>')
+        # Einkaufstasche, groß im Feld (vorher wirkte sie in der Taskleiste winzig)
+        return (f'<defs>{d}</defs><path d="M6 21h52l-3.4 34.6a4 4 0 0 1-4 3.4H13.4a4 4 0 0 1-4-3.4z" fill="url(#{g})"/>'
+                '<path d="M6 21h52l-3.4 34.6a4 4 0 0 1-4 3.4H13.4a4 4 0 0 1-4-3.4z" fill="none" stroke="#A9B2BF" stroke-width="1"/>'
+                '<path d="M22 21v-5a10 10 0 0 1 20 0v5" fill="none" stroke="#6B7584" stroke-width="3.6" stroke-linecap="round"/>'
+                '<rect x="17" y="27" width="14" height="13" rx="2" fill="#F25022"/><rect x="33" y="27" width="14" height="13" rx="2" fill="#7FBA00"/>'
+                '<rect x="17" y="42" width="14" height="13" rx="2" fill="#00A4EF"/><rect x="33" y="42" width="14" height="13" rx="2" fill="#FFB900"/>')
     if name == 'hilfe':
         g, d = lin([(0, '#4EA8FF'), (1, '#1F6ED6')])
         return (f'<defs>{d}</defs><circle cx="32" cy="32" r="27" fill="url(#{g})"/>'

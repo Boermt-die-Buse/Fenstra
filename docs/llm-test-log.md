@@ -203,3 +203,26 @@ Hyper-V-Fernsteuerung. Bewertung des übernommenen Stands (2026-10-05, Bild bei 
 | Vorschau/Sprunglisten | 3 | 7 | Livebilder, Aufgaben, zuletzt verwendet; keine „Peek“-Vorschau des Fensters |
 | Infobereich/Uhr | 4 | 7 | Gruppe, Uhr, Glocke, Streifen wie Windows; Überlauf und Flyouts noch Plasma/Vorstufe |
 | Start-Knopf/-Menü | 5 | 6 | eigenes Symbol, mittig; Menüinhalt erst in M4 auf Windows-Stand |
+
+### Nachtrag M3: Nutzerbefunde (2026-10-06, nach dem Bericht)
+
+- **„Firefox lässt sich mit den Knöpfen nicht minimieren, maximieren oder schließen“:** Firefox
+  zeichnete mit Tabs in der Titelleiste eigene Knöpfe mit Symbolen aus dem Symbolthema, stark
+  verkleinert; das Schließen-X (zwei diagonale 1-px-Linien) war unsichtbar, Minimieren und
+  Maximieren nur winzige Striche. Behoben: Firefox nutzt per Systemvorgabe
+  (`/etc/firefox/pref/fenstra-prefs.js`, `browser.tabs.inTitlebar = 0`) die normale
+  Titelleiste mit der Fenstra-Dekoration; dazu ein GTK-Design „Fenstra“ (Breeze-GTK +
+  Windows-Knöpfe 46×32) als Vorgabe, damit KDE für GTK-Programme keine unbrauchbaren
+  Knopfbilder aus der Dekoration mehr erzeugt (fenstra-theme 44.0-10).
+- **Fehler in meinem eigenen Testwerkzeug:** `vm-input.ps1 click` nutzte die WMI-Methode
+  `ClickButton`, die Drücken und Loslassen mit identischem Zeitstempel liefert. Firefox und
+  KWin-Fenster verwerfen solche Klicks; deshalb sah es zuerst so aus, als nähme die VM gar keine
+  Klicks mehr an. Jetzt: drücken, 90 ms halten, loslassen.
+- **„Skalierung der Taskleistensymbole falsch“:** Die farbigen Symbole hatten im 64er-Raster zu
+  viel Rand und füllten ihre 24 px nur zu rund 80 %; das Store-Symbol war besonders klein.
+  Ausschnitt jetzt 58/64 (fenstra-icon-theme 44.0-5). Zusätzlich zeigt das Hyper-V-Fenster die
+  1920×1080-VM auf einem 1920×1080-Bildschirm verkleinert (Vollbild: Strg+Alt+Pause).
+- **Bewertung:** Diese Fehler hätte meine Prüfliste finden müssen: Ich hatte Firefox als
+  angeheftete App, aber nie seine Fensterknöpfe getestet. Für M4 kommt ein Punkt „Fenster
+  fremder Toolkits (GTK/Firefox): Knöpfe sichtbar und funktionsfähig“ in jede Prüfliste mit
+  Fenstern.

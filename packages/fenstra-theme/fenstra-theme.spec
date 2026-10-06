@@ -3,7 +3,7 @@
 # Bootscreen und fontconfig-Regeln. Bindet Hintergrund, Symbole und Schriften ein.
 Name:           fenstra-theme
 Version:        44.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Erscheinungsbild von Fenstra (Plasma-Design, Farben, Bootscreen)
 License:        GPL-2.0-or-later AND CC-BY-SA-4.0
 URL:            https://github.com/Boermt-die-Buse/Fenstra
@@ -86,6 +86,8 @@ done
 rsvg-convert -w 128 -h 128 -o plymouth/frames/watermark.png look-and-feel/org.fenstra.desktop/contents/splash/images/fenstra-logo-white.svg
 # Plasma-Designs fenstra / fenstra-dark (Taskleiste, Popups, Tooltips) aus Code erzeugen
 python3 desktoptheme/generate.py desktoptheme-build
+# GTK-Design „Fenstra“ (Breeze-GTK + Windows-Titelleistenknöpfe)
+python3 gtk/erzeuge.py --out gtk-build
 
 %install
 # Globale Designs (Look-and-Feel)
@@ -112,6 +114,13 @@ install -p -m 0644 xdg/kdeglobals xdg/kcminputrc xdg/kwinrc xdg/kscreenlockerrc 
 # Plasma-Designs
 install -d %{buildroot}%{_datadir}/plasma/desktoptheme
 cp -a desktoptheme-build/fenstra desktoptheme-build/fenstra-dark %{buildroot}%{_datadir}/plasma/desktoptheme/
+# GTK-Design „Fenstra“; Vorgabe für neue Benutzer (KDE übernimmt den Namen aus settings.ini)
+install -d %{buildroot}%{_datadir}/themes
+cp -a gtk-build/Fenstra %{buildroot}%{_datadir}/themes/
+install -D -p -m 0644 skel/gtk-settings.ini %{buildroot}%{_sysconfdir}/skel/.config/gtk-3.0/settings.ini
+install -D -p -m 0644 skel/gtk-settings.ini %{buildroot}%{_sysconfdir}/skel/.config/gtk-4.0/settings.ini
+# Firefox: normale Titelleiste mit Fenstra-Knöpfen
+install -D -p -m 0644 firefox/fenstra-prefs.js %{buildroot}%{_sysconfdir}/firefox/pref/fenstra-prefs.js
 # fontconfig
 install -D -p -m 0644 fontconfig/61-fenstra-ui.conf %{buildroot}%{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
 # Plymouth
@@ -148,6 +157,10 @@ fi
 %{_datadir}/plasma/desktoptheme/fenstra/
 %{_datadir}/plasma/desktoptheme/fenstra-dark/
 %config(noreplace) %{_sysconfdir}/fonts/conf.d/61-fenstra-ui.conf
+%{_datadir}/themes/Fenstra/
+%config(noreplace) %{_sysconfdir}/skel/.config/gtk-3.0/settings.ini
+%config(noreplace) %{_sysconfdir}/skel/.config/gtk-4.0/settings.ini
+%config(noreplace) %{_sysconfdir}/firefox/pref/fenstra-prefs.js
 
 %files -n fenstra-taskleiste
 %{_datadir}/plasma/plasmoids/org.fenstra.taskbar/
@@ -157,6 +170,12 @@ fi
 %{_datadir}/plymouth/themes/fenstra/
 
 %changelog
+* Tue Oct 06 2026 Fenstra-Projekt - 44.0-10
+- Firefox: normale Titelleiste (Fenstra-Dekoration), weil die eigenen Firefox-Knöpfe winzig
+  waren und das Schließen-X unsichtbar (Nutzerbefund)
+- GTK-Design „Fenstra“ (Breeze-GTK + Titelleistenknöpfe 46×32 wie Windows) als Vorgabe für
+  neue Benutzer; KDE erzeugt damit keine unbrauchbaren Knopfbilder aus der Dekoration mehr
+
 * Tue Oct 06 2026 Fenstra-Projekt - 44.0-9
 - M3: eigene Taskleiste (org.fenstra.taskbar, mit Startmenü) und eigener Infobereich
   (org.fenstra.infobereich) im Unterpaket fenstra-taskleiste; ersetzt fenstra-startmenu
