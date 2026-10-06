@@ -128,6 +128,13 @@ Fehlersuche: `grep -n 'return code [1-9]' logs/<stamp>/anaconda/dnf.log`, dann k
 livemedia.log, packaging.log. Anaconda loggt chpasswd nicht; Passwortfehler mit Kopie von
 /etc/passwd,shadow in /tmp/t und `chpasswd -e -R /tmp/t` nachstellen.
 
+## Neue Sitzung starten
+
+Claude Code im Ordner `C:\Users\Daniel\Fenstra\ws` starten (dann wird diese Datei geladen;
+das Gedächtnis mit dem VM-Zugang hängt am Git-Stamm C:\Users\Daniel). Übergabe-Prompt für
+M4: `C:\Users\Daniel\Fenstra\prompt-m4.md`; ursprünglicher Auftrag:
+`C:\Users\Daniel\Fenstra\prompt-windows11-klon.md`.
+
 ## Stand M3 (abgeschlossen 2026-10-06) – nächster Schritt: M4 Startmenü, Suche, Flyouts
 
 - **Taskleiste eigen** (Prüfliste docs/checkliste-taskleiste.md bestanden, Abweichungen dort):
